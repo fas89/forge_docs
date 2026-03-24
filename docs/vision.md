@@ -178,10 +178,10 @@ fluid export-opds contract.yaml           # Export to open data standards
 
 Fluid Forge is open source and built in the open.
 
-- **Star & Fork** — [github.com/agentics-rising/fluid-forge-cli](https://github.com/agentics-rising/fluid-forge-cli)
-- **Report Issues** — [Issue Tracker](https://github.com/agentics-rising/fluid-forge-cli/issues)
+- **Star & Fork** — [github.com/agentics-rising/fluid-forge-cli](https://github.com/Agentics-Rising/forge-cli)
+- **Report Issues** — [Issue Tracker](https://github.com/Agentics-Rising/forge-cli/issues)
 - **Contribute** — [Contributing Guide](/contributing)
-- **Discussions** — [GitHub Discussions](https://github.com/agentics-rising/fluid-forge-cli/discussions)
+- **Discussions** — [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions)
 
 ## Ready to Build?
 

@@ -70,7 +70,7 @@ export default defineUserConfig({
       },
       {
         text: 'GitHub',
-        link: 'https://github.com/agentics-rising/fluid-forge-cli'
+        link: 'https://github.com/Agentics-Rising/forge-cli'
       }
     ],
 

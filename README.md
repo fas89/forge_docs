@@ -14,9 +14,9 @@
 
 <p align="center">
   <a href="https://agentics-rising.github.io/forge_docs/">📖 Live Docs</a> ·
-  <a href="https://github.com/agentics-rising/fluid-forge-cli">⚡ CLI Repository</a> ·
+  <a href="https://github.com/Agentics-Rising/forge-cli">⚡ CLI Repository</a> ·
   <a href="https://github.com/agentics-rising/forge_docs/issues">🐛 Report Issue</a> ·
-  <a href="https://github.com/agentics-rising/fluid-forge-cli/discussions">💬 Discussions</a>
+  <a href="https://github.com/Agentics-Rising/forge-cli/discussions">💬 Discussions</a>
 </p>
 
 ---
@@ -220,7 +220,7 @@ For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Co
 
 | Repository | Description |
 |-----------|-------------|
-| [`fluid-forge-cli`](https://github.com/agentics-rising/fluid-forge-cli) | The Fluid Forge CLI — the core engine |
+| [`fluid-forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
 | [`fluid-provider-sdk`](https://github.com/agentics-rising/fluid-provider-sdk) | SDK for building custom providers |
 
 ## License
@@ -232,7 +232,7 @@ Licensed under the **Apache License, Version 2.0**. See [LICENSE](LICENSE) for t
 ---
 
 <p align="center">
-  <strong>Built with <a href="https://v2.vuepress.vuejs.org/">VuePress 2</a></strong> · <strong>Powered by <a href="https://github.com/agentics-rising/fluid-forge-cli">Fluid Forge</a></strong>
+  <strong>Built with <a href="https://v2.vuepress.vuejs.org/">VuePress 2</a></strong> · <strong>Powered by <a href="https://github.com/Agentics-Rising/forge-cli">Fluid Forge</a></strong>
   <br>
   <sub>Declarative Data Products for Modern Data Teams</sub>
   <br><br>

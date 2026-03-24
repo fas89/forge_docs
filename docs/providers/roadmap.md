@@ -237,7 +237,7 @@ The same contract structure works across GCP, AWS, and Snowflake — just change
 
 Vote for providers or request new ones:
 
-- 🗳️ [Provider Feature Requests](https://github.com/agentics-rising/fluid-forge-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aprovider)
+- 🗳️ [Provider Feature Requests](https://github.com/Agentics-Rising/forge-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aprovider)
 - 💬 [Discord Discussion](https://discord.gg/fluidforge)
 - 📧 Email: providers@fluidforge.dev
 
