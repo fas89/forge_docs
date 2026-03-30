@@ -18,7 +18,7 @@ Let's build a provider that deploys to a hypothetical database platform called "
 # my_provider/provider.py
 import time
 import datetime
-from fluid_build.providers.base import BaseProvider, ApplyResult, ProviderError
+from fluid_provider_sdk import ApplyResult, BaseProvider, ProviderError
 
 class MyDbProvider(BaseProvider):
     name = "mydb"
@@ -57,17 +57,16 @@ class MyDbProvider(BaseProvider):
 
 **Step 2:** Register it so Fluid Forge can find it:
 
-```python
-# my_provider/__init__.py
-from fluid_build.providers import register_provider
-from .provider import MyDbProvider
-
-register_provider("mydb", MyDbProvider)
+```toml
+# pyproject.toml
+[project.entry-points."fluid_build.providers"]
+mydb = "my_provider.provider:MyDbProvider"
 ```
 
 **Step 3:** Use it:
 
 ```bash
+pip install -e .
 fluid --provider mydb plan contract.fluid.yaml
 fluid --provider mydb apply contract.fluid.yaml --yes
 ```
@@ -211,7 +210,7 @@ Always capture partial progress in the results list — even if an action fails,
 Tell the CLI what your provider supports:
 
 ```python
-from fluid_build.providers.base import ProviderCapabilities
+from fluid_provider_sdk import ProviderCapabilities
 
 def capabilities(self):
     return ProviderCapabilities(
@@ -230,7 +229,7 @@ The CLI checks these to decide which features to enable. For example, it won't o
 Metadata appears in `fluid providers` output and helps users discover providers:
 
 ```python
-from fluid_build.providers.base import ProviderMetadata
+from fluid_provider_sdk import ProviderMetadata
 
 @classmethod
 def get_provider_info(cls):
@@ -248,21 +247,9 @@ def get_provider_info(cls):
 
 Fluid Forge needs to know your provider exists. There are two ways to register.
 
-### Option 1: Explicit Registration (Recommended)
+### Option 1: Entry Points (Recommended)
 
-Call `register_provider()` when your module is imported:
-
-```python
-# my_provider/__init__.py
-from fluid_build.providers import register_provider
-from .provider import MyDbProvider
-
-register_provider("mydb", MyDbProvider)
-```
-
-### Option 2: Entry Points (For Pip Packages)
-
-If you're distributing your provider as a standalone pip package, use Python entry points. This lets Fluid Forge discover your provider automatically after `pip install`:
+If you're distributing your provider as a standalone package, use Python entry points. This lets Fluid Forge discover your provider automatically after `pip install`:
 
 ```toml
 # pyproject.toml
@@ -275,6 +262,18 @@ After installation, your provider appears automatically:
 ```bash
 pip install my-fluid-provider
 fluid providers    # Shows "mydb" in the list
+```
+
+### Option 2: Explicit Registration (For In-Tree Providers)
+
+If you're bundling a provider inside the CLI repo or another in-process integration, you can register it at import time:
+
+```python
+# my_provider/__init__.py
+from fluid_build.providers import register_provider
+from .provider import MyDbProvider
+
+register_provider("mydb", MyDbProvider)
 ```
 
 ### Name Rules
@@ -292,7 +291,7 @@ Provider names are normalized on registration:
 Use the two-tier error model:
 
 ```python
-from fluid_build.providers.base import ProviderError, ProviderInternalError
+from fluid_provider_sdk import ProviderError, ProviderInternalError
 
 # User-fixable problems — shown as friendly messages
 raise ProviderError("Table 'orders' does not exist in schema 'analytics'")

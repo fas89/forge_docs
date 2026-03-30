@@ -93,7 +93,7 @@ cd bitcoin-price-tracker
 git init
 
 # Copy files from fluid-mono (excluding git history)
-cp -r ~/fluid-mono/fluid_forge_docs/examples/bitcoin-tracker/* .
+cp -r ~/fluid-mono/forge_docs/examples/bitcoin-tracker/* .
 
 # Reorganize structure
 mkdir -p scripts docs
