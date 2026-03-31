@@ -2,10 +2,10 @@
 # Install with: pip install -r requirements.txt
 
 # Snowflake connector
-snowflake-connector-python>=3.0.0
+snowflake-connector-python>=4.4.0
 
 # API requests
-requests>=2.31.0
+requests>=2.32.5
 
 # YAML parsing
 pyyaml>=6.0

@@ -220,6 +220,6 @@ chmod +x analyze.py
 
 ## Learn More
 
-- **[Fluid Forge Documentation](../../fluid_forge_docs/)**
-- **[Local Development Walkthrough](../../fluid_forge_docs/docs/walkthrough/local.md)**
-- **[Schema Reference](../../fluid_forge_docs/docs/reference/schema.md)**
+- **[Fluid Forge Documentation](../../docs/README.md)**
+- **[Local Development Walkthrough](../../docs/walkthrough/local.md)**
+- **[Validation Reference](../../docs/cli/validate.md)**
