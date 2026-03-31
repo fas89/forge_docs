@@ -1,6 +1,6 @@
 # CLI Reference
 
-Fluid Forge ships with 40+ commands organized into functional categories. Run `fluid --help` for the full list or `fluid <command> -h` for per-command details.
+Fluid Forge ships with 45 top-level commands organized into functional categories. Run `fluid --help` for the full list or `fluid <command> -h` for per-command details.
 
 ::: tip
 ```bash
@@ -57,6 +57,15 @@ Common use-case categories in the interactive flow are:
 
 You can still answer with your own wording such as `CDC sync`, `executive scorecards`, or `customer 360`.
 
+Built-in domain-agent mode is also available through `fluid forge --mode agent`. The current built-in agents are:
+
+- `finance` for regulated analytics, fraud, trading, and compliance-heavy data products
+- `healthcare` for HIPAA-aware analytics, PHI handling, and clinical workflows
+- `retail` for customer 360, personalization, demand, and inventory use cases
+- `telco` for TM Forum SID-aligned OSS/BSS, service assurance, and network-operations analytics
+
+These built-in agents are backed by declarative YAML specs, so they share the same Forge scaffolding engine while applying domain-specific questions, defaults, rules, and next-step guidance.
+
 Useful copilot flags:
 
 | Flag | Description |
@@ -100,6 +109,11 @@ fluid forge --mode copilot \
 ```bash
 fluid forge --show-memory
 fluid forge --reset-memory
+```
+
+```bash
+fluid forge --mode agent --agent telco
+fluid forge --mode agent --agent finance
 ```
 
 Step-by-step guides:
@@ -394,7 +408,7 @@ fluid forge [options]
 | Option | Description |
 |--------|-------------|
 | `--mode <name>` | `copilot`, `agent`, `template`, `blueprint` |
-| `--agent <name>` | Domain agent: `finance`, `healthcare`, `retail`, or custom |
+| `--agent <name>` | Domain agent: `finance`, `healthcare`, `retail`, `telco`, or a registered custom agent |
 | `--template <name>` | Named template |
 | `--provider <name>` | Provider hint for the generated project |
 | `--llm-provider <name>` | Built-in LLM adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
@@ -424,6 +438,7 @@ fluid forge --mode copilot --llm-provider ollama \
 fluid forge --mode copilot --discovery-path ./data
 fluid forge --show-memory
 fluid forge --template analytics --provider gcp
+fluid forge --mode agent --agent telco
 ```
 
 Credential resolution:
@@ -438,6 +453,7 @@ Important behavior:
 - `--llm-endpoint` is an exact endpoint override for proxies, self-hosted gateways, or Ollama. It is not a file-upload target.
 - `--discovery-path` scans local files and sends only derived metadata to the LLM, never raw sample rows or full file contents.
 - Discovery supports SQL, dbt, Terraform, README headings, existing FLUID contracts, and sample files including CSV, JSON, JSONL, Parquet, and Avro.
+- `--mode agent` uses the same shared Forge scaffolding path as copilot mode, but seeds it with domain-specific declarative rules and next-step guidance.
 - Interactive prompts are friendly by default: suggested options are hints, not strict menus.
 - Copilot keeps an app-managed interview summary and transcript so provider behavior stays consistent across OpenAI, Anthropic, Gemini, and Ollama.
 - The public scaffolding path is `fluid forge --mode copilot`.
@@ -502,7 +518,7 @@ Display version and build information.
 
 ```bash
 fluid version
-# Fluid Forge CLI v0.7.1
+# Fluid Forge CLI v0.7.7
 ```
 
 ### `fluid providers`

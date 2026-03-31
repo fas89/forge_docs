@@ -1,4 +1,4 @@
-# Built-in And Custom LLM Agents
+# Built-in And Custom Forge Agents
 
 `fluid forge --mode copilot` is the primary AI-backed project creation path. It now runs as an adaptive interview plus generation loop: bootstrap context, ask only the highest-signal follow-up questions, discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
 
@@ -9,7 +9,16 @@ Built-in copilot providers:
 - Gemini
 - Ollama
 
-Use a custom agent only when you need bespoke questioning, a non-standard provider, or domain-specific planning behavior that goes beyond the built-in copilot flow.
+Built-in domain agents:
+
+- `finance` for regulated analytics, fraud, trading, and compliance-heavy workflows
+- `healthcare` for HIPAA-aware data products and PHI-sensitive workflows
+- `retail` for customer 360, personalization, and inventory-driven workflows
+- `telco` for TM Forum SID-aligned telecom OSS/BSS, service-assurance, and network-operations workflows
+
+Those built-in domain agents are no longer hand-coded one by one. They are backed by declarative YAML specs under `fluid_build/cli/agent_specs/*.yaml`, loaded through the shared `DeclarativeDomainAgent` path, and then exposed via `fluid forge --mode agent --agent <name>`.
+
+Use a custom agent only when you need bespoke questioning, a non-standard provider, or domain-specific planning behavior that goes beyond the built-in copilot flow or the declarative spec system.
 
 If you want a private ChatGPT GPT that drafts and reviews FLUID contracts rather than running through `fluid forge --mode copilot`, use the [FLUID Forge Contract GPT Packet](/advanced/chatgpt-forge-contract-gpt/).
 
@@ -222,9 +231,95 @@ Custom domain agents are registered for `fluid forge --mode agent --agent <name>
 
 ## Creating A Custom Domain Agent
 
-### 1. Implement the Agent Class
+### 1. Recommended Path: Add A Declarative Agent Spec
 
-Create a new file at `fluid_build/cli/agents/my_agent.py` or add it to `fluid_build/cli/forge_agents.py`:
+Most domain agents now fit the declarative path. Add a YAML spec under `fluid_build/cli/agent_specs/`:
+
+```yaml
+name: my_domain
+domain: my-domain
+description: Expert in my domain's architecture and compliance requirements
+
+questions:
+  - key: product_type
+    question: What type of data product are you building?
+    type: choice
+    required: true
+    choices:
+      - label: Operational Analytics
+        value: operational_analytics
+        aliases: ["ops", "operations"]
+      - label: Executive Reporting
+        value: executive_reporting
+        aliases: ["exec", "scorecards"]
+  - key: data_sources
+    question: What data sources will you use?
+    type: text
+    required: true
+
+resolver_defaults:
+  product_type: operational_analytics
+
+suggestion_defaults:
+  recommended_template: analytics
+  recommended_provider: local
+  recommended_patterns: []
+  architecture_suggestions: []
+  best_practices: []
+  security_requirements: []
+
+rules:
+  - when:
+      all:
+        - field: product_type
+          equals: executive_reporting
+    actions:
+      - op: set
+        path: recommended_template
+        value: analytics
+      - op: append_unique
+        path: best_practices
+        value: Publish executive KPIs with explicit semantic definitions
+
+next_step_tips:
+  - Run `fluid validate` before wiring downstream dashboards
+```
+
+What the spec controls:
+
+- normalized interview questions and soft-matched choice aliases
+- resolver defaults for ambiguous answers
+- ordered rules that update template, provider, patterns, and guidance
+- static and conditional next-step tips shown after project creation
+
+Forge also applies a shared security and privacy baseline automatically for all declarative domain agents, so your spec can stay focused on domain-specific guidance.
+
+### 2. Bind The Spec Into `DOMAIN_AGENTS`
+
+Create a small compatibility class and register it:
+
+```python
+from fluid_build.cli.forge_domain_agent_base import DeclarativeDomainAgent
+from fluid_build.cli.forge_agents import DOMAIN_AGENTS
+
+
+class MyDomainAgent(DeclarativeDomainAgent):
+    def __init__(self):
+        super().__init__("my_domain")
+
+
+DOMAIN_AGENTS["my-domain"] = MyDomainAgent
+```
+
+Then run:
+
+```bash
+fluid forge --mode agent --agent my-domain
+```
+
+### 3. Advanced Path: Write A Python Agent Class
+
+Drop to a Python class only when the declarative spec format is not enough, for example when you need external API calls, custom ranking logic, or special runtime orchestration. Add your class in `fluid_build/cli/forge_agents.py` or another module imported by it:
 
 ```python
 import json
@@ -233,7 +328,7 @@ from typing import Any, Dict, List
 
 import httpx
 
-from fluid_build.cli.forge_agents import AIAgentBase
+from fluid_build.cli.forge_domain_agent_base import AIAgentBase
 
 
 class MyLLMAgent(AIAgentBase):
@@ -309,24 +404,33 @@ class MyLLMAgent(AIAgentBase):
         }
 ```
 
-### 2. Register the Agent
+### 4. Register The Python Agent
 
 ```python
-from fluid_build.cli.agents.my_agent import MyLLMAgent
+from fluid_build.cli.forge_agents import (
+    DOMAIN_AGENTS,
+    FinanceAgent,
+    HealthcareAgent,
+    RetailAgent,
+    TelcoAgent,
+)
 
-DOMAIN_AGENTS = {
-    "finance": FinanceAgent,
-    "healthcare": HealthcareAgent,
-    "retail": RetailAgent,
-    "my-llm": MyLLMAgent,
-}
+DOMAIN_AGENTS.update(
+    {
+        "finance": FinanceAgent,
+        "healthcare": HealthcareAgent,
+        "retail": RetailAgent,
+        "telco": TelcoAgent,
+        "my-llm": MyLLMAgent,
+    }
+)
 ```
 
 ```bash
 fluid forge --mode agent --agent my-llm
 ```
 
-### 3. Agent Response Contract
+### 5. Python Agent Response Contract
 
 Your custom agent should return a dictionary like this from `analyze_requirements()`:
 
@@ -337,8 +441,11 @@ Your custom agent should return a dictionary like this from `analyze_requirement
     "recommended_patterns": ["layered_architecture"],
     "architecture_suggestions": ["Use incremental loads where possible"],
     "best_practices": ["Set up automated data-quality checks"],
+    "security_requirements": ["Enable audit logging"],
 }
 ```
+
+The declarative spec path and the Python class path both ultimately feed the same shared Forge scaffolding engine. The difference is where you express the domain logic: YAML rules for the common case, Python for bespoke behavior.
 
 ## Advanced: Extension Hooks
 
@@ -451,7 +558,7 @@ Leave it unset unless you are routing to Ollama, a proxy, or a self-hosted OpenA
 It does not in v1. Forge shares metadata summaries only, not raw rows or full file bodies.
 
 **Agent not appearing in `--agent` choices:**
-Ensure your class is imported and added to `DOMAIN_AGENTS` before the CLI registers its argument parser.
+Ensure the spec file exists, the binding class is imported, and the agent is added to `DOMAIN_AGENTS` before the CLI registers its argument parser.
 
 **LLM call timing out:**
 Increase the `httpx.Client(timeout=...)` value. Self-hosted models on CPU can be slow — 120s is a safe starting point.
