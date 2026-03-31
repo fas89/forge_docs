@@ -1,6 +1,6 @@
 # Built-in And Custom LLM Agents
 
-`fluid forge --mode copilot` is the primary AI-backed project creation path. It can discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
+`fluid forge --mode copilot` is the primary AI-backed project creation path. It now runs as an adaptive interview plus generation loop: bootstrap context, ask only the highest-signal follow-up questions, discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
 
 Built-in copilot providers:
 
@@ -28,9 +28,11 @@ Supported copilot flags:
 
 | Flag | Purpose |
 |------|---------|
-| `--llm-provider` | Selects the built-in adapter: `openai`, `anthropic`, `claude`, `gemini`, `ollama` |
+| `--llm-provider` | Selects the built-in adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
 | `--llm-model` | Selects the model for the chosen adapter |
 | `--llm-endpoint` | Overrides the adapter's exact HTTP endpoint |
+| `--context` | Adds structured context from inline JSON or a file |
+| `--interactive` / `--non-interactive` | Forces prompts on or off |
 | `--discover` / `--no-discover` | Enables or disables local metadata discovery |
 | `--discovery-path` | Adds a local file or directory to the discovery scan |
 | `--memory` / `--no-memory` | Enables or disables loading repo-local copilot memory |
@@ -65,7 +67,7 @@ fluid forge --mode copilot --llm-provider anthropic --llm-model claude-3-5-sonne
 
 # Gemini
 export GEMINI_API_KEY=...
-fluid forge --mode copilot --llm-provider gemini --llm-model gemini-1.5-pro
+fluid forge --mode copilot --llm-provider gemini --llm-model gemini-2.5-flash
 
 # Ollama
 export OLLAMA_HOST=http://localhost:11434
@@ -78,6 +80,21 @@ If you prefer a `.env` file, load it in your shell before running Forge:
 export $(grep -v '^#' .env | xargs)
 fluid forge --mode copilot --llm-provider openai
 ```
+
+## How The Built-In Copilot Session Works
+
+The built-in copilot flow is provider-agnostic. Forge keeps the interview state itself and re-sends a compact summary plus recent turns on each model call instead of depending on a provider-native chat session.
+
+That means the same high-level behavior applies across OpenAI, Anthropic, Gemini, and Ollama:
+
+1. Forge bootstraps from CLI flags, `--context`, local discovery, and optional project memory.
+2. If the current picture is still thin, Forge asks a small number of adaptive follow-up questions.
+3. Suggested options are hints only. Users can answer with a number, short phrase, synonym, or free text.
+4. Forge builds an `interview_summary` that grounds the generated FLUID 0.7.2 contract, including semantic intent such as entity, measures, dimensions, time grain, and cadence when known.
+5. Forge validates and repairs the generated contract locally before it scaffolds anything.
+6. If an interactive run failed because business intent was still ambiguous, Forge can ask one final clarification round and retry once more.
+
+Use `--non-interactive` when you want the single-shot automation path with no user-visible clarification prompts.
 
 ### What `--llm-endpoint` Means
 
@@ -170,7 +187,7 @@ Use:
 - `--show-memory` to inspect what Forge currently remembers for this project
 - `--reset-memory` to clear the saved memory file
 
-Interactive runs ask whether to save memory after a successful scaffold.
+Interactive runs ask whether to save memory after a successful scaffold, using the same friendly dialog style as the rest of Forge.
 
 When memory is loaded, Forge now surfaces that in the copilot UX and explains whether template/provider seed guidance came from explicit input, current discovery, saved project memory, or defaults.
 

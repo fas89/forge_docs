@@ -129,7 +129,7 @@ Fluid Forge isn't just `apply`. It's a complete data product lifecycle toolkit:
 | **Governance** | `policy-check` · `policy-compile` · `policy-apply` | Validate policies, compile to native IAM, and enforce — all from the contract |
 | **Visualization** | `viz-graph` · `viz-plan` · `preview` | Lineage diagrams (SVG/PNG/HTML), execution plan visualization |
 | **Publishing** | `publish` · `export-opds` · `odcs` · `datamesh-manager` | Register in catalogs, export to OPDS/ODCS, push to Data Mesh Manager |
-| **AI & Blueprints** | `forge` · `blueprint` · `marketplace` · `copilot` | AI-assisted creation, blueprint templates, marketplace discovery |
+| **AI & Blueprints** | `forge --mode copilot` · `blueprint` · `marketplace` | Adaptive AI-assisted creation, blueprint templates, marketplace discovery |
 | **Config & Admin** | `context` · `providers` · `doctor` · `auth` · `wizard` | Provider management, diagnostics, interactive onboarding |
 
 > Run `fluid doctor` to verify your setup, or `fluid wizard` for interactive onboarding.

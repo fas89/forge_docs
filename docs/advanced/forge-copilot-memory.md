@@ -1,6 +1,6 @@
 # Forge Copilot Memory Guide
 
-This guide explains, step by step, how project-scoped memory works for `fluid forge --mode copilot`.
+This guide explains, step by step, how project-scoped memory works for `fluid forge --mode copilot` inside the new adaptive copilot flow.
 
 ## What Copilot Memory Is
 
@@ -26,16 +26,17 @@ It is **not** a bypass around validation. Forge still validates every generated 
 1. You run `fluid forge --mode copilot`.
 2. Forge loads `runtime/.state/copilot-memory.json` if it exists, unless you pass `--no-memory`.
 3. Forge combines:
-   - your explicit answers and CLI flags
+   - your explicit CLI flags and current-run answers
    - current local discovery results
    - saved project memory
    - safe defaults
-4. Forge shows whether memory was loaded and summarizes what it remembers.
-5. Forge sends a bounded `project_memory` summary to the LLM together with the current discovery report.
-6. Forge explains whether seed template/provider guidance came from explicit input, current discovery, saved memory, or defaults.
-7. Forge validates and repairs the generated contract.
-8. Forge scaffolds only if validation passes.
-9. Forge saves memory only if you explicitly opt in:
+4. Forge uses that combined picture to drive the adaptive interview and generation prompts.
+5. Forge shows whether memory was loaded and summarizes what it remembers.
+6. Forge sends a bounded `project_memory` summary to the LLM together with the current discovery report.
+7. Forge explains whether seed template/provider guidance came from explicit input, current discovery, saved memory, or defaults.
+8. Forge validates and repairs the generated contract.
+9. Forge scaffolds only if validation passes.
+10. Forge saves memory only if you explicitly opt in:
    - interactive mode: Forge asks after a successful scaffold
    - non-interactive mode: you must pass `--save-memory`
 
@@ -74,18 +75,19 @@ When memory exists, Forge loads a structured summary such as:
 - bounded schema summaries from earlier discoveries
 - a small list of recent successful copilot outcomes
 
-This gives the model continuity across runs without replaying full files or chat transcripts.
+This gives the model continuity across runs without replaying full files or full interview transcripts.
 
 ## Step 3: See The Precedence Rules
 
 Forge merges inputs in this order:
 
-1. Explicit CLI and current run context
-2. Current discovery results from this run
-3. Saved project memory
-4. Built-in defaults
+1. Explicit CLI flags and context-file values
+2. Current-run interactive answers
+3. Current discovery results from this run
+4. Saved project memory
+5. Built-in defaults
 
-That means memory can influence ambiguous cases, but it does not override what you explicitly asked for and it does not outrank fresh discovery.
+That means memory can influence ambiguous cases, but it does not override what you explicitly asked for, it does not outrank fresh discovery, and it does not beat newer answers from the current run.
 
 Examples:
 
@@ -190,7 +192,7 @@ Forge does **not** persist:
 - full README text
 - full SQL text
 - full contract bodies
-- free-form chat transcripts
+- free-form interview transcripts
 - absolute user-home paths
 
 For example, an external file like `/Users/alice/data/customers.parquet` is reduced to a safe label such as `external/customers.parquet`.
@@ -228,7 +230,18 @@ fluid forge --mode copilot \
 
 If you omit `--save-memory`, Forge still generates and scaffolds the project, but it does not write memory.
 
-## Step 10: See A Two-Run Example
+## Step 10: How Memory Interacts With The Adaptive Interview
+
+Memory is part of the interview context, not a hidden override.
+
+In practice, that means:
+
+- memory can help Forge skip unnecessary questions when the project already has stable conventions
+- memory can steer template or provider seeding when the current run is ambiguous
+- memory stays a soft preference when stronger evidence exists from explicit input or current discovery
+- any assumptions inferred from memory are surfaced back to the user before generation
+
+## Step 11: See A Two-Run Example
 
 ### First Run
 
@@ -283,7 +296,7 @@ That means the model sees not only the current Parquet metadata, but also the pr
 
 Because this example uses `--dry-run`, Forge does not prompt to save memory again.
 
-## Step 11: Inspect, Disable, Or Reset Memory
+## Step 12: Inspect, Disable, Or Reset Memory
 
 Show the current memory summary:
 
@@ -305,7 +318,7 @@ fluid forge --reset-memory
 
 The next copilot run starts fresh unless you save memory again.
 
-## Step 12: Handle Corrupt Memory Safely
+## Step 13: Handle Corrupt Memory Safely
 
 If `runtime/.state/copilot-memory.json` is corrupt or invalid:
 

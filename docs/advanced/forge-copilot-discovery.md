@@ -1,10 +1,10 @@
 # Forge Copilot Discovery Guide
 
-This guide explains, step by step, how `fluid forge --mode copilot` discovers local context before it generates a production-ready FLUID contract.
+This guide explains, step by step, how `fluid forge --mode copilot` discovers local context inside the current adaptive copilot flow before it generates a production-ready FLUID contract.
 
 ## What Discovery Is For
 
-Discovery gives copilot grounded local context so it can generate a better contract on the first attempt.
+Discovery gives copilot grounded local context so it can generate a better contract on the first attempt and ask fewer follow-up questions.
 
 Instead of asking the LLM to guess your data shape, Forge scans local assets and sends a metadata summary such as:
 
@@ -14,7 +14,7 @@ Instead of asking the LLM to guess your data shape, Forge scans local assets and
 - existing provider hints
 - existing FLUID contract conventions
 
-The goal is simple: better contract generation with less hallucination.
+The goal is simple: better contract generation with less hallucination and less repetitive questioning.
 
 ## Step 1: Install Copilot Discovery Helpers
 
@@ -52,7 +52,7 @@ fluid forge --mode copilot --discovery-path ./data
 fluid forge --mode copilot --discovery-path ../shared-schemas
 ```
 
-Use `--no-discover` if you want copilot to rely only on interactive answers and explicit `--context`.
+Use `--no-discover` if you want copilot to rely only on explicit context and whatever the user answers during the interview.
 
 ## Step 3: Understand What Forge Scans
 
@@ -198,11 +198,17 @@ Examples of data that are not sent:
 
 After discovery, Forge builds a normalized `DiscoveryReport` and sends that metadata to the selected LLM adapter together with:
 
-- your interactive answers
+- your current-run answers and interview summary
 - project-scoped memory when `runtime/.state/copilot-memory.json` exists and memory is enabled
 - the local capability matrix
 - a seed FLUID contract
 - repair feedback from any previous failed attempt
+
+In interactive copilot mode, discovery also affects the interview itself:
+
+- if discovery is strong, Forge may ask nothing else
+- if discovery is thin, Forge may ask a small number of focused follow-up questions
+- current-run answers still take precedence over discovery when they conflict
 
 The LLM is asked to return:
 
@@ -212,6 +218,13 @@ The LLM is asked to return:
 - template/provider recommendations
 
 If saved project memory and the current discovery report conflict, Forge prefers the current discovery report.
+
+At a high level, precedence is:
+
+1. explicit CLI flags and current-run answers
+2. current discovery results
+3. saved project memory
+4. safe defaults
 
 ## Step 7: Validation And Repair
 
@@ -232,6 +245,8 @@ If validation fails:
 2. sends those errors back to the LLM
 3. asks for a repaired contract
 4. retries up to 3 total attempts
+
+If the interactive run still fails because the business intent is too ambiguous, Forge can ask one final clarification round and then retry once more.
 
 If all attempts fail, Forge exits non-zero and writes no project files.
 
