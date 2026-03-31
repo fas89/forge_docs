@@ -181,7 +181,7 @@ Fluid Forge is open source and built in the open.
 - **Star & Fork** — [github.com/Agentics-Rising/forge-cli](https://github.com/Agentics-Rising/forge-cli)
 - **Report Issues** — [Issue Tracker](https://github.com/Agentics-Rising/forge-cli/issues)
 - **Contribute** — [Contributing Guide](/contributing)
-- **Discussions** — [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions)
+- **Discussions** — [GitHub Discussions](https://github.com/agentics-rising/fluid-forge-cli/discussions)
 
 ## Ready to Build?
 
