@@ -115,7 +115,7 @@ All providers use the **same contract format** and **same CLI commands**. Switch
 Need support for a platform we don't cover yet? Build your own provider in ~40 lines of Python:
 
 ```python
-from fluid_build.providers.base import BaseProvider, ApplyResult
+from fluid_provider_sdk import ApplyResult, BaseProvider
 
 class MyProvider(BaseProvider):
     name = "my-platform"

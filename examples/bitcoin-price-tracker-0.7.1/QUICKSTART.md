@@ -251,7 +251,7 @@ AI governance via `agentPolicy` is planned for future FLUID versions. Currently 
 ## 🆘 Need Help?
 
 - **Documentation:** See [README.md](README.md) and [HOW_IT_WORKS.md](HOW_IT_WORKS.md)
-- **Examples:** Browse `/fluid_forge_docs/examples/`
+- **Examples:** Browse `/forge_docs/examples/`
 - **FLUID Docs:** Check `docs/FLUID_0_7_1_QUICK_REFERENCE.md`
 - **Issues:** Common problems solved in README troubleshooting section
 
