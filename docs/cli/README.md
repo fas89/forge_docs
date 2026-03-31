@@ -404,6 +404,7 @@ fluid forge [options]
 5. Validate and repair the contract up to 3 times
 6. If interactive generation failed because intent was still ambiguous, ask one more clarification round and retry once
 7. Scaffold the project only after the contract passes validation
+8. If built-in provider inspection or provider setup is incomplete, surface a warning and continue so you can review the provider later
 
 | Option | Description |
 |--------|-------------|
@@ -456,6 +457,9 @@ Important behavior:
 - `--mode agent` uses the same shared Forge scaffolding path as copilot mode, but seeds it with domain-specific declarative rules and next-step guidance.
 - Interactive prompts are friendly by default: suggested options are hints, not strict menus.
 - Copilot keeps an app-managed interview summary and transcript so provider behavior stays consistent across OpenAI, Anthropic, Gemini, and Ollama.
+- Built-in provider checks for `local`, `gcp`, `aws`, and `snowflake` are best-effort during copilot preparation. If local inspection fails, Forge warns and keeps going with safe defaults instead of aborting.
+- If copilot scaffolds a cloud-oriented project before provider credentials are fully configured, Forge now shows a warning instead of failing project creation. Finish provider setup before `fluid plan` or `fluid apply`.
+- `fluid doctor` is the quickest way to sanity-check provider tooling and credentials after scaffolding.
 - The public scaffolding path is `fluid forge --mode copilot`.
 
 [Advanced LLM setup →](../advanced/custom-llm-agents.md)

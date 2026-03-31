@@ -103,6 +103,13 @@ That means the same high-level behavior applies across OpenAI, Anthropic, Gemini
 5. Forge validates and repairs the generated contract locally before it scaffolds anything.
 6. If an interactive run failed because business intent was still ambiguous, Forge can ask one final clarification round and retry once more.
 
+Provider-related behavior in the copilot flow is intentionally forgiving during scaffolding:
+
+- Forge treats built-in provider inspection for `local`, `gcp`, `aws`, and `snowflake` as best-effort during copilot preparation.
+- If a local provider check fails, Forge warns and continues with reduced confidence instead of aborting the interview.
+- If the generated project targets a cloud provider but the local provider config is still incomplete, Forge warns during scaffolding and lets you finish setup later.
+- Before `fluid plan` or `fluid apply`, you should still complete the real provider setup and run `fluid doctor` if you want a quick environment sanity check.
+
 Use `--non-interactive` when you want the single-shot automation path with no user-visible clarification prompts.
 
 ### What `--llm-endpoint` Means

@@ -210,6 +210,13 @@ In interactive copilot mode, discovery also affects the interview itself:
 - if discovery is thin, Forge may ask a small number of focused follow-up questions
 - current-run answers still take precedence over discovery when they conflict
 
+Built-in provider discovery is also best-effort in this stage:
+
+- Forge tries to inspect the locally available `local`, `gcp`, `aws`, and `snowflake` providers
+- if one of those checks fails locally, Forge warns and continues instead of aborting copilot
+- if provider verification is incomplete, Forge falls back to safe built-in provider defaults for planning
+- you can still review or override the provider later in the generated project
+
 The LLM is asked to return:
 
 - a full FLUID contract
