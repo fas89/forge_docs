@@ -195,7 +195,7 @@ Providers use a two-tier error model:
 | `ProviderInternalError` | Bugs or environment failures (API outage) | Full traceback in debug mode |
 
 ```python
-from fluid_build.providers.base import ProviderError, ProviderInternalError
+from fluid_provider_sdk import ProviderError, ProviderInternalError
 
 # User error — they can fix this
 raise ProviderError("Dataset 'analytics' not found in project 'my-project'")

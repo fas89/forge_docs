@@ -44,4 +44,4 @@ We follow [coordinated disclosure](https://en.wikipedia.org/wiki/Coordinated_vul
 
 For security concerns: **security@fluidhq.io**
 
-For general questions: [GitHub Discussions](https://github.com/agentics-rising/forge-cli-docs/discussions)
+For general questions: [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions)

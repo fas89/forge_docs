@@ -33,7 +33,7 @@
 ## 🚀 Quick Start (One Command)
 
 ```bash
-cd /home/dustlabs/fluid-mono/fluid_forge_docs/examples/bitcoin-tracker
+cd /home/dustlabs/fluid-mono/forge_docs/examples/bitcoin-tracker
 export GCP_PROJECT_ID=dust-labs-485011
 ./run-complete-example.sh
 ```

@@ -220,7 +220,7 @@ For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Co
 
 | Repository | Description |
 |-----------|-------------|
-| [`fluid-forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
+| [`forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
 | [`fluid-provider-sdk`](https://github.com/agentics-rising/fluid-provider-sdk) | SDK for building custom providers |
 
 ## License

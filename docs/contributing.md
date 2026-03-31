@@ -6,7 +6,7 @@ We welcome contributions of all kinds — bug reports, feature ideas, docs impro
 
 ### Report a Bug
 
-Open an issue at [github.com/agentics-rising/fluid-forge-cli/issues](https://github.com/Agentics-Rising/forge-cli/issues) with:
+Open an issue at [github.com/Agentics-Rising/forge-cli/issues](https://github.com/Agentics-Rising/forge-cli/issues) with:
 
 - **What happened** vs. **what you expected**
 - The command you ran and its output
@@ -22,7 +22,7 @@ Start a [GitHub Discussion](https://github.com/Agentics-Rising/forge-cli/discuss
 The docs live in `docs/` and are built with VuePress. To preview locally:
 
 ```bash
-cd forge-cli-docs
+cd forge_docs
 npm install
 npm run docs:dev
 ```
@@ -33,8 +33,8 @@ Edit any `.md` file, save, and your browser refreshes automatically.
 
 ```bash
 # 1. Fork & clone
-git clone https://github.com/<your-username>/fluid-forge-cli.git
-cd fluid-forge-cli
+git clone https://github.com/<your-username>/forge-cli.git
+cd forge-cli
 
 # 2. Create a virtual environment
 python -m venv .venv && source .venv/bin/activate
@@ -59,17 +59,25 @@ git push origin feat/my-feature
 Fluid Forge is designed to be extended. See the [Custom Providers Guide](/providers/custom-providers) for the full walkthrough, but the gist is:
 
 ```python
-from fluid_provider_sdk import FluidProvider
+from fluid_provider_sdk import ApplyResult, BaseProvider, ProviderError
 
-class MyProvider(FluidProvider):
+class MyProvider(BaseProvider):
     name = "my-cloud"
 
     def plan(self, contract):
-        return [{"action": "create_table", "config": {...}}]
+        return [{"op": "create_table", "resource_id": "demo"}]
 
     def apply(self, actions):
-        for action in actions:
-            self._execute(action)
+        if not actions:
+            raise ProviderError("No actions to apply")
+        return ApplyResult(
+            provider=self.name,
+            applied=len(actions),
+            failed=0,
+            duration_sec=0.0,
+            timestamp="",
+            results=[{"status": "ok", "op": action["op"]} for action in actions],
+        )
 ```
 
 ## Coding Standards

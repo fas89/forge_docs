@@ -513,7 +513,7 @@ gcloud projects add-iam-policy-binding your-project-id \
 Test the entire pipeline:
 
 ```bash
-cd /home/dustlabs/fluid-mono/fluid_forge_docs/examples/bitcoin-tracker
+cd /home/dustlabs/fluid-mono/forge_docs/examples/bitcoin-tracker
 
 # Test ingestion script
 python3 ingest_bitcoin_prices.py
