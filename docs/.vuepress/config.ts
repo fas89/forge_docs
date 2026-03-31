@@ -126,7 +126,10 @@ export default defineUserConfig({
             '/advanced/blueprints.md',
             '/advanced/governance.md',
             '/advanced/airflow.md',
-            '/advanced/custom-llm-agents.md'
+            '/advanced/custom-llm-agents.md',
+            '/advanced/chatgpt-forge-contract-gpt/',
+            '/advanced/forge-copilot-discovery.md',
+            '/advanced/forge-copilot-memory.md'
           ]
         },
         {

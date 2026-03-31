@@ -31,6 +31,61 @@ The commands you'll use most often:
 
 ---
 
+## `fluid forge`
+
+`fluid forge --mode copilot` is the primary AI-backed project creation flow.
+
+What it does:
+
+1. collects your project context
+2. discovers local metadata from SQL, dbt, Terraform, README files, existing FLUID contracts, and sample files
+3. optionally loads project-scoped memory from `runtime/.state/copilot-memory.json`
+4. asks the selected LLM to generate a full FLUID contract and scaffold content
+5. validates and repairs the contract locally
+6. scaffolds the project only if validation passes
+
+Useful copilot flags:
+
+| Flag | Description |
+|------|-------------|
+| `--llm-provider` | Built-in adapter: `openai`, `anthropic`, `claude`, `gemini`, `ollama` |
+| `--llm-model` | Model identifier for the selected adapter |
+| `--llm-endpoint` | Exact HTTP endpoint override for the selected adapter |
+| `--discover` / `--no-discover` | Enable or disable local metadata discovery |
+| `--discovery-path <path>` | Scan an extra local file or directory for metadata-only discovery |
+| `--memory` / `--no-memory` | Enable or disable loading repo-local copilot memory |
+| `--save-memory` | Save repo-local copilot memory after a successful non-interactive run |
+| `--show-memory` | Show the current project-scoped copilot memory summary and exit |
+| `--reset-memory` | Delete the current project-scoped copilot memory file and exit |
+| `--dry-run` | Preview generation without writing project files |
+
+Typical examples:
+
+```bash
+export OPENAI_API_KEY=sk-...
+fluid forge --mode copilot --llm-provider openai --llm-model gpt-4o-mini
+```
+
+```bash
+fluid forge --mode copilot \
+  --non-interactive \
+  --llm-provider openai \
+  --llm-model gpt-4o-mini \
+  --save-memory
+```
+
+```bash
+fluid forge --show-memory
+fluid forge --reset-memory
+```
+
+Step-by-step guides:
+
+- [Forge Copilot Discovery Guide →](../advanced/forge-copilot-discovery.md)
+- [Forge Copilot Memory Guide →](../advanced/forge-copilot-memory.md)
+
+---
+
 ## Core Workflow
 
 These four commands form the standard development loop: **init → validate → plan → apply**.
@@ -297,28 +352,67 @@ fluid diff <contract-file> --provider gcp --exit-on-drift
 
 ### `fluid forge`
 
-AI-powered project generation.
+LLM-backed project generation and scaffolding.
 
 ```bash
 fluid forge [options]
 ```
+
+`fluid forge --mode copilot` now runs a structured flow:
+
+1. Collect project context
+2. Discover local metadata from the workspace and optional `--discovery-path`
+3. Generate a full production-ready `contract.fluid.yaml`
+4. Validate and repair the contract up to 3 times
+5. Scaffold the project only after the contract passes validation
 
 | Option | Description |
 |--------|-------------|
 | `--mode <name>` | `copilot`, `agent`, `template`, `blueprint` |
 | `--agent <name>` | Domain agent: `finance`, `healthcare`, `retail`, or custom |
 | `--template <name>` | Named template |
+| `--provider <name>` | Provider hint for the generated project |
+| `--llm-provider <name>` | Built-in LLM adapter: `openai`, `anthropic`, `claude`, `gemini`, `ollama` |
+| `--llm-model <name>` | Model identifier for the selected adapter |
+| `--llm-endpoint <url>` | Exact HTTP endpoint override for the selected adapter |
+| `--discover` / `--no-discover` | Enable or disable local metadata discovery |
+| `--discovery-path <path>` | Extra local file or directory to scan for metadata |
+| `--context <json-or-file>` | Additional structured context for copilot mode |
 | `--quickstart` | Use smart defaults |
 | `--dry-run` | Preview without creating files |
 
 ```bash
-fluid forge --mode copilot                    # AI-guided
-fluid forge --template analytics --provider gcp  # From template
+export OPENAI_API_KEY=sk-...
+fluid forge --mode copilot --llm-provider openai --llm-model gpt-4o-mini
+
+fluid forge --mode copilot --llm-provider ollama \
+  --llm-model llama3.1 \
+  --llm-endpoint http://localhost:11434/v1/chat/completions
+
+fluid forge --mode copilot --discovery-path ./data
+fluid forge --template analytics --provider gcp
 ```
+
+Credential resolution:
+
+- Provider, model, and endpoint use `CLI flags > FLUID_LLM_* > built-in defaults`
+- API keys use `FLUID_LLM_API_KEY` first, then provider-specific variables such as `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`, or `GOOGLE_API_KEY`
+- Ollama uses no API key by default
+
+Important behavior:
+
+- Secrets are environment-variable only. There is no `--llm-api-key` flag.
+- `--llm-endpoint` is an exact endpoint override for proxies, self-hosted gateways, or Ollama. It is not a file-upload target.
+- `--discovery-path` scans local files and sends only derived metadata to the LLM, never raw sample rows or full file contents.
+- Discovery supports SQL, dbt, Terraform, README headings, existing FLUID contracts, and sample files including CSV, JSON, JSONL, Parquet, and Avro.
+- `fluid copilot` remains the advisory assistant. `fluid forge --mode copilot` is the project-creation path.
+
+[Advanced LLM setup →](../advanced/custom-llm-agents.md)
+[Step-by-step discovery guide →](../advanced/forge-copilot-discovery.md)
 
 ### `fluid copilot`
 
-Launch the interactive AI assistant for guided data product creation.
+Launch the advisory AI assistant. In v1, project scaffolding stays on `fluid forge --mode copilot`.
 
 ### `fluid wizard`
 
