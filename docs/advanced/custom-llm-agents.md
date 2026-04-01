@@ -33,21 +33,7 @@ fluid forge --mode copilot \
   --discovery-path ./data
 ```
 
-Supported copilot flags:
-
-| Flag | Purpose |
-|------|---------|
-| `--llm-provider` | Selects the built-in adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
-| `--llm-model` | Selects the model for the chosen adapter |
-| `--llm-endpoint` | Overrides the adapter's exact HTTP endpoint |
-| `--context` | Adds structured context from inline JSON or a file |
-| `--interactive` / `--non-interactive` | Forces prompts on or off |
-| `--discover` / `--no-discover` | Enables or disables local metadata discovery |
-| `--discovery-path` | Adds a local file or directory to the discovery scan |
-| `--memory` / `--no-memory` | Enables or disables loading repo-local copilot memory |
-| `--save-memory` | Saves repo-local copilot memory after a successful non-interactive run |
-| `--show-memory` | Shows the current project-scoped copilot memory summary and exits |
-| `--reset-memory` | Deletes the current project-scoped copilot memory file and exits |
+Key copilot flags: `--llm-provider`, `--llm-model`, `--llm-endpoint`, `--discovery-path`, `--context`, `--memory` / `--no-memory`, `--interactive` / `--non-interactive`. See the [CLI Reference](/cli/#fluid-forge-1) for the full flag table.
 
 Resolution precedence:
 

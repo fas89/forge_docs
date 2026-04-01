@@ -66,22 +66,7 @@ Built-in domain-agent mode is also available through `fluid forge --mode agent`.
 
 These built-in agents are backed by declarative YAML specs, so they share the same Forge scaffolding engine while applying domain-specific questions, defaults, rules, and next-step guidance.
 
-Useful copilot flags:
-
-| Flag | Description |
-|------|-------------|
-| `--llm-provider` | Built-in adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
-| `--llm-model` | Model identifier for the selected adapter |
-| `--llm-endpoint` | Exact HTTP endpoint override for the selected adapter |
-| `--context` | Additional structured context as inline JSON or a file path |
-| `--interactive` / `--non-interactive` | Force prompts on or off |
-| `--discover` / `--no-discover` | Enable or disable local metadata discovery |
-| `--discovery-path <path>` | Scan an extra local file or directory for metadata-only discovery |
-| `--memory` / `--no-memory` | Enable or disable loading repo-local copilot memory |
-| `--save-memory` | Save repo-local copilot memory after a successful non-interactive run |
-| `--show-memory` | Show the current project-scoped copilot memory summary and exit |
-| `--reset-memory` | Delete the current project-scoped copilot memory file and exit |
-| `--dry-run` | Preview generation without writing project files |
+Key copilot flags: `--llm-provider`, `--llm-model`, `--discovery-path`, `--context`, `--memory` / `--no-memory`, `--interactive` / `--non-interactive`, `--dry-run`. See the full flag table in the [`fluid forge` command reference](#fluid-forge-1) below.
 
 Typical examples:
 
