@@ -37,7 +37,7 @@ pip install fluid-forge
 fluid version
 
 # Should show:
-# Fluid Forge CLI v0.7.1
+# Fluid Forge CLI v0.7.7
 # Providers: local (production), gcp (production)
 ```
 

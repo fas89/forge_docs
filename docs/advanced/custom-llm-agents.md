@@ -1,62 +1,343 @@
-# Custom LLM Agents
+# Built-in And Custom Forge Agents
 
-Plug your own Large Language Model into Fluid Forge to power AI-assisted data product creation. Any OpenAI-compatible API, Anthropic Claude, AWS Bedrock, or self-hosted model (Ollama, vLLM) works out of the box.
+`fluid forge --mode copilot` is the primary AI-backed project creation path. It now runs as an adaptive interview plus generation loop: bootstrap context, ask only the highest-signal follow-up questions, discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
 
-## How Forge Agents Work
+Built-in copilot providers:
 
-When you run `fluid forge`, the CLI enters one of four creation **modes**:
+- OpenAI
+- Anthropic / Claude
+- Gemini
+- Ollama
 
-| Mode | Flag | Description |
-|------|------|-------------|
-| **Copilot** | `--mode copilot` | General-purpose assistant (default) |
-| **Agent** | `--mode agent --agent <name>` | Domain expert (finance, healthcare, retail, or custom) |
-| **Template** | `--mode template` | Traditional template-based scaffolding |
-| **Blueprint** | `--mode blueprint` | Enterprise blueprint patterns |
+Built-in domain agents:
 
-In **copilot** and **agent** mode the CLI collects user context through interactive questions, passes it to an agent's `analyze_requirements()` method, and feeds the result into the `ForgeEngine` which generates the project.
+- `finance` for regulated analytics, fraud, trading, and compliance-heavy workflows
+- `healthcare` for HIPAA-aware data products and PHI-sensitive workflows
+- `retail` for customer 360, personalization, and inventory-driven workflows
+- `telco` for TM Forum SID-aligned telecom OSS/BSS, service-assurance, and network-operations workflows
 
+Those built-in domain agents are no longer hand-coded one by one. They are backed by declarative YAML specs under `fluid_build/cli/agent_specs/*.yaml`, loaded through the shared `DeclarativeDomainAgent` path, and then exposed via `fluid forge --mode agent --agent <name>`.
+
+Use a custom agent only when you need bespoke questioning, a non-standard provider, or domain-specific planning behavior that goes beyond the built-in copilot flow or the declarative spec system.
+
+If you want a private ChatGPT GPT that drafts and reviews FLUID contracts rather than running through `fluid forge --mode copilot`, use the [FLUID Forge Contract GPT Packet](/advanced/chatgpt-forge-contract-gpt/).
+
+## Built-in Copilot Configuration
+
+### CLI Flags
+
+```bash
+fluid forge --mode copilot \
+  --llm-provider openai \
+  --llm-model gpt-4o-mini \
+  --discovery-path ./data
 ```
-┌────────────┐     context      ┌─────────────────┐    suggestions    ┌─────────────┐
-│  CLI User  │ ──────────────▶  │  Your LLM Agent │ ──────────────▶  │ ForgeEngine │
-│  (prompts) │                  │  analyze_reqs()  │                  │  generates   │
-└────────────┘                  └─────────────────┘                  └─────────────┘
+
+Key copilot flags: `--llm-provider`, `--llm-model`, `--llm-endpoint`, `--discovery-path`, `--context`, `--memory` / `--no-memory`, `--interactive` / `--non-interactive`. See the [CLI Reference](/cli/#fluid-forge-1) for the full flag table.
+
+Resolution precedence:
+
+- Provider, model, and endpoint: `CLI flags > FLUID_LLM_* > built-in defaults`
+- API key: `FLUID_LLM_API_KEY > provider-specific env vars`
+
+Provider-specific API key fallbacks:
+
+- OpenAI: `OPENAI_API_KEY`
+- Anthropic / Claude: `ANTHROPIC_API_KEY`
+- Gemini: `GEMINI_API_KEY` or `GOOGLE_API_KEY`
+- Ollama: no key required by default
+
+### Credentials
+
+Secrets stay in the environment. Forge does not expose a `--llm-api-key` flag.
+
+```bash
+# OpenAI
+export OPENAI_API_KEY=sk-...
+fluid forge --mode copilot --llm-provider openai --llm-model gpt-4o-mini
+
+# Anthropic / Claude
+export ANTHROPIC_API_KEY=sk-ant-...
+fluid forge --mode copilot --llm-provider anthropic --llm-model claude-3-5-sonnet-latest
+
+# Gemini
+export GEMINI_API_KEY=...
+fluid forge --mode copilot --llm-provider gemini --llm-model gemini-2.5-flash
+
+# Ollama
+export OLLAMA_HOST=http://localhost:11434
+fluid forge --mode copilot --llm-provider ollama --llm-model llama3.1
 ```
 
-By subclassing `AIAgentBase` you can inject any LLM — OpenAI, Anthropic, a self-hosted model, or your own fine-tuned endpoint — into this pipeline.
+If you prefer a `.env` file, load it in your shell before running Forge:
 
-## Creating a Custom Agent
+```bash
+export $(grep -v '^#' .env | xargs)
+fluid forge --mode copilot --llm-provider openai
+```
 
-### 1. Implement the Agent Class
+## How The Built-In Copilot Session Works
 
-Create a new file at `fluid_build/cli/agents/my_agent.py` (or add directly to `fluid_build/cli/forge_agents.py`):
+The built-in copilot flow is provider-agnostic. Forge keeps the interview state itself and re-sends a compact summary plus recent turns on each model call instead of depending on a provider-native chat session.
+
+That means the same high-level behavior applies across OpenAI, Anthropic, Gemini, and Ollama:
+
+1. Forge bootstraps from CLI flags, `--context`, local discovery, and optional project memory.
+2. If the current picture is still thin, Forge asks a small number of adaptive follow-up questions.
+3. Suggested options are hints only. Users can answer with a number, short phrase, synonym, or free text.
+4. Forge builds an `interview_summary` that grounds the generated FLUID 0.7.2 contract, including semantic intent such as entity, measures, dimensions, time grain, and cadence when known.
+5. Forge validates and repairs the generated contract locally before it scaffolds anything.
+6. If an interactive run failed because business intent was still ambiguous, Forge can ask one final clarification round and retry once more.
+
+Provider-related behavior in the copilot flow is intentionally forgiving during scaffolding:
+
+- Forge treats built-in provider inspection for `local`, `gcp`, `aws`, and `snowflake` as best-effort during copilot preparation.
+- If a local provider check fails, Forge warns and continues with reduced confidence instead of aborting the interview.
+- If the generated project targets a cloud provider but the local provider config is still incomplete, Forge warns during scaffolding and lets you finish setup later.
+- Before `fluid plan` or `fluid apply`, you should still complete the real provider setup and run `fluid doctor` if you want a quick environment sanity check.
+
+Use `--non-interactive` when you want the single-shot automation path with no user-visible clarification prompts.
+
+### What `--llm-endpoint` Means
+
+`--llm-endpoint` is an exact HTTP endpoint override for the chosen adapter.
+
+Use it when you need:
+
+- Ollama or another local gateway
+- A proxy in front of OpenAI, Anthropic, or Gemini
+- An OpenAI-compatible self-hosted endpoint
+
+Examples:
+
+```bash
+fluid forge --mode copilot \
+  --llm-provider ollama \
+  --llm-model llama3.1 \
+  --llm-endpoint http://localhost:11434/v1/chat/completions
+```
+
+```bash
+fluid forge --mode copilot \
+  --llm-provider openai \
+  --llm-model gpt-4o-mini \
+  --llm-endpoint https://gateway.example.com/v1/chat/completions
+```
+
+### What `--discovery-path` Sends
+
+`--discovery-path` points Forge at an extra local file or directory to scan. V1 discovery is local-only.
+
+Forge may inspect:
+
+- SQL files
+- dbt projects
+- Terraform files
+- existing FLUID contracts
+- README headings
+- sample CSV, JSON, JSONL, Parquet, or Avro files
+
+Forge sends only distilled metadata to the LLM, such as:
+
+- column names and inferred types
+- table names and SQL references
+- Parquet column types and row counts when schema readers are available
+- Avro field names and logical types when schema readers are available
+- provider hints and build constraints
+
+Forge does **not** send:
+
+- raw sample rows
+- full file contents
+- secrets or credentials
+
+[Full step-by-step discovery guide →](./forge-copilot-discovery.md)
+[Full step-by-step memory guide →](./forge-copilot-memory.md)
+
+### Installing Discovery Helpers For Parquet And Avro
+
+Parquet and Avro discovery are metadata-only features. They use optional local readers so Forge can inspect schema without uploading the files.
+
+Install the optional copilot discovery dependencies:
+
+```bash
+pip install "fluid-forge[copilot]"
+```
+
+Or install the readers directly:
+
+```bash
+pip install pyarrow fastavro
+```
+
+If those readers are not installed, Forge still discovers the file paths but cannot extract Parquet or Avro schema metadata.
+
+## Project-Scoped Copilot Memory
+
+Forge can also load project-scoped memory from:
+
+```text
+runtime/.state/copilot-memory.json
+```
+
+Memory is enabled by default when that file exists.
+
+Use:
+
+- `--no-memory` to ignore saved memory for one run
+- `--save-memory` to persist memory after a successful non-interactive run
+- `--show-memory` to inspect what Forge currently remembers for this project
+- `--reset-memory` to clear the saved memory file
+
+Interactive runs ask whether to save memory after a successful scaffold, using the same friendly dialog style as the rest of Forge.
+
+When memory is loaded, Forge now surfaces that in the copilot UX and explains whether template/provider seed guidance came from explicit input, current discovery, saved project memory, or defaults.
+
+Saved memory contains bounded project conventions such as:
+
+- accepted template and provider
+- domain and owner team
+- build and binding conventions
+- source-format summaries
+- bounded schema summaries
+- recent successful outcome summaries
+
+Saved memory does **not** contain:
+
+- API keys or tokens
+- raw sample rows
+- full SQL, README, or contract bodies
+- free-form prompt transcripts
+
+For the full flow, see [Forge Copilot Memory Guide](./forge-copilot-memory.md).
+
+## When To Build A Custom Agent
+
+Use a custom domain agent when you need one or more of these:
+
+- custom interview questions before generation
+- a non-built-in provider or routing layer
+- organization-specific architecture rules
+- a domain expert that should steer template and provider selection
+
+Custom domain agents are registered for `fluid forge --mode agent --agent <name>`.
+
+## Creating A Custom Domain Agent
+
+### 1. Recommended Path: Add A Declarative Agent Spec
+
+Most domain agents now fit the declarative path. Add a YAML spec under `fluid_build/cli/agent_specs/`:
+
+```yaml
+name: my_domain
+domain: my-domain
+description: Expert in my domain's architecture and compliance requirements
+
+questions:
+  - key: product_type
+    question: What type of data product are you building?
+    type: choice
+    required: true
+    choices:
+      - label: Operational Analytics
+        value: operational_analytics
+        aliases: ["ops", "operations"]
+      - label: Executive Reporting
+        value: executive_reporting
+        aliases: ["exec", "scorecards"]
+  - key: data_sources
+    question: What data sources will you use?
+    type: text
+    required: true
+
+resolver_defaults:
+  product_type: operational_analytics
+
+suggestion_defaults:
+  recommended_template: analytics
+  recommended_provider: local
+  recommended_patterns: []
+  architecture_suggestions: []
+  best_practices: []
+  security_requirements: []
+
+rules:
+  - when:
+      all:
+        - field: product_type
+          equals: executive_reporting
+    actions:
+      - op: set
+        path: recommended_template
+        value: analytics
+      - op: append_unique
+        path: best_practices
+        value: Publish executive KPIs with explicit semantic definitions
+
+next_step_tips:
+  - Run `fluid validate` before wiring downstream dashboards
+```
+
+What the spec controls:
+
+- normalized interview questions and soft-matched choice aliases
+- resolver defaults for ambiguous answers
+- ordered rules that update template, provider, patterns, and guidance
+- static and conditional next-step tips shown after project creation
+
+Forge also applies a shared security and privacy baseline automatically for all declarative domain agents, so your spec can stay focused on domain-specific guidance.
+
+### 2. Bind The Spec Into `DOMAIN_AGENTS`
+
+Create a small compatibility class and register it:
 
 ```python
+from fluid_build.cli.forge_domain_agent_base import DeclarativeDomainAgent
+from fluid_build.cli.forge_agents import DOMAIN_AGENTS
+
+
+class MyDomainAgent(DeclarativeDomainAgent):
+    def __init__(self):
+        super().__init__("my_domain")
+
+
+DOMAIN_AGENTS["my-domain"] = MyDomainAgent
+```
+
+Then run:
+
+```bash
+fluid forge --mode agent --agent my-domain
+```
+
+### 3. Advanced Path: Write A Python Agent Class
+
+Drop to a Python class only when the declarative spec format is not enough, for example when you need external API calls, custom ranking logic, or special runtime orchestration. Add your class in `fluid_build/cli/forge_agents.py` or another module imported by it:
+
+```python
+import json
 import os
-from pathlib import Path
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 import httpx
 
-from fluid_build.cli.forge_agents import AIAgentBase
+from fluid_build.cli.forge_domain_agent_base import AIAgentBase
 
 
 class MyLLMAgent(AIAgentBase):
-    """Custom agent backed by your own LLM endpoint."""
-
     def __init__(self):
         super().__init__(
             name="my-llm",
-            description="LLM-powered agent for data-product creation",
+            description="LLM-powered domain agent",
             domain="general",
         )
-        # Read config from environment — never hard-code secrets
         self.api_url = os.environ.get(
-            "FLUID_LLM_ENDPOINT", "https://api.openai.com/v1/chat/completions"
+            "FLUID_LLM_ENDPOINT",
+            "https://api.openai.com/v1/chat/completions",
         )
         self.api_key = os.environ.get("FLUID_LLM_API_KEY", "")
-        self.model = os.environ.get("FLUID_LLM_MODEL", "gpt-4")
+        self.model = os.environ.get("FLUID_LLM_MODEL", "gpt-4o-mini")
 
-    # ── Interactive questions ──────────────────────────────────
     def get_questions(self) -> List[Dict[str, Any]]:
         return [
             {
@@ -71,236 +352,93 @@ class MyLLMAgent(AIAgentBase):
                 "type": "text",
                 "required": True,
             },
-            {
-                "key": "provider",
-                "question": "Target provider?",
-                "type": "choice",
-                "choices": ["local", "gcp", "aws", "snowflake"],
-                "default": "local",
-            },
         ]
 
-    # ── LLM-powered analysis ──────────────────────────────────
     def analyze_requirements(self, context: Dict[str, Any]) -> Dict[str, Any]:
-        prompt = self._build_prompt(context)
-        llm_response = self._call_llm(prompt)
-        return self._parse_response(llm_response, context)
+        prompt = {
+            "project_goal": context.get("project_goal"),
+            "data_sources": context.get("data_sources"),
+            "provider_hint": context.get("provider", "local"),
+        }
 
-    def _build_prompt(self, context: Dict[str, Any]) -> str:
-        return (
-            "You are a data-engineering architect. Given the following requirements, "
-            "recommend a FLUID Forge template, provider, architecture patterns, and "
-            "best practices. Respond in JSON with keys: recommended_template, "
-            "recommended_provider, recommended_patterns, architecture_suggestions, "
-            "best_practices.\n\n"
-            f"Project goal: {context.get('project_goal')}\n"
-            f"Data sources: {context.get('data_sources')}\n"
-            f"Provider preference: {context.get('provider', 'local')}\n"
-        )
-
-    def _call_llm(self, prompt: str) -> str:
-        """Call your LLM endpoint synchronously."""
         headers = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
 
         payload = {
             "model": self.model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.4,
+            "temperature": 0.2,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": (
+                        "Recommend a FLUID template and provider. "
+                        "Return strict JSON with keys recommended_template, "
+                        "recommended_provider, recommended_patterns, "
+                        "architecture_suggestions, best_practices."
+                        f"\n\nContext:\n{json.dumps(prompt, indent=2)}"
+                    ),
+                }
+            ],
         }
 
         with httpx.Client(timeout=60) as client:
-            resp = client.post(self.api_url, json=payload, headers=headers)
-            resp.raise_for_status()
-            return resp.json()["choices"][0]["message"]["content"]
+            response = client.post(self.api_url, headers=headers, json=payload)
+            response.raise_for_status()
+            raw = response.json()["choices"][0]["message"]["content"]
 
-    def _parse_response(
-        self, raw: str, context: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Parse the LLM JSON into the format ForgeEngine expects."""
-        import json
-
-        # Safely default to sensible values if the LLM returns bad JSON
-        defaults = {
-            "recommended_template": "starter",
-            "recommended_provider": context.get("provider", "local"),
-            "recommended_patterns": [],
-            "architecture_suggestions": [],
-            "best_practices": [],
+        parsed = json.loads(raw)
+        return {
+            "recommended_template": parsed.get("recommended_template", "starter"),
+            "recommended_provider": parsed.get("recommended_provider", "local"),
+            "recommended_patterns": parsed.get("recommended_patterns", []),
+            "architecture_suggestions": parsed.get("architecture_suggestions", []),
+            "best_practices": parsed.get("best_practices", []),
         }
-        try:
-            parsed = json.loads(raw)
-            defaults.update(
-                {k: v for k, v in parsed.items() if k in defaults}
-            )
-        except (json.JSONDecodeError, KeyError):
-            pass
-        return defaults
 ```
 
-### 2. Register the Agent
-
-Add your agent class to the `DOMAIN_AGENTS` registry at the bottom of `fluid_build/cli/forge_agents.py`:
+### 4. Register The Python Agent
 
 ```python
-from fluid_build.cli.agents.my_agent import MyLLMAgent
+from fluid_build.cli.forge_agents import (
+    DOMAIN_AGENTS,
+    FinanceAgent,
+    HealthcareAgent,
+    RetailAgent,
+    TelcoAgent,
+)
 
-DOMAIN_AGENTS = {
-    "finance": FinanceAgent,
-    "healthcare": HealthcareAgent,
-    "retail": RetailAgent,
-    "my-llm": MyLLMAgent,          # ← your agent
-}
+DOMAIN_AGENTS.update(
+    {
+        "finance": FinanceAgent,
+        "healthcare": HealthcareAgent,
+        "retail": RetailAgent,
+        "telco": TelcoAgent,
+        "my-llm": MyLLMAgent,
+    }
+)
 ```
 
-Once registered, the CLI discovers it automatically:
-
 ```bash
-# Use your agent
-fluid forge --mode agent --agent my-llm
-
-# List all available agents
-fluid forge --mode agent --help
-```
-
-### 3. Configure Credentials
-
-Set environment variables — avoid hard-coding secrets:
-
-```bash
-# .env (never commit this file)
-FLUID_LLM_ENDPOINT=https://api.openai.com/v1/chat/completions
-FLUID_LLM_API_KEY=sk-...
-FLUID_LLM_MODEL=gpt-4
-```
-
-Load them before running the CLI:
-
-```bash
-export $(grep -v '^#' .env | xargs)
 fluid forge --mode agent --agent my-llm
 ```
 
-## Connecting to Different LLM Providers
+### 5. Python Agent Response Contract
 
-The `_call_llm()` method is the only integration point. Swap it out for any provider:
-
-### OpenAI / Azure OpenAI
-
-```python
-def _call_llm(self, prompt: str) -> str:
-    with httpx.Client(timeout=60) as client:
-        resp = client.post(
-            "https://api.openai.com/v1/chat/completions",
-            json={
-                "model": "gpt-4",
-                "messages": [{"role": "user", "content": prompt}],
-            },
-            headers={"Authorization": f"Bearer {self.api_key}"},
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-```
-
-### Anthropic Claude
-
-```python
-def _call_llm(self, prompt: str) -> str:
-    with httpx.Client(timeout=60) as client:
-        resp = client.post(
-            "https://api.anthropic.com/v1/messages",
-            json={
-                "model": "claude-sonnet-4-20250514",
-                "max_tokens": 2048,
-                "messages": [{"role": "user", "content": prompt}],
-            },
-            headers={
-                "x-api-key": self.api_key,
-                "anthropic-version": "2023-06-01",
-            },
-        )
-        resp.raise_for_status()
-        return resp.json()["content"][0]["text"]
-```
-
-### Self-Hosted / Ollama
-
-```python
-def _call_llm(self, prompt: str) -> str:
-    # Any OpenAI-compatible endpoint works — llama.cpp, vLLM, Ollama, etc.
-    with httpx.Client(timeout=120) as client:
-        resp = client.post(
-            "http://localhost:11434/v1/chat/completions",
-            json={
-                "model": "llama3",
-                "messages": [{"role": "user", "content": prompt}],
-            },
-        )
-        resp.raise_for_status()
-        return resp.json()["choices"][0]["message"]["content"]
-```
-
-### AWS Bedrock
-
-```python
-def _call_llm(self, prompt: str) -> str:
-    import boto3, json
-
-    client = boto3.client("bedrock-runtime", region_name="us-east-1")
-    resp = client.invoke_model(
-        modelId="anthropic.claude-3-sonnet-20240229-v1:0",
-        body=json.dumps({
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": 2048,
-            "messages": [{"role": "user", "content": prompt}],
-        }),
-    )
-    body = json.loads(resp["body"].read())
-    return body["content"][0]["text"]
-```
-
-## Agent API Contract
-
-Your agent must return a dictionary from `analyze_requirements()` that the `ForgeEngine` understands:
+Your custom agent should return a dictionary like this from `analyze_requirements()`:
 
 ```python
 {
-    # Required — maps to a registered ForgeEngine template
-    "recommended_template": "analytics",    # analytics | starter | mlpipelinetemplate | etlpipelinetemplate | streamingtemplate
-
-    # Required — maps to a registered provider
-    "recommended_provider": "gcp",          # local | gcp | aws | snowflake
-
-    # Optional — architecture patterns to apply
-    "recommended_patterns": [
-        "layered_architecture",
-        "data_mesh"
-    ],
-
-    # Optional — shown to user as recommendations
-    "architecture_suggestions": [
-        "Use partitioned tables for time-series data",
-        "Implement CDC for incremental loads"
-    ],
-
-    # Optional — shown to user
-    "best_practices": [
-        "Set up automated data-quality checks",
-        "Document SLAs in contract metadata"
-    ],
+    "recommended_template": "analytics",   # starter | analytics | etl_pipeline | ml_pipeline | streaming
+    "recommended_provider": "gcp",         # local | gcp | aws | snowflake
+    "recommended_patterns": ["layered_architecture"],
+    "architecture_suggestions": ["Use incremental loads where possible"],
+    "best_practices": ["Set up automated data-quality checks"],
+    "security_requirements": ["Enable audit logging"],
 }
 ```
 
-The `create_project()` method (inherited from `AIAgentBase`) takes care of:
-
-1. Calling `analyze_requirements()` with user context
-2. Displaying the analysis in a Rich panel
-3. Building a `ForgeEngine`-compatible config
-4. Delegating to `ForgeEngine.run_with_config()` for validated project generation
-5. Showing next-steps guidance
-
-You only need to implement `get_questions()` and `analyze_requirements()`.
+The declarative spec path and the Python class path both ultimately feed the same shared Forge scaffolding engine. The difference is where you express the domain logic: YAML rules for the common case, Python for bespoke behavior.
 
 ## Advanced: Extension Hooks
 
@@ -391,16 +529,29 @@ fluid policy-check contract.fluid.yaml
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `FLUID_LLM_ENDPOINT` | API base URL for your LLM | — |
+| `FLUID_LLM_PROVIDER` | Built-in copilot provider override | `openai` |
+| `FLUID_LLM_ENDPOINT` | Exact endpoint override for the selected adapter | provider default |
 | `FLUID_LLM_API_KEY` | API authentication key | — |
-| `FLUID_LLM_MODEL` | Model identifier | `gpt-4` |
+| `FLUID_LLM_MODEL` | Model identifier | provider default |
 | `FLUID_FORGE_MODE` | Default creation mode | `copilot` |
 | `FLUID_AGENT_DOMAIN` | Default domain agent | — |
 
 ## Troubleshooting
 
+**Copilot says the API key is missing:**
+Set `FLUID_LLM_API_KEY` or the provider-specific fallback for the adapter you selected.
+
+**Copilot generated a contract but refused to scaffold the project:**
+That means the contract did not pass validation after the repair loop. Re-run with clearer context or a stronger model.
+
+**Unsure whether `--llm-endpoint` is required:**
+Leave it unset unless you are routing to Ollama, a proxy, or a self-hosted OpenAI-compatible endpoint.
+
+**Worried that discovery uploads sample data:**
+It does not in v1. Forge shares metadata summaries only, not raw rows or full file bodies.
+
 **Agent not appearing in `--agent` choices:**
-Ensure your class is imported and added to `DOMAIN_AGENTS` before the CLI registers its argument parser.
+Ensure the spec file exists, the binding class is imported, and the agent is added to `DOMAIN_AGENTS` before the CLI registers its argument parser.
 
 **LLM call timing out:**
 Increase the `httpx.Client(timeout=...)` value. Self-hosted models on CPU can be slow — 120s is a safe starting point.
