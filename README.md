@@ -211,8 +211,12 @@ We welcome contributions! Whether it's fixing a typo, improving an explanation, 
 
 1. Fork this repository
 2. Create a branch (`git checkout -b docs/my-improvement`)
-3. Make your changes — the dev server hot-reloads on save
-4. Open a Pull Request
+3. Install dependencies with `npm ci`
+4. Make your changes — the dev server hot-reloads on save
+5. Run `npm run docs:build`
+6. Open a Pull Request
+
+If the docs change accompanies a CLI change, include the related `forge-cli` PR in the docs PR description. Docs-only PRs are welcome too.
 
 For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).
 
