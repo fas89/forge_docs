@@ -3,7 +3,7 @@
 Deploy data products to Snowflake Data Cloud — databases, schemas, tables, RBAC grants — using the same contract and CLI commands as every other provider.
 
 **Status:** ✅ Production  
-**Version:** 0.7.1  
+**Version:** 0.7.8  
 **Tested Services:** Databases, Schemas, Tables, Warehouses, RBAC Grants
 
 ---
@@ -18,6 +18,24 @@ The Snowflake provider turns a FLUID contract into real Snowflake infrastructure
 - ✅ **Airflow DAG Generation** — `fluid generate-airflow` produces Snowflake-operator DAGs
 - ✅ **Governance** — Classification, column masking, row-level security, audit labels
 - ✅ **Universal Pipeline** — Same Jenkinsfile as GCP and AWS — zero provider logic
+
+## Choose Your Starting Path
+
+Use Snowflake in one of these two modes:
+
+- **Enterprise recommended path:** dbt-snowflake plus explicit environment-specific warehouse, database, schema, and role settings. Start with the [`billing_history` example](https://github.com/Agentics-Rising/forge-cli/tree/main/examples/snowflake/billing_history) and the [Snowflake quickstart](/getting-started/snowflake).
+- **Minimal starter path:** native SQL with the [`smoke` example](https://github.com/Agentics-Rising/forge-cli/tree/main/examples/snowflake/smoke) when you want the smallest contract that still proves `auth`, `validate`, `plan`, `apply`, and `verify`.
+
+For production teams, make these explicit per environment:
+
+- `SNOWFLAKE_ACCOUNT`
+- `SNOWFLAKE_USER`
+- `SNOWFLAKE_WAREHOUSE`
+- `SNOWFLAKE_DATABASE`
+- `SNOWFLAKE_SCHEMA`
+- `SNOWFLAKE_ROLE`
+
+Password auth is supported, but key-pair auth or SSO via `SNOWFLAKE_AUTHENTICATOR` is the recommended production setup.
 
 ## Working Example: Bitcoin Price Tracker
 
@@ -234,35 +252,50 @@ This is identical to GCP (`platform: gcp`, `format: bigquery_table`) and AWS (`p
 
 ## CLI Commands
 
-Every command is **identical** across providers. No `--provider` flag needed — the CLI reads the provider from the contract's `binding.platform` field.
+Every normal Snowflake provider command is autodetected from `binding.platform`, so `--provider snowflake` is not required for `plan`, `apply`, `verify`, or `test`.
 
 ```bash
-# Validate contract against 0.7.1 JSON schema
-fluid validate contract.fluid.yaml --verbose
+# Validate Snowflake connectivity with the same config the provider uses
+fluid auth status snowflake
+
+# Validate contract shape
+fluid validate contract.fluid.yaml
 
 # Generate execution plan
 fluid plan contract.fluid.yaml --env dev --out plans/plan-dev.json
 
-# Deploy database, schema, table
+# Deploy database, schema, table, and build logic
 fluid apply contract.fluid.yaml --env dev --yes
 
-# Compile RBAC policies from accessPolicy grants
+# Verify the deployed Snowflake object against the contract schema
+fluid verify contract.fluid.yaml --strict
+
+# Optional: run the live contract test flow
+fluid test contract.fluid.yaml
+
+# Validate governance declarations
+fluid policy-check contract.fluid.yaml
+
+# Compile RBAC / access bindings from accessPolicy grants
 fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 
 # Apply RBAC bindings (dry-run or enforce)
 fluid policy-apply runtime/policy/bindings.json --mode check
 fluid policy-apply runtime/policy/bindings.json --mode enforce
 
-# Run the ingest script
-fluid execute contract.fluid.yaml
-
 # Generate Airflow DAG
 fluid generate-airflow contract.fluid.yaml --out airflow-dags/bitcoin_snowflake.py
-
-# Export standards
-fluid odps export contract.fluid.yaml --out standards/product.odps.json
-fluid odcs export contract.fluid.yaml --out standards/product.odcs.yaml
 ```
+
+Recommended deployment gate for enterprise teams:
+
+1. `fluid validate`
+2. `fluid plan`
+3. `fluid policy-check`
+4. `fluid policy-compile`
+5. `fluid apply`
+6. `fluid verify --strict`
+7. optional `fluid test`
 
 ## RBAC Policy Compilation
 
@@ -303,6 +336,15 @@ The permission mapping:
 | `update` | `UPDATE` on table |
 | `delete` | `DELETE` on table |
 
+## Governance Scope
+
+Use the governance commands this way:
+
+- `fluid policy-check` validates governance declarations in the contract.
+- `fluid policy-compile` and `fluid policy-apply` manage Snowflake RBAC and access-policy bindings.
+- Snowflake governance during `apply` handles object-level controls such as tags, descriptions, and masking policies.
+- `fluid verify` checks deployed schema and drift. It does not perform a full RBAC or entitlement audit.
+
 ## Credentials Setup
 
 ### Jenkins CI (Recommended)
@@ -338,7 +380,10 @@ EOF
 
 # Source and run
 set -a; . .env; set +a
+fluid auth status snowflake
+fluid plan contract.fluid.yaml --env dev --out runtime/plan.json
 fluid apply contract.fluid.yaml --env dev --yes
+fluid verify contract.fluid.yaml --strict
 ```
 
 ## Infrastructure Created

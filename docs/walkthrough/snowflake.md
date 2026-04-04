@@ -15,6 +15,8 @@ This walkthrough shows how three engineers collaborate on one Fluid Forge projec
 
 The scenario is a Snowflake BI/reporting data product called `customer_orders_weekly_revenue`. The team wants a clean analytics mart for finance dashboards without exposing unnecessary PII.
 
+If you want the first successful Snowflake deployment rather than the review workflow, start with the [Snowflake quickstart](/getting-started/snowflake). This walkthrough assumes the team already has Snowflake access and is reviewing a contract in a normal PR process.
+
 ### Roles
 
 - **Data engineer** uses copilot mode to scaffold the first draft from local SQL, sample data, and a short README.
@@ -53,7 +55,7 @@ fluid forge --mode copilot \
   --llm-model gpt-4o-mini
 
 fluid validate contract.fluid.yaml
-fluid plan contract.fluid.yaml --provider snowflake --out runtime/plan.json
+fluid plan contract.fluid.yaml --out runtime/plan.json
 ```
 
 ### What Copilot Contributes
@@ -89,7 +91,7 @@ Changes in this PR:
 
 Commands run:
 - `fluid validate contract.fluid.yaml`
-- `fluid plan contract.fluid.yaml --provider snowflake --out runtime/plan.json`
+- `fluid plan contract.fluid.yaml --out runtime/plan.json`
 
 Main review asks:
 - should `customer_email` remain in the exposed table if it is masked? (The contract marks it `sensitivity: pii`, which is what flags this column for review.)
@@ -207,7 +209,7 @@ The platform engineer pulls the branch and runs the standard checks:
 
 ```bash
 fluid validate contract.fluid.yaml
-fluid plan contract.fluid.yaml --provider snowflake --out runtime/plan.json
+fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid policy-check contract.fluid.yaml
 fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 ```
@@ -240,7 +242,7 @@ The reviewer does not need to reconstruct the project from scratch. They just ne
 
 ```bash
 fluid validate contract.fluid.yaml
-fluid plan contract.fluid.yaml --provider snowflake
+fluid plan contract.fluid.yaml
 ```
 
 ### Exact Reviewer Comment
@@ -259,7 +261,7 @@ The data engineer addresses the review in one place: the contract.
 
 ```bash
 fluid validate contract.fluid.yaml
-fluid plan contract.fluid.yaml --provider snowflake --out runtime/plan.json
+fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid policy-check contract.fluid.yaml
 fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 ```
@@ -332,7 +334,7 @@ exposes:
 >
 > I also reran:
 > - `fluid validate contract.fluid.yaml`
-> - `fluid plan contract.fluid.yaml --provider snowflake --out runtime/plan.json`
+> - `fluid plan contract.fluid.yaml --out runtime/plan.json`
 > - `fluid policy-check contract.fluid.yaml`
 > - `fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json`
 >
@@ -352,7 +354,7 @@ exposes:
 At this point the team can merge and continue with the standard execution flow:
 
 ```bash
-fluid apply contract.fluid.yaml --provider snowflake --yes
+fluid apply contract.fluid.yaml --yes
 ```
 
 ---

@@ -4,7 +4,7 @@ Get a working data product running in under 2 minutes — no cloud account requi
 
 ::: tip No Cloud Needed
 Fluid Forge ships with a **local** provider powered by DuckDB. Everything runs on your laptop.
-When you're ready for production, switch to [GCP](/providers/gcp), [AWS](/providers/aws), or [Snowflake](/providers/snowflake).
+When you're ready for production, switch to [GCP](/providers/gcp), [AWS](/providers/aws), or the [Snowflake quickstart](/getting-started/snowflake).
 :::
 
 ## Prerequisites
@@ -166,14 +166,14 @@ See the [AWS provider guide](/providers/aws).
 ### Snowflake
 
 ```bash
-# Set credentials in .env
+# Export your Snowflake settings
 export SNOWFLAKE_ACCOUNT=your_account
 export SNOWFLAKE_USER=your_user
 
-fluid apply contract.fluid.yaml --provider snowflake
+fluid apply contract.fluid.yaml
 ```
 
-See the [Snowflake provider guide](/providers/snowflake).
+Start with the [Snowflake quickstart](/getting-started/snowflake), then use the [Snowflake provider guide](/providers/snowflake) for production details.
 
 ---
 
@@ -239,7 +239,7 @@ fluid doctor     # Diagnose system issues
 | Goal | Where to Go |
 |------|-------------|
 | **Hands-on tutorial** | [Local Walkthrough](/walkthrough/local) — build Netflix analytics from scratch |
-| **Deploy to cloud** | [GCP](/providers/gcp) · [AWS](/providers/aws) · [Snowflake](/providers/snowflake) |
+| **Deploy to cloud** | [GCP](/providers/gcp) · [AWS](/providers/aws) · [Snowflake Quickstart](/getting-started/snowflake) |
 | **CI/CD pipeline** | [Universal Pipeline](/walkthrough/universal-pipeline) — one Jenkinsfile for all clouds |
 | **All commands** | [CLI Reference](/cli/) |
 | **Contribute** | [Contributing Guide](/contributing) |
