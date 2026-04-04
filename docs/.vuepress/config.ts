@@ -82,6 +82,7 @@ export default defineUserConfig({
           children: [
             '/README.md',
             '/getting-started/',
+            '/getting-started/snowflake.md',
             '/vision.md'
           ]
         },
