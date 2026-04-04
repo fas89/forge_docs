@@ -25,6 +25,20 @@ Each provider implements two methods: `plan()` (pure planning, no side effects) 
 | **OPDS** | Open Data Product Specification | ✅ Production |
 | **Datamesh Manager** | Publish to datamesh-manager.com | ✅ Production |
 
+### Export Metadata Mapping
+
+When you export to ODPS or publish to DataMesh Manager, Fluid Forge derives catalog metadata from your contract with a few explicit fallback rules.
+
+| Output field | Source fields | Notes |
+|--------------|---------------|-------|
+| Output port provider / type | `binding.platform`, then legacy `provider` where supported | Exports prefer the FLUID 0.7.1 `binding.platform` field. |
+| Expose kind | `expose.kind`, then `expose.type` | Use `kind` in new contracts; `type` is kept as a fallback. |
+| ODPS product type | `metadata.product_type`, `metadata.type`, top-level `product_type`, top-level `type` | The first populated value is exported as the ODPS `type` custom property. |
+| ODPS tags | `metadata.tags`, then top-level `tags` | ODPS uses one tag source, with metadata taking precedence. |
+| DataMesh Manager tags | top-level `tags` merged with `metadata.tags` | Metadata tags are appended without duplicating existing top-level tags. |
+
+If multiple candidate fields are present, keep `binding.platform`, `kind`, and `metadata.*` values aligned so exported catalogs stay predictable across providers.
+
 ---
 
 ## Quick Start by Provider

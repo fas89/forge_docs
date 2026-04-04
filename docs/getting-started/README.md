@@ -23,7 +23,7 @@ Verify the installation:
 
 ```bash
 fluid version
-# Fluid Forge CLI v0.7.7
+# Fluid Forge CLI v0.7.8
 
 fluid doctor
 # Reports Python version, installed providers, and dependencies
@@ -36,15 +36,18 @@ fluid init my-project --quickstart
 cd my-project
 ```
 
-This scaffolds a ready-to-run project:
+`fluid init` creates the `my-project/` directory for you, then scaffolds a ready-to-run project inside it:
 
 ```
 my-project/
+├── README.md              # Template walkthrough and next steps
 ├── contract.fluid.yaml   # Your data product definition (the single source of truth)
-├── data/                  # Sample CSV data
+├── data/                 # Sample CSV data
 │   ├── customers.csv
+│   ├── interactions.csv
 │   └── orders.csv
-└── .fluid/               # Local state (DuckDB database, logs)
+└── .fluid/
+    └── db.duckdb         # Local DuckDB state created during init
 ```
 
 ## Validate the Contract
@@ -98,7 +101,7 @@ contract.fluid.yaml
 └─────────────────────────┘
 ```
 
-1. **`fluid init`** created a **contract** — a YAML file that declaratively describes your data product (sources, schema, transformations, quality rules).
+1. **`fluid init`** created `my-project/` and scaffolded a **contract** — a YAML file that declaratively describes your data product (sources, schema, transformations, quality rules).
 2. **`fluid validate`** checked the contract against Fluid Forge's schema and best practices.
 3. **`fluid plan`** generated an execution plan (what to load, transform, and output).
 4. **`fluid apply`** loaded the sample data, ran the embedded SQL transformation, and wrote the results.
