@@ -15,7 +15,7 @@ Open an issue at [github.com/Agentics-Rising/forge-cli/issues](https://github.co
 
 ### Suggest a Feature
 
-Start a [GitHub Discussion](https://github.com/agentics-rising/fluid-forge-cli/discussions) or open an issue tagged `enhancement`.
+Start a [GitHub Discussion](https://github.com/Agentics-Rising/forge-cli/discussions) or open an issue tagged `enhancement`.
 
 ### Improve Documentation
 
@@ -97,12 +97,12 @@ class MyProvider(BaseProvider):
 
 ## Code of Conduct
 
-Be respectful, constructive, and inclusive. See [CODE_OF_CONDUCT.md](https://github.com/agentics-rising/fluid-forge-cli/blob/main/CODE_OF_CONDUCT.md).
+Be respectful, constructive, and inclusive. See [CODE_OF_CONDUCT.md](https://github.com/Agentics-Rising/forge-cli/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
-By contributing, you agree that your work will be licensed under [Apache 2.0](https://github.com/agentics-rising/fluid-forge-cli/blob/main/LICENSE).
+By contributing, you agree that your work will be licensed under [Apache 2.0](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE).
 
 ---
 
-<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://fluidhq.io">Agentics Transformation Pty Ltd</a> · Open source under <a href="https://github.com/agentics-rising/fluid-forge-cli/blob/main/LICENSE">Apache 2.0</a></p>
+<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://fluidhq.io">Agentics Transformation Pty Ltd</a> · Open source under <a href="https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE">Apache 2.0</a></p>

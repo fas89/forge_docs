@@ -770,4 +770,4 @@ stage('Deploy') {
 
 ---
 
-**Questions or issues?** Open an issue on [GitHub](https://github.com/agentics-rising/fluid-forge-cli/issues).
+**Questions or issues?** Open an issue on [GitHub](https://github.com/Agentics-Rising/forge-cli/issues).

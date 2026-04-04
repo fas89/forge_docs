@@ -699,4 +699,4 @@ pip install apache-airflow-providers-snowflake
 
 ---
 
-**Questions?** Open an issue on [GitHub](https://github.com/agentics-rising/fluid-forge-cli/issues)
+**Questions?** Open an issue on [GitHub](https://github.com/Agentics-Rising/forge-cli/issues)

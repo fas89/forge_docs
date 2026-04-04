@@ -8,7 +8,7 @@ actions:
     link: /getting-started/
     type: primary
   - text: View on GitHub
-    link: https://github.com/agentics-rising/fluid-forge-cli
+    link: https://github.com/Agentics-Rising/forge-cli
     type: secondary
 
 features:
@@ -37,8 +37,8 @@ footer: Apache 2.0 Licensed | Developed with ❤️ by DustLabs. Copyright 2025-
 
 [![PyPI version](https://img.shields.io/pypi/v/fluid-forge?color=blue)](https://pypi.org/project/fluid-forge/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/agentics-rising/fluid-forge-cli/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/tests-828%20passing-brightgreen)]()
+[![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
+[![CLI CI](https://img.shields.io/github/actions/workflow/status/Agentics-Rising/forge-cli/ci.yml?label=CLI%20CI)](https://github.com/Agentics-Rising/forge-cli/actions/workflows/ci.yml)
 
 </div>
 
@@ -185,7 +185,7 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 
 **Setting up CI/CD?** [Universal Pipeline](/walkthrough/universal-pipeline) — one config file for every provider.
 
-**Want to contribute?** [Contributing Guide](/contributing) · [GitHub](https://github.com/agentics-rising/fluid-forge-cli)
+**Want to contribute?** [Contributing Guide](/contributing) · [GitHub](https://github.com/Agentics-Rising/forge-cli)
 
 </div>
 
@@ -194,7 +194,7 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 <div class="about-section" style="text-align: center; padding: 2rem 0 1rem; opacity: 0.85;">
 
 **Developed with pride by [DustLabs](https://dustlabs.co.za/)** ·
-Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://fluidhq.io) · Open source under [Apache 2.0](https://github.com/agentics-rising/fluid-forge-cli/blob/main/LICENSE)
+Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://fluidhq.io) · Open source under [Apache 2.0](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
 
 </div>
 
