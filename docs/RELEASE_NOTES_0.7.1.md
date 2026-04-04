@@ -352,7 +352,7 @@ This release was made possible by:
 ## 📞 Support
 
 - **Documentation:** [https://fluidforge.dev/docs](https://fluidforge.dev/docs)
-- **GitHub Issues:** [https://github.com/agentics-rising/fluid-forge-cli/issues](https://github.com/agentics-rising/fluid-forge-cli/issues)
+- **GitHub Issues:** [https://github.com/Agentics-Rising/forge-cli/issues](https://github.com/Agentics-Rising/forge-cli/issues)
 - **Email:** support@fluidforge.dev
 - **Community Chat:** [Join our Discord](https://discord.gg/fluidforge)
 
@@ -363,7 +363,7 @@ This release was made possible by:
 - [Export Orchestration Guide](/walkthrough/export-orchestration.html)
 - [CLI Reference](/cli/)
 - [Provider Roadmap](/providers/roadmap.html)
-- [GitHub Repository](https://github.com/agentics-rising/fluid-forge-cli)
+- [GitHub Repository](https://github.com/Agentics-Rising/forge-cli)
 
 ---
 

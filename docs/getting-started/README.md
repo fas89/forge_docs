@@ -249,7 +249,7 @@ fluid <command> -h    # Per-command help
 ```
 
 - 📚 [CLI Reference](/cli/) — all commands with examples
-- 🐛 [Report an issue](https://github.com/agentics-rising/fluid-forge-cli/issues)
+- 🐛 [Report an issue](https://github.com/Agentics-Rising/forge-cli/issues)
 
 ---
 
