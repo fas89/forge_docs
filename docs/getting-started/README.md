@@ -23,7 +23,7 @@ Verify the installation:
 
 ```bash
 fluid version
-# Fluid Forge CLI v0.7.1
+# Fluid Forge CLI v0.7.7
 
 fluid doctor
 # Reports Python version, installed providers, and dependencies

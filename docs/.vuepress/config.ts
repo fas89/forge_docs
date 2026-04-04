@@ -49,6 +49,7 @@ export default defineUserConfig({
         children: [
           { text: 'Local (DuckDB)', link: '/walkthrough/local' },
           { text: 'GCP (BigQuery)', link: '/walkthrough/gcp' },
+          { text: 'Snowflake Team Collaboration', link: '/walkthrough/snowflake' },
           { text: 'Declarative Airflow', link: '/walkthrough/airflow-declarative' },
           { text: 'Orchestration Export', link: '/walkthrough/export-orchestration' },
           { text: 'Jenkins CI/CD', link: '/walkthrough/jenkins-cicd' },
@@ -89,6 +90,7 @@ export default defineUserConfig({
           children: [
             '/walkthrough/local.md',
             '/walkthrough/gcp.md',
+            '/walkthrough/snowflake.md',
             '/walkthrough/airflow-declarative.md',
             '/walkthrough/export-orchestration.md',
             '/walkthrough/jenkins-cicd.md',
@@ -126,7 +128,10 @@ export default defineUserConfig({
             '/advanced/blueprints.md',
             '/advanced/governance.md',
             '/advanced/airflow.md',
-            '/advanced/custom-llm-agents.md'
+            '/advanced/custom-llm-agents.md',
+            '/advanced/chatgpt-forge-contract-gpt/',
+            '/advanced/forge-copilot-discovery.md',
+            '/advanced/forge-copilot-memory.md'
           ]
         },
         {

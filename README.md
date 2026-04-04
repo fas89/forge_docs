@@ -129,7 +129,7 @@ Fluid Forge isn't just `apply`. It's a complete data product lifecycle toolkit:
 | **Governance** | `policy-check` · `policy-compile` · `policy-apply` | Validate policies, compile to native IAM, and enforce — all from the contract |
 | **Visualization** | `viz-graph` · `viz-plan` · `preview` | Lineage diagrams (SVG/PNG/HTML), execution plan visualization |
 | **Publishing** | `publish` · `export-opds` · `odcs` · `datamesh-manager` | Register in catalogs, export to OPDS/ODCS, push to Data Mesh Manager |
-| **AI & Blueprints** | `forge` · `blueprint` · `marketplace` · `copilot` | AI-assisted creation, blueprint templates, marketplace discovery |
+| **AI & Blueprints** | `forge --mode copilot` · `forge --mode agent` · `blueprint` · `marketplace` | Adaptive AI-assisted creation, spec-backed domain agents, blueprint templates, marketplace discovery |
 | **Config & Admin** | `context` · `providers` · `doctor` · `auth` · `wizard` | Provider management, diagnostics, interactive onboarding |
 
 > Run `fluid doctor` to verify your setup, or `fluid wizard` for interactive onboarding.
@@ -158,7 +158,7 @@ Everything you need to go from first install to production-grade data products:
 |---------|-------------|
 | **[Getting Started](https://agentics-rising.github.io/forge_docs/getting-started/)** | Install & build your first data product in under 2 minutes |
 | **[Walkthroughs](https://agentics-rising.github.io/forge_docs/walkthrough/local.html)** | Step-by-step guides — Local, GCP, Airflow, Jenkins CI/CD |
-| **[CLI Reference](https://agentics-rising.github.io/forge_docs/cli/)** | Full command reference for all 44 CLI commands |
+| **[CLI Reference](https://agentics-rising.github.io/forge_docs/cli/)** | Full command reference for all 45 top-level CLI commands |
 | **[Providers](https://agentics-rising.github.io/forge_docs/providers/)** | Deep dives into GCP, AWS, Snowflake, Local & Custom providers |
 | **[Advanced](https://agentics-rising.github.io/forge_docs/advanced/blueprints.html)** | Blueprints, governance, Airflow integration, AI-powered agents |
 | **[Vision & Roadmap](https://agentics-rising.github.io/forge_docs/vision.html)** | Where we're headed and how to shape the future |
@@ -211,8 +211,12 @@ We welcome contributions! Whether it's fixing a typo, improving an explanation, 
 
 1. Fork this repository
 2. Create a branch (`git checkout -b docs/my-improvement`)
-3. Make your changes — the dev server hot-reloads on save
-4. Open a Pull Request
+3. Install dependencies with `npm ci`
+4. Make your changes — the dev server hot-reloads on save
+5. Run `npm run docs:build`
+6. Open a Pull Request
+
+If the docs change accompanies a CLI change, include the related `forge-cli` PR in the docs PR description. Docs-only PRs are welcome too.
 
 For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Code of Conduct](CODE_OF_CONDUCT.md).
 
@@ -220,7 +224,7 @@ For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Co
 
 | Repository | Description |
 |-----------|-------------|
-| [`fluid-forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
+| [`forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
 | [`fluid-provider-sdk`](https://github.com/agentics-rising/fluid-provider-sdk) | SDK for building custom providers |
 
 ## License

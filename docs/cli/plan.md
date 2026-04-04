@@ -321,7 +321,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Install Fluid Forge
-        run: pip install fluid-forge-cli
+        run: pip install fluid-forge
       
       - name: Generate Plan
         run: |

@@ -131,7 +131,7 @@ Global Tool Configuration
 Pipeline → Definition → Pipeline script from SCM
   SCM: Git
   Repository URL: https://github.com/your-org/fluid-mono.git
-  Script Path: fluid_forge_docs/examples/bitcoin-tracker/Jenkinsfile
+  Script Path: forge_docs/examples/bitcoin-tracker/Jenkinsfile
 ```
 
 **Option B: Inline Pipeline**

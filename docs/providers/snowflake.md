@@ -462,6 +462,7 @@ binding:
 
 ## See Also
 
+- [Snowflake Team Collaboration Walkthrough](/walkthrough/snowflake) - Role-based PR review example for Snowflake teams
 - [Universal Pipeline](/walkthrough/universal-pipeline) — Same Jenkinsfile for every provider
 - [AWS Provider](./aws) — Amazon Web Services integration
 - [GCP Provider](./gcp) — Google Cloud Platform integration

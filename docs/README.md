@@ -157,7 +157,7 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 |---------|-------------|
 | **40+ CLI commands** | `validate`, `plan`, `apply`, `verify`, `generate-airflow`, `export`, `policy-check`, and more |
 | **Blueprints** | Pre-built templates: `customer-360`, `enterprise-snowflake`, analytics starters |
-| **AI Copilot** | `fluid forge --mode copilot` — describe what you want in English, get a working project |
+| **AI Copilot** | `fluid forge --mode copilot` — adaptive interview, discovery, validation/repair, then scaffolding |
 | **Governance Engine** | Access policies, sovereignty controls, data classification, compliance checks |
 | **Orchestration Export** | Generate Airflow DAGs, Dagster pipelines, and Prefect flows from contracts |
 | **Open Standards** | Export to ODPS v4.1, ODCS v3.1, and data mesh catalogs |
