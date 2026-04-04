@@ -17,6 +17,8 @@ The scenario is a Snowflake BI/reporting data product called `customer_orders_we
 
 If you want the first successful Snowflake deployment rather than the review workflow, start with the [Snowflake quickstart](/getting-started/snowflake). This walkthrough assumes the team already has Snowflake access and is reviewing a contract in a normal PR process.
 
+For shared environments, assume the team is using explicit environment-specific warehouse, database, schema, and role settings, plus secure authentication for automation. In practice that means key-pair or OAuth in CI, with browser SSO reserved for interactive local work.
+
 ### Roles
 
 - **Data engineer** uses copilot mode to scaffold the first draft from local SQL, sample data, and a short README.
@@ -97,6 +99,8 @@ Main review asks:
 - should `customer_email` remain in the exposed table if it is masked? (The contract marks it `sensitivity: pii`, which is what flags this column for review.)
 - are `ANALYTICS` and `SHARED_MARTS` acceptable defaults for the first rollout?
 - is the warehouse sizing reasonable for this build?
+
+The CI version of this review flow should run with key-pair or OAuth credentials rather than password auth, and it should fail on `validate`, `plan`, or `verify --strict` drift before merge.
 ```
 
 ### Sample Contract Excerpt In The PR

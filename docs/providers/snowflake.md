@@ -35,7 +35,15 @@ For production teams, make these explicit per environment:
 - `SNOWFLAKE_SCHEMA`
 - `SNOWFLAKE_ROLE`
 
-Password auth is supported, but key-pair auth or SSO via `SNOWFLAKE_AUTHENTICATOR` is the recommended production setup.
+For production and CI, use this authentication order:
+
+1. `SNOWFLAKE_PRIVATE_KEY_PATH` for key-pair auth
+2. `SNOWFLAKE_OAUTH_TOKEN` for federated automation
+3. `SNOWFLAKE_AUTHENTICATOR` for interactive SSO
+
+Password auth is still supported, but it should be treated as a fallback rather than the default production path.
+
+If no explicit credentials are present, browser SSO is only attempted in an interactive TTY session. Non-interactive runs should supply key-pair, OAuth, or another explicit authenticator instead of relying on browser prompts.
 
 ## Working Example: Bitcoin Price Tracker
 
@@ -296,6 +304,8 @@ Recommended deployment gate for enterprise teams:
 5. `fluid apply`
 6. `fluid verify --strict`
 7. optional `fluid test`
+
+Every Snowflake session opened through the provider carries a `QUERY_TAG` so statements can be attributed in Snowflake `QUERY_HISTORY`. In practice this means plan/apply/verify traffic can be traced back to the contract and environment that issued it.
 
 ## RBAC Policy Compilation
 

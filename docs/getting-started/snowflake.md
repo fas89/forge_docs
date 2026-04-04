@@ -18,7 +18,13 @@ For team environments, make these explicit in each environment:
 - `SNOWFLAKE_SCHEMA`
 - `SNOWFLAKE_ROLE`
 
-Password auth is supported, but for production teams the recommended path is key-pair auth or SSO via `SNOWFLAKE_AUTHENTICATOR`, with least-privilege roles per environment.
+For production and CI, prefer non-password auth in this order:
+
+- key-pair auth via `SNOWFLAKE_PRIVATE_KEY_PATH`
+- OAuth via `SNOWFLAKE_OAUTH_TOKEN`
+- SSO via `SNOWFLAKE_AUTHENTICATOR` for interactive local use
+
+Password auth is still supported as a fallback, but it should not be the default automation path.
 
 ## Minimal Starter Path
 
@@ -34,12 +40,15 @@ Export your Snowflake settings:
 ```bash
 export SNOWFLAKE_ACCOUNT="your-account"
 export SNOWFLAKE_USER="your-user"
-export SNOWFLAKE_PASSWORD="your-password"
 export SNOWFLAKE_WAREHOUSE="DEV_TRANSFORM_WH"
 export SNOWFLAKE_DATABASE="DEV_ANALYTICS"
 export SNOWFLAKE_SCHEMA="COMMUNITY_SMOKE"
 export SNOWFLAKE_ROLE="TRANSFORMER"
+export SNOWFLAKE_PRIVATE_KEY_PATH="/secure/path/to/snowflake_user_key.p8"
+export SNOWFLAKE_PRIVATE_KEY_PASSPHRASE="optional-passphrase"
 ```
+
+If you are doing an ad-hoc local smoke test and do not have key-pair or OAuth configured yet, password auth still works as a fallback. For non-interactive runs, use key-pair or OAuth rather than browser SSO.
 
 Run the happy path:
 
@@ -65,6 +74,7 @@ For production teams, prefer a dbt-snowflake workflow:
 
 - keep transformation logic in dbt
 - keep Snowflake runtime settings explicit per environment
+- use key-pair or OAuth for automation instead of password auth
 - run `validate`, `plan`, `apply`, and `verify` in CI
 - keep governance and access policy checks in the same contract review flow
 
