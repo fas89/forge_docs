@@ -33,16 +33,18 @@ fluid init [name] [options]
 
 ## What It Creates
 
-A new project directory containing:
+`fluid init my-project --quickstart` creates the `my-project/` directory for you and then copies the current quickstart scaffold into it. The default quickstart project looks like:
 
 ```
 my-project/
-├── contract.fluid.yaml   # Data product contract
-├── seeds/                 # Sample CSV data (quickstart only)
-│   └── *.csv
-├── models/                # SQL transforms
-│   └── *.sql
-└── runtime/               # Execution artifacts
+├── README.md              # Template walkthrough and next steps
+├── contract.fluid.yaml    # Data product contract
+├── data/
+│   ├── customers.csv
+│   ├── interactions.csv
+│   └── orders.csv
+└── .fluid/
+    └── db.duckdb          # Local DuckDB state created during init
 ```
 
 ## Examples
@@ -53,7 +55,7 @@ my-project/
 fluid init bitcoin-tracker --quickstart
 ```
 
-Creates a fully working project with sample data you can run immediately:
+Creates the `bitcoin-tracker/` directory and fills it with a fully working project you can run immediately:
 
 ```bash
 cd bitcoin-tracker
@@ -92,7 +94,7 @@ Creates a minimal project with an empty contract template.
 fluid init my-project --quickstart --dry-run
 ```
 
-Shows what files and directories would be created without writing anything.
+Shows what files and directories would be created, including the target project directory, without writing anything.
 
 ## After Initialization
 

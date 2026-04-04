@@ -21,6 +21,7 @@ The commands you'll use most often:
 | Preview changes | `fluid plan contract.fluid.yaml` |
 | Deploy / run | `fluid apply contract.fluid.yaml --yes` |
 | Verify deployment | `fluid verify contract.fluid.yaml` |
+| Publish to DataMesh Manager | `fluid datamesh-manager publish contract.fluid.yaml` |
 | Run build jobs | `fluid execute contract.fluid.yaml` |
 | Detect drift | `fluid diff contract.fluid.yaml` |
 | Visualize lineage | `fluid viz-graph contract.fluid.yaml` |
@@ -114,7 +115,7 @@ These four commands form the standard development loop: **init → validate → 
 
 ### `fluid init`
 
-Create a new Fluid Forge project with sample data and a working contract.
+Create a new Fluid Forge project with sample data and a working contract. If the target directory does not exist yet, `fluid init` creates it before copying the selected template.
 
 ```bash
 fluid init <name> [options]
@@ -290,8 +291,12 @@ fluid export-opds <contract-file> -o output.yaml
 Export to ODPS v4.1 (Linux Foundation Open Data Product Specification).
 
 ```bash
-fluid odps <contract-file> [options]
+fluid odps export <contract-file> [options]
+fluid odps validate <odps-file> [options]
+fluid odps info
 ```
+
+ODPS export metadata comes from the contract itself: provider/type fields are derived from `binding.platform`, expose kind falls back from `kind` to `type`, and product metadata uses the documented exporter precedence in the [provider guide](../providers/README.md).
 
 ### `fluid odcs`
 
@@ -300,6 +305,17 @@ Export to ODCS v3.1 (Open Data Contract Standard — Bitol.io).
 ```bash
 fluid odcs <contract-file> [options]
 ```
+
+### `fluid datamesh-manager`
+
+Publish a data product to Entropy Data / DataMesh Manager.
+
+```bash
+fluid datamesh-manager publish <contract-file> [options]
+fluid dmm publish <contract-file> [options]
+```
+
+DataMesh Manager publish uses the same contract-driven metadata rules as the providers: `binding.platform` is preferred over legacy provider keys, expose kind falls back from `kind` to `type`, and tags merge top-level `tags` with `metadata.tags`.
 
 ---
 
