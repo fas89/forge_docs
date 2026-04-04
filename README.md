@@ -9,13 +9,13 @@
   <a href="https://pypi.org/project/fluid-forge/"><img src="https://img.shields.io/pypi/v/fluid-forge?color=blue&label=PyPI" alt="PyPI"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.9%2B-blue" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
-  <a href="https://github.com/agentics-rising/forge_docs/actions/workflows/deploy-docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/agentics-rising/forge_docs/deploy-docs.yml?label=docs" alt="Docs Build"></a>
+  <a href="https://github.com/Agentics-Rising/forge_docs/actions/workflows/deploy-docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/Agentics-Rising/forge_docs/deploy-docs.yml?label=docs" alt="Docs Build"></a>
 </p>
 
 <p align="center">
   <a href="https://agentics-rising.github.io/forge_docs/">📖 Live Docs</a> ·
   <a href="https://github.com/Agentics-Rising/forge-cli">⚡ CLI Repository</a> ·
-  <a href="https://github.com/agentics-rising/forge_docs/issues">🐛 Report Issue</a> ·
+  <a href="https://github.com/Agentics-Rising/forge_docs/issues">🐛 Report Issue</a> ·
   <a href="https://github.com/Agentics-Rising/forge-cli/discussions">💬 Discussions</a>
 </p>
 
@@ -115,7 +115,7 @@ governance:
 </tr>
 </table>
 
-**Plus:** Build your own providers with the [Provider SDK](https://github.com/agentics-rising/fluid-provider-sdk) — Databricks, Azure, Postgres, anything.
+**Plus:** Build your own providers with the [Provider SDK](https://github.com/Agentics-Rising/forge-cli-sdk) — Databricks, Azure, Postgres, anything.
 
 ## ⚡ 44 Commands — Everything You Need
 
@@ -166,7 +166,7 @@ Everything you need to go from first install to production-grade data products:
 ## 🛠 Running the Docs Locally
 
 ```bash
-git clone https://github.com/agentics-rising/forge_docs.git
+git clone https://github.com/Agentics-Rising/forge_docs.git
 cd forge_docs
 npm install
 npm run docs:dev       # Dev server at http://localhost:8080
@@ -225,7 +225,7 @@ For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Co
 | Repository | Description |
 |-----------|-------------|
 | [`forge-cli`](https://github.com/Agentics-Rising/forge-cli) | The Fluid Forge CLI — the core engine |
-| [`fluid-provider-sdk`](https://github.com/agentics-rising/fluid-provider-sdk) | SDK for building custom providers |
+| [`forge-cli-sdk`](https://github.com/Agentics-Rising/forge-cli-sdk) | SDK for building custom providers |
 
 ## License
 

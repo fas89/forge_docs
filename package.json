@@ -5,7 +5,7 @@
   "homepage": "https://agentics-rising.github.io/forge_docs/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/agentics-rising/forge_docs.git"
+    "url": "https://github.com/Agentics-Rising/forge_docs.git"
   },
   "scripts": {
     "docs:dev": "vuepress dev docs",
