@@ -1,0 +1,11 @@
+# CODEOWNERS — FLUID Forge Docs
+
+# Default owner for docs content
+*                               @agentics-rising/fluid-docs
+
+# Community and workflow files
+.github/                        @agentics-rising/fluid-core
+
+# Primary docs site content
+docs/                           @agentics-rising/fluid-docs
+README.md                       @agentics-rising/fluid-docs
