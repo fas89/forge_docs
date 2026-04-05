@@ -357,6 +357,29 @@ Use the governance commands this way:
 
 ## Credentials Setup
 
+### Accepted `SNOWFLAKE_ACCOUNT` Formats
+
+Forge accepts the common Snowflake account identifier formats that teams usually copy from the Snowflake UI, connector docs, or browser URL and normalizes them before opening the connection.
+
+Accepted examples:
+
+- `org-account`
+- `xy12345`
+- `xy12345.eu-central-1`
+- `xy12345.eu-central-1.aws`
+- `xy12345.eu-central-1.privatelink`
+- `https://xy12345.eu-central-1.aws.snowflakecomputing.com`
+- `https://app-org-account.privatelink.snowflakecomputing.com`
+
+Normalization rules:
+
+- strips `https://` and `.snowflakecomputing.com`
+- strips cloud suffixes such as `.aws`, `.gcp`, and `.azure`
+- preserves `.privatelink` when it is part of the effective account identifier
+- strips the leading `app-` prefix from Snowsight-style browser hostnames
+
+Invalid hostnames such as `https://example.com` fail fast with a validation error instead of being silently misparsed.
+
 ### Jenkins CI (Recommended)
 
 Create a Jenkins **Secret File** credential containing your Snowflake env vars:
@@ -395,6 +418,21 @@ fluid plan contract.fluid.yaml --env dev --out runtime/plan.json
 fluid apply contract.fluid.yaml --env dev --yes
 fluid verify contract.fluid.yaml --strict
 ```
+
+### Session Context Initialization
+
+After connecting, Forge pins the active Snowflake session explicitly using any configured role, warehouse, database, and schema:
+
+```sql
+USE ROLE <role>;
+USE WAREHOUSE <warehouse>;
+USE DATABASE <database>;
+USE SCHEMA <schema>;
+```
+
+This keeps runtime behavior aligned with the contract and credential settings across local runs, CI, and automation. If any configured value is invalid, Forge fails fast instead of leaving the session half-initialized.
+
+`DATABASE` and `SCHEMA` settings may be dot-qualified when Snowflake accepts that shape, for example `ANALYTICS.RAW`.
 
 ## Infrastructure Created
 
@@ -468,6 +506,10 @@ privacy:
   rowLevelPolicy:
     expression: "price_timestamp >= DATEADD(day, -30, CURRENT_TIMESTAMP())"
 ```
+
+Row-level security expressions are intentionally validated against a narrow SQL-expression allowlist before Forge generates Snowflake row access policies. Keep these expressions to predicate-style logic such as comparisons, boolean operators, function calls, and string literals.
+
+Forge rejects or skips unsafe expressions that contain statement separators, SQL comments, or statement-level keywords such as `SELECT`, `USE`, `GRANT`, `DROP`, or `INSERT`. When that happens, planning continues and the CLI emits a warning so you can fix the contract instead of applying unsafe SQL.
 
 ### Snowflake-Native Security
 
