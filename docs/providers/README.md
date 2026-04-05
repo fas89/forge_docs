@@ -73,6 +73,8 @@ export SNOWFLAKE_USER=your_user
 fluid apply contract.fluid.yaml --provider snowflake --yes
 ```
 
+`SNOWFLAKE_ACCOUNT` can be a locator, an org-account identifier, a privatelink account, or a full Snowflake / Snowsight hostname. Forge normalizes these forms before connecting.
+
 [Full Snowflake Guide →](./snowflake.md)
 
 ### Local (DuckDB)

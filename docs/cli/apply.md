@@ -45,7 +45,7 @@ The `<contract-file>` can be a `.fluid.yaml` contract or a previously saved plan
 | Option | Description | Default |
 |--------|-------------|---------|
 | `--verbose` | Verbose output | `false` |
-| `--debug` | Debug-level logging | `false` |
+| `--debug` | Debug-level logging with secret redaction | `false` |
 | `--keep-temp-files` | Keep temporary files after execution | `false` |
 | `--profile` | Enable performance profiling | `false` |
 
@@ -126,6 +126,18 @@ fluid apply contract.fluid.yaml \
 | `immediate` | Roll back the failing phase immediately |
 | `phase_complete` | Let the current phase finish, then roll back |
 | `full_rollback` | Roll back all completed phases |
+
+## Debug Logging and Secret Redaction
+
+When you use `--debug` or write logs to a file with the global `--log-file` option, Forge now scrubs common secret-like values before they are emitted.
+
+Redaction covers common credential shapes such as:
+
+- `password`, `api_key`, `oauth_token`, `private_key`, and similar key/value pairs
+- bearer tokens and JWT-like strings inside formatted log messages
+- nested dictionaries, list payloads, and exception text that contain secret-looking values
+
+This is best-effort hardening for observability and support workflows, not a reason to place raw credentials in contracts, shell history, or command arguments intentionally.
 
 ## See Also
 
