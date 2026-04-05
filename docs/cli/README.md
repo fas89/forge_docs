@@ -512,11 +512,17 @@ Extended marketplace browser with search and filtering.
 
 ### `fluid doctor`
 
-Run system diagnostics: Python version, installed providers, cloud SDKs, credentials.
+Run system diagnostics: Python version, installed providers, cloud SDKs, credentials, and bundled FLUID feature availability.
 
 ```bash
 fluid doctor
+fluid doctor --features-only
 ```
+
+Notes:
+
+- `--features-only` runs the built-in FLUID capability checks even when the optional workspace helper `scripts/diagnose.sh` is not present.
+- Core feature checks include bundled schema availability, so `FLUID Schema Manager` should report available when the packaged schemas load correctly.
 
 ### `fluid version`
 
