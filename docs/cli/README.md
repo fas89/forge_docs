@@ -455,6 +455,7 @@ Important behavior:
 - `--llm-endpoint` is an exact endpoint override for proxies, self-hosted gateways, or Ollama. It is not a file-upload target.
 - `--discovery-path` scans local files and sends only derived metadata to the LLM, never raw sample rows or full file contents.
 - Discovery supports SQL, dbt, Terraform, README headings, existing FLUID contracts, and sample files including CSV, JSON, JSONL, Parquet, and Avro.
+- Sample-file discovery is best-effort. If a CSV, JSON, or JSONL sample is malformed, Forge surfaces a warning and keeps going instead of aborting copilot preparation.
 - `--mode agent` uses the same shared Forge scaffolding path as copilot mode, but seeds it with domain-specific declarative rules and next-step guidance.
 - Interactive prompts are friendly by default: suggested options are hints, not strict menus.
 - Copilot keeps an app-managed interview summary and transcript so provider behavior stays consistent across OpenAI, Anthropic, Gemini, and Ollama.

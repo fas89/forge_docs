@@ -136,6 +136,14 @@ Forge reads a bounded local sample and derives:
 
 It supports object arrays, JSONL rows, and simple columnar JSON shapes.
 
+Discovery is best-effort here:
+
+- UTF-8 BOM markers are ignored for JSON and JSONL inputs
+- empty `.json` files are treated as empty samples
+- malformed or unreadable JSON or JSONL files produce a discovery warning and do not abort copilot
+
+That means Forge can keep using the rest of the workspace context even if one sample file is messy.
+
 ### Parquet
 
 Forge inspects Parquet schema metadata locally.
@@ -216,6 +224,12 @@ Built-in provider discovery is also best-effort in this stage:
 - if one of those checks fails locally, Forge warns and continues instead of aborting copilot
 - if provider verification is incomplete, Forge falls back to safe built-in provider defaults for planning
 - you can still review or override the provider later in the generated project
+
+Sample-file discovery follows the same best-effort rule:
+
+- Forge keeps scanning when a CSV, JSON, or JSONL sample cannot be summarized
+- discovery warnings are carried forward so you can diagnose the noisy file later
+- successfully summarized files still influence copilot generation in the same run
 
 The LLM is asked to return:
 
