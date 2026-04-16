@@ -5,10 +5,10 @@ import { viteBundler } from '@vuepress/bundler-vite'
 export default defineUserConfig({
   lang: 'en-US',
   title: 'Fluid Forge',
-  description: 'Declarative Data Products — Write YAML, Deploy Anywhere. One contract, every cloud.',
-  
+  description: 'Declarative data products for local and multi-cloud delivery with a contract-first CLI.',
+
   base: '/forge_docs/',
-  
+
   bundler: viteBundler({
     viteOptions: {
       build: {
@@ -20,7 +20,7 @@ export default defineUserConfig({
       }
     }
   }),
-  
+
   shouldPrefetch: false,
   shouldPreload: false,
 
@@ -29,23 +29,24 @@ export default defineUserConfig({
     ['meta', { name: 'theme-color', content: '#1a73e8' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
-    ['meta', { property: 'og:title', content: 'Fluid Forge — Declarative Data Products' }],
-    ['meta', { property: 'og:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud. What Terraform did for infrastructure, Fluid Forge does for data products.' }],
+    ['meta', { property: 'og:title', content: 'Fluid Forge' }],
+    ['meta', { property: 'og:description', content: 'Write contracts, validate locally, and deploy data products with the Fluid Forge CLI.' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:url', content: 'https://agentics-rising.github.io/forge_docs/' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'Fluid Forge — Declarative Data Products' }],
-    ['meta', { name: 'twitter:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud.' }],
-    ['meta', { name: 'keywords', content: 'data products, declarative, data engineering, GCP, BigQuery, AWS, Athena, Snowflake, DuckDB, infrastructure as code, DataOps' }],
+    ['meta', { name: 'twitter:title', content: 'Fluid Forge' }],
+    ['meta', { name: 'twitter:description', content: 'Contract-first data product delivery with Fluid Forge.' }],
+    ['meta', { name: 'keywords', content: 'fluid forge, data products, declarative data engineering, duckdb, bigquery, snowflake, aws, cli' }],
   ],
 
   theme: defaultTheme({
     logo: '/logo.png',
-    
+
     navbar: [
       { text: 'Home', link: '/' },
       { text: 'Get Started', link: '/getting-started/' },
-      { text: 'Walkthroughs', 
+      {
+        text: 'Walkthroughs',
         children: [
           { text: 'Local (DuckDB)', link: '/walkthrough/local' },
           { text: 'GCP (BigQuery)', link: '/walkthrough/gcp' },
@@ -57,7 +58,8 @@ export default defineUserConfig({
         ]
       },
       { text: 'CLI Reference', link: '/cli/' },
-      { text: 'Providers', 
+      {
+        text: 'Providers',
         children: [
           { text: 'Overview', link: '/providers/' },
           { text: 'Architecture', link: '/providers/architecture' },
@@ -71,7 +73,7 @@ export default defineUserConfig({
       },
       {
         text: 'GitHub',
-        link: 'https://github.com/agentics-rising/fluid-forge-cli'
+        link: 'https://github.com/Agentics-Rising/forge-cli'
       }
     ],
 
@@ -103,11 +105,25 @@ export default defineUserConfig({
           children: [
             '/cli/README.md',
             '/cli/init.md',
+            '/cli/forge.md',
             '/cli/validate.md',
             '/cli/plan.md',
             '/cli/apply.md',
+            '/cli/generate.md',
+            '/cli/publish.md',
+            '/cli/market.md',
+            '/cli/import.md',
+            '/cli/policy-check.md',
+            '/cli/diff.md',
+            '/cli/test.md',
             '/cli/verify.md',
-            '/cli/generate-airflow.md'
+            '/cli/config.md',
+            '/cli/split.md',
+            '/cli/bundle.md',
+            '/cli/auth.md',
+            '/cli/doctor.md',
+            '/cli/providers.md',
+            '/cli/version.md'
           ]
         },
         {
@@ -139,14 +155,15 @@ export default defineUserConfig({
           text: 'Project',
           children: [
             '/contributing.md',
+            '/RELEASE_NOTES_0.7.9.md',
             '/RELEASE_NOTES_0.7.1.md'
           ]
         }
       ]
     },
 
-    repo: 'agentics-rising/fluid-forge-cli',
-    docsRepo: 'agentics-rising/forge_docs',
+    repo: 'Agentics-Rising/forge-cli',
+    docsRepo: 'Agentics-Rising/forge_docs',
     docsDir: 'docs',
     docsBranch: 'main',
     editLink: true,
@@ -154,5 +171,4 @@ export default defineUserConfig({
     lastUpdated: true,
     contributors: true
   }),
-
 })

@@ -1,146 +1,81 @@
-# apply Command
+# `fluid apply`
 
-Execute a FLUID contract: load data, run transformations, create infrastructure.
+Execute a FLUID contract or a saved plan end-to-end.
 
 ## Syntax
 
 ```bash
-fluid apply <contract-file> [options]
+fluid apply CONTRACT
 ```
 
-The `<contract-file>` can be a `.fluid.yaml` contract or a previously saved plan JSON file.
+`CONTRACT` can be a FLUID contract file or a saved plan JSON file.
 
-## Options
+## Key options
 
-### Execution Control
+### General
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--yes` | Skip confirmation prompt | `false` |
-| `--dry-run` | Show what would happen without executing | `false` |
-| `--timeout <minutes>` | Global timeout | `120` |
-| `--parallel-phases` | Enable parallel phase execution | `false` |
-| `--max-workers <n>` | Maximum parallel workers | `4` |
+| Option | Description |
+| --- | --- |
+| `--env` | Apply an environment overlay |
 
-### Safety & Rollback
+### Execution control
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--rollback-strategy` | `none`, `immediate`, `phase_complete`, `full_rollback` | `phase_complete` |
-| `--require-approval` | Require approval for destructive operations | `false` |
-| `--backup-state` | Create a state backup before execution | `false` |
-| `--validate-dependencies` | Validate all dependencies before execution | `false` |
+| Option | Description |
+| --- | --- |
+| `--yes` | Skip confirmation |
+| `--dry-run` | Show what would be executed |
+| `--timeout TIMEOUT` | Global timeout in minutes |
+| `--parallel-phases` | Execute independent phases in parallel |
+| `--max-workers MAX_WORKERS` | Maximum workers for parallel execution |
 
-### Reporting & Monitoring
+### Safety and rollback
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--report <path>` | Report output path | `runtime/apply_report.html` |
-| `--report-format` | `html`, `json`, `markdown` | `html` |
-| `--metrics-export` | `none`, `prometheus`, `datadog`, `cloudwatch` | `none` |
-| `--notify <dest>` | Notification destinations | — |
+| Option | Description |
+| --- | --- |
+| `--rollback-strategy` | `none`, `immediate`, `phase_complete`, or `full_rollback` |
+| `--require-approval` | Require explicit approval for destructive work |
+| `--backup-state` | Create a backup before execution |
+| `--validate-dependencies` | Validate dependencies before execution |
 
-### Development & Debugging
+### Reporting
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--verbose` | Verbose output | `false` |
-| `--debug` | Debug-level logging with secret redaction | `false` |
-| `--keep-temp-files` | Keep temporary files after execution | `false` |
-| `--profile` | Enable performance profiling | `false` |
+| Option | Description |
+| --- | --- |
+| `--report` | Output path for the execution report |
+| `--report-format` | Report format |
+| `--metrics-export` | Export metrics to monitoring backends |
+| `--notify` | Send notifications to destinations such as Slack or email |
 
-### Advanced
+### Build execution
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--workspace-dir <path>` | Working directory | `.` |
-| `--state-file <path>` | Custom state file location | — |
-| `--config-override <json>` | JSON configuration override string | — |
-| `--provider-config <path>` | Path to provider configuration file | — |
+| Option | Description |
+| --- | --- |
+| `--build`, `--build-id` | Execute a specific build job |
+| `--delay DELAY` | Seconds between build iterations |
+| `--fail-fast` | Stop on first failure |
+| `--no-output` | Suppress build script output |
 
-## What It Does
+### Debugging and advanced
 
-The apply command orchestrates a multi-phase execution:
-
-1. **Validate** — checks contract syntax and provider configuration
-2. **Plan** — generates the execution plan
-3. **Execute** — runs each phase (create resources, load data, run transforms)
-4. **Report** — generates an execution report
+| Option | Description |
+| --- | --- |
+| `--verbose` | Detailed progress output |
+| `--keep-temp-files` | Keep temporary files |
+| `--workspace-dir` | Custom workspace directory |
+| `--state-file STATE_FILE` | Custom state file location |
+| `--config-override` | Override contract config with JSON |
+| `--provider-config` | Path to provider-specific configuration |
 
 ## Examples
 
-### Local Execution
-
 ```bash
-# Quick local run
 fluid apply contract.fluid.yaml --yes
+fluid apply contract.fluid.yaml --dry-run --verbose
+fluid apply contract.fluid.yaml --env production --rollback-strategy immediate
+fluid apply runtime/plan.json --yes
 ```
 
-### Cloud Deployment
+## Notes
 
-```bash
-# Deploy to GCP
-fluid apply contract.fluid.yaml --provider gcp --env prod
-```
-
-### Preview Without Executing
-
-```bash
-fluid apply contract.fluid.yaml --dry-run
-```
-
-Shows the full execution plan without making any changes.
-
-### Production-Safe Deployment
-
-```bash
-fluid apply contract.fluid.yaml \
-  --require-approval \
-  --backup-state \
-  --rollback-strategy full_rollback \
-  --report-format json \
-  --notify slack://data-team
-```
-
-### CI/CD Pipeline
-
-```bash
-fluid validate contract.fluid.yaml --strict && \
-fluid apply contract.fluid.yaml --yes --report-format json
-```
-
-### Parallel Execution
-
-```bash
-fluid apply contract.fluid.yaml \
-  --parallel-phases \
-  --max-workers 8 \
-  --timeout 60
-```
-
-## Rollback Strategies
-
-| Strategy | Behavior |
-|----------|----------|
-| `none` | No rollback on failure |
-| `immediate` | Roll back the failing phase immediately |
-| `phase_complete` | Let the current phase finish, then roll back |
-| `full_rollback` | Roll back all completed phases |
-
-## Debug Logging and Secret Redaction
-
-When you use `--debug` or write logs to a file with the global `--log-file` option, Forge now scrubs common secret-like values before they are emitted.
-
-Redaction covers common credential shapes such as:
-
-- `password`, `api_key`, `oauth_token`, `private_key`, and similar key/value pairs
-- bearer tokens and JWT-like strings inside formatted log messages
-- nested dictionaries, list payloads, and exception text that contain secret-looking values
-
-This is best-effort hardening for observability and support workflows, not a reason to place raw credentials in contracts, shell history, or command arguments intentionally.
-
-## See Also
-
-- [plan command](./plan.md) — preview changes before applying
-- [verify command](./verify.md) — verify deployment matches contract
-- [Getting Started Guide](/getting-started/) — end-to-end walkthrough
+- The recommended sequence is `validate -> plan -> apply`.
+- For local-first onboarding, `fluid apply contract.fluid.yaml --yes` is the shortest path after a quickstart scaffold.

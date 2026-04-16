@@ -3,8 +3,12 @@
 Deploy data products to Snowflake Data Cloud — databases, schemas, tables, RBAC grants — using the same contract and CLI commands as every other provider.
 
 **Status:** ✅ Production  
-**Version:** 0.7.8  
+**Docs Baseline:** CLI `0.7.9`  
 **Tested Services:** Databases, Schemas, Tables, Warehouses, RBAC Grants
+
+::: warning Compatibility note
+This page preserves some older `0.7.1` examples for backward-compatibility context. Current scaffolds emit `fluidVersion: 0.7.2`, and new orchestration examples should prefer `fluid generate schedule --scheduler airflow`.
+:::
 
 ---
 
@@ -15,7 +19,7 @@ The Snowflake provider turns a FLUID contract into real Snowflake infrastructure
 - ✅ **Plan & Apply** — Databases, schemas, tables, warehouses
 - ✅ **RBAC Compilation** — `fluid policy-compile` generates Snowflake `GRANT` statements from `accessPolicy`
 - ✅ **Sovereignty Validation** — Region constraints enforced before deployment
-- ✅ **Airflow DAG Generation** — `fluid generate-airflow` produces Snowflake-operator DAGs
+- ✅ **Orchestration Generation** — prefer `fluid generate schedule --scheduler airflow` for current docs
 - ✅ **Governance** — Classification, column masking, row-level security, audit labels
 - ✅ **Universal Pipeline** — Same Jenkinsfile as GCP and AWS — zero provider logic
 

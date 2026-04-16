@@ -1,7 +1,11 @@
 # Generating Orchestration Code from Contracts
 
-**Version:** 0.7.1  
+**Docs Baseline:** CLI `0.7.9`  
 **Status:** ✅ Production Ready
+
+::: warning Compatibility note
+This walkthrough preserves older `0.7.1` orchestration snippets for historical context. For current docs and new automation, prefer `fluid generate schedule --scheduler airflow`. `fluid generate-airflow` remains available as a compatibility shortcut.
+:::
 
 ---
 

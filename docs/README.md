@@ -2,218 +2,78 @@
 home: true
 heroImage: /logo.png
 heroText: Fluid Forge
-tagline: Declarative Data Products — Write YAML, Deploy Anywhere.
+tagline: Contract-first data products, from local DuckDB to multi-cloud delivery.
 actions:
-  - text: Get Started in 2 Minutes →
+  - text: Get Started →
     link: /getting-started/
     type: primary
-  - text: View on GitHub
-    link: https://github.com/Agentics-Rising/forge-cli
+  - text: CLI Reference
+    link: /cli/
     type: secondary
 
 features:
-  - title: 🎯 One Contract. Every Cloud.
-    details: Write a single YAML contract and deploy to GCP, AWS, Snowflake, or your laptop. Fluid Forge handles the cloud plumbing — datasets, tables, IAM, monitoring — so you don't have to.
-  
-  - title: 🚀 Zero to Production in Minutes
-    details: "pip install → init → apply → done. No cloud account needed to start. Pre-built blueprints, AI-powered scaffolding, and a local DuckDB provider for instant feedback."
-  
-  - title: 🔄 Pipelines That Write Themselves
-    details: Auto-generate production-ready Airflow DAGs, Dagster graphs, and Prefect flows straight from your contracts. No hand-written orchestration code.
-  
-  - title: 🛡️ Governance from Day One
-    details: Policy-as-code, sovereignty controls, column-level security, data masking, and full audit trails baked in — not bolted on.
-  
-  - title: ☁️ True Multi-Cloud
-    details: Same CLI. Same Jenkinsfile. Same contract. Deploy to GCP (BigQuery), AWS (Athena, Glue), and Snowflake without rewriting a single line.
-  
-  - title: 🧩 Extend Everything
-    details: Build a custom cloud provider in ~40 lines of Python. Plug in any LLM for AI generation. Export to open standards (ODPS, ODCS) for full interoperability.
+  - title: Local First
+    details: Install the CLI, scaffold a project, validate it, and run it locally before you touch cloud credentials.
+  - title: Contract-Driven
+    details: Use one FLUID contract to describe the data product, then plan, test, verify, and publish from the same source of truth.
+  - title: Promoted CLI Surface
+    details: These docs track the current `fluid --help` experience so new users are not sent down stale or deprecated command paths.
+  - title: AI-Optional
+    details: Start with `fluid init` for a quickstart or use `fluid forge` when you want AI-assisted scaffolding and discovery.
+  - title: Multi-Target Delivery
+    details: Build locally with DuckDB, then target GCP, AWS, Snowflake, or standards/export flows when you are ready.
+  - title: Compatibility Aware
+    details: Legacy commands still exist in the docs where they matter, but primary pages lead with the current recommended workflow.
 
-footer: Apache 2.0 Licensed | Developed with ❤️ by DustLabs. Copyright 2025-2026 [Agentics Transformation Pty Ltd]
+footer: Apache 2.0 Licensed | Documentation for the Fluid Forge CLI
 ---
 
-<div class="badges" style="text-align: center; margin-bottom: 2rem;">
-
-[![PyPI version](https://img.shields.io/pypi/v/fluid-forge?color=blue)](https://pypi.org/project/fluid-forge/)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
-[![CLI CI](https://img.shields.io/github/actions/workflow/status/Agentics-Rising/forge-cli/ci.yml?label=CLI%20CI)](https://github.com/Agentics-Rising/forge-cli/actions/workflows/ci.yml)
-
-</div>
-
-## Why Fluid Forge?
-
-Every cloud wants you locked in. Every SDK wants you to rewrite everything when you switch providers. **Fluid Forge says no.**
-
-Write one declarative YAML contract. Deploy it to any cloud. Move between providers in seconds. This is **Infrastructure-as-Code for data engineering** — and it actually works.
-
-<div class="comparison">
-
-::: code-group
-
-```python [❌ The Hard Way — 100+ lines per cloud]
-from google.cloud import bigquery, storage
-
-client = bigquery.Client(project='my-project')
-dataset = bigquery.Dataset(client.dataset('analytics'))
-dataset.location = 'US'
-dataset.description = 'Customer analytics data'
-client.create_dataset(dataset, exists_ok=True)
-
-table_ref = dataset.table('customers')
-schema = [
-    bigquery.SchemaField('id', 'INTEGER', mode='REQUIRED'),
-    bigquery.SchemaField('name', 'STRING', mode='REQUIRED'),
-    bigquery.SchemaField('email', 'STRING', mode='REQUIRED'),
-]
-table = bigquery.Table(table_ref, schema=schema)
-client.create_table(table, exists_ok=True)
-# ... 80 more lines of IAM, monitoring, error handling
-# ... then rewrite everything for AWS and Snowflake
-```
-
-```yaml [✅ Fluid Forge — One contract for every cloud]
-# contract.fluid.yaml
-fluidVersion: "0.7.1"
-kind: DataProduct
-id: analytics.customers
-name: Customer Analytics
-
-metadata:
-  owner: { team: data-engineering }
-
-exposes:
-  - exposeId: customers_table
-    kind: table
-    binding:
-      platform: gcp           # or aws, snowflake, local
-      resource:
-        type: bigquery_table
-        dataset: analytics
-        table: customers
-    contract:
-      schema:
-        - name: id
-          type: INTEGER
-          required: true
-        - name: name
-          type: STRING
-          required: true
-        - name: email
-          type: STRING
-          required: true
-          sensitivity: pii
-```
-
-:::
-
-</div>
-
-Then deploy with one command:
+## Start with the current workflow
 
 ```bash
-fluid apply contract.fluid.yaml --yes
-```
-
-That same contract deploys to GCP, AWS, Snowflake, or runs locally on DuckDB — **zero code changes**.
-
-## Quick Start
-
-```bash
-# Install
 pip install fluid-forge
-
-# Create a project with sample data
+fluid version
+fluid doctor
 fluid init my-project --quickstart
 cd my-project
-
-# Validate and run — no cloud account needed
 fluid validate contract.fluid.yaml
+fluid plan contract.fluid.yaml
 fluid apply contract.fluid.yaml --yes
 ```
 
-That's it. A working data product on your laptop in under 2 minutes — no cloud account, no credit card, no config hell. When you're ready for production, change `platform: local` to `platform: gcp` and run the exact same command.
+This docs site currently tracks:
 
-::: tip Ready to dive deeper?
-[Full Getting Started Guide →](/getting-started/)
-:::
+- CLI release `0.7.9`
+- Scaffolded contract examples using `fluidVersion: 0.7.2`
 
-## Platform Support
+`fluid version` and `fluidVersion` are different things. The first is the CLI release you installed. The second is the schema version inside a contract.
 
-| Platform | Deploy | IAM / RBAC | Airflow Gen | Key Services |
-|----------|--------|-----------|-------------|-------------|
-| **[GCP](/providers/gcp)** | ✅ Production | ✅ | ✅ | BigQuery, GCS, IAM |
-| **[AWS](/providers/aws)** | ✅ Production | ✅ | ✅ | S3, Glue, Athena, IAM |
-| **[Snowflake](/providers/snowflake)** | ✅ Production | ✅ | ✅ | Databases, Schemas, RBAC |
-| **[Local](/providers/local)** | ✅ Production | — | — | DuckDB, CSV, Parquet |
-| **Azure** | 🔜 Planned | 🔜 | 🔜 | Synapse, Data Lake |
+## Optional AI-assisted scaffolding
 
-All cloud providers use the **same CLI commands** and the **same CI/CD pipeline** — see [Universal Pipeline](/walkthrough/universal-pipeline).
+```bash
+fluid forge
+fluid forge --domain retail
+fluid forge --llm-provider openai --llm-model gpt-4o-mini
+```
 
-## What's In the Box
+Use `fluid forge` when you want discovery, memory, and LLM-guided scaffolding. Use `fluid init` when you want the fastest deterministic quickstart.
 
-| Feature | Description |
-|---------|-------------|
-| **40+ CLI commands** | `validate`, `plan`, `apply`, `verify`, `generate-airflow`, `export`, `policy-check`, and more |
-| **Blueprints** | Pre-built templates: `customer-360`, `enterprise-snowflake`, analytics starters |
-| **AI Copilot** | `fluid forge --mode copilot` — adaptive interview, discovery, validation/repair, then scaffolding |
-| **Governance Engine** | Access policies, sovereignty controls, data classification, compliance checks |
-| **Orchestration Export** | Generate Airflow DAGs, Dagster pipelines, and Prefect flows from contracts |
-| **Open Standards** | Export to ODPS v4.1, ODCS v3.1, and data mesh catalogs |
-| **Custom Providers** | Build your own provider with ~40 lines of Python using the [Provider SDK](/providers/custom-providers) |
-| **Universal CI/CD** | One Jenkinsfile that works for every provider — [zero branching logic](/walkthrough/universal-pipeline) |
+## Promoted command groups
 
-## Who Uses Fluid Forge?
+| Group | Commands |
+| --- | --- |
+| Core Workflow | `init`, `forge`, `validate`, `plan`, `apply` |
+| Generate | `generate transformation`, `generate schedule`, `generate ci`, `generate standard` |
+| Integrations | `publish`, `market`, `import` |
+| Quality & Governance | `policy-check`, `diff`, `test`, `verify` |
+| Utilities | `config`, `split`, `bundle`, `auth`, `doctor`, `providers`, `version` |
 
-| Role | How Fluid Forge Helps |
-|------|----------------------|
-| **Data Engineers** | Build production pipelines without wrestling with cloud SDKs |
-| **Analytics Teams** | Create self-service data products with governance built-in |
-| **Platform Teams** | Standardize data infrastructure across the entire org |
-| **Data Scientists** | Deploy ML feature pipelines with proper contracts and testing |
+## Where to go next
 
-## Next Steps
+- [Getting Started](/getting-started/) for the local-first path
+- [CLI Reference](/cli/) for the promoted command surface
+- [Providers](/providers/) for platform-specific guidance
+- [Walkthroughs](/walkthrough/local) for end-to-end examples
 
-<div class="next-steps">
-
-**New here?** Start with the [Getting Started Guide](/getting-started/) — 2 minutes, no cloud account needed.
-
-**Want a hands-on example?** [Local Walkthrough](/walkthrough/local) — build a Netflix analytics pipeline from scratch.
-
-**Going to production?** Pick your cloud: [GCP](/providers/gcp) · [AWS](/providers/aws) · [Snowflake](/providers/snowflake)
-
-**Setting up CI/CD?** [Universal Pipeline](/walkthrough/universal-pipeline) — one config file for every provider.
-
-**Want to contribute?** [Contributing Guide](/contributing) · [GitHub](https://github.com/Agentics-Rising/forge-cli)
-
-</div>
-
----
-
-<div class="about-section" style="text-align: center; padding: 2rem 0 1rem; opacity: 0.85;">
-
-**Developed with pride by [DustLabs](https://dustlabs.co.za/)** ·
-Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://fluidhq.io) · Open source under [Apache 2.0](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
-
-</div>
-
-<style>
-.badges img {
-  display: inline-block;
-  margin: 0 4px;
-}
-
-.next-steps {
-  background: var(--c-bg-light);
-  border-left: 4px solid var(--c-brand);
-  padding: 1.5rem;
-  margin: 2rem 0;
-  border-radius: 4px;
-}
-
-.next-steps p {
-  margin: 0.75rem 0;
-  font-size: 1.05rem;
-}
-</style>
+Compatibility note:
+`fluid generate-airflow` is still available, but primary docs now lead with `fluid generate schedule --scheduler airflow`.

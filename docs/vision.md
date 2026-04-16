@@ -1,51 +1,36 @@
 ---
 title: Vision & Roadmap
-description: The philosophy behind Fluid Forge and where we're headed.
+description: Why Fluid Forge exists and how the current docs align to the modern CLI.
 ---
 
 # Vision & Roadmap
 
-## The Problem
+Fluid Forge treats data products as contracts first, execution second.
 
-Data engineering is too hard. Building a production analytics pipeline today means:
+## What problem it solves
 
-- **Hundreds of lines of cloud SDK boilerplate** per provider
-- **Deep expertise** in BigQuery *and* Athena *and* Snowflake APIs
-- **Manually crafting IAM policies**, then rewriting them for each cloud
-- **Copy-paste infrastructure** with no reusable abstractions
-- **Weeks of setup** before a single row of data flows
+Most teams still build data products with a pile of provider-specific scripts, IAM glue, orchestration code, and validation logic. That slows down delivery and makes cloud changes expensive.
 
-For every new data product, teams repeat the same laborious process. The industry has solved this for infrastructure (Terraform), containers (Kubernetes), and configuration (Ansible). **Data products deserve the same treatment.**
-
----
-
-## The Solution
-
-Fluid Forge introduces **Data Products as Code** — a declarative approach where you write a YAML contract describing *what* you want, and the engine figures out *how* to build it.
+Fluid Forge shifts that work into one contract-driven workflow:
 
 ```yaml
-# One contract. Every cloud.
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: analytics.customers
 name: Customer Analytics
 
 metadata:
-  owner: { team: data-engineering }
+  owner:
+    team: data-engineering
 
 exposes:
   - exposeId: customers_table
     kind: table
     binding:
-      platform: gcp            # Change to aws or snowflake — same contract
-      resource:
-        type: bigquery_table
+      platform: gcp
+      location:
         dataset: analytics
         table: customers
-        partitioning:
-          type: time
-          field: created_at
-          granularity: DAY
     contract:
       schema:
         - name: id
@@ -56,137 +41,96 @@ exposes:
           sensitivity: pii
 ```
 
-Behind the scenes, Fluid Forge:
-- Creates datasets, tables, and schemas with optimal configuration
-- Sets up IAM roles, service accounts, and RBAC
-- Generates Airflow DAGs for orchestration
-- Validates schema compatibility and detects configuration drift
-- Enforces governance policies and data sovereignty rules
+The contract becomes the source of truth for validation, planning, execution, verification, testing, and publishing.
 
-All from **one contract file**.
+## Core principles
 
----
+### Declarative first
 
-## Core Principles
+Describe the desired outcome. Let the CLI validate and execute it consistently.
 
-### 1. Declarative First
+### Local first
 
-You declare the desired state. Fluid Forge plans the execution, handles errors, ensures idempotency, and converges toward that state. No imperative scripts. No manual steps.
-
-### 2. Developer Experience
+The recommended docs path starts locally:
 
 ```bash
-pip install fluid-forge          # Install
-fluid init my-project --quickstart  # Scaffold
-fluid apply contract.fluid.yaml --yes  # Deploy
+fluid init my-project --quickstart
+cd my-project
+fluid validate contract.fluid.yaml
+fluid plan contract.fluid.yaml
+fluid apply contract.fluid.yaml --yes
 ```
 
-If a workflow isn't delightful, it's not done. Zero boilerplate, maximum productivity.
+### AI is optional
 
-### 3. Multi-Cloud Native
+Use deterministic scaffolding with `fluid init`, or opt into guided generation with:
 
-GCP, AWS, and Snowflake are production-ready today. Azure and Databricks are on the roadmap. The key insight: **same contract, same commands, different cloud.** Switching providers is a one-line change.
+```bash
+fluid forge
+fluid forge --domain finance
+```
 
-### 4. Production Ready
+### Same contract, different targets
 
-Enterprise features out of the box:
-- Built-in governance and compliance (GDPR, SOC2)
-- Automated testing and contract validation
-- Drift detection and remediation
-- Comprehensive audit trails
-- Multi-environment support (dev → staging → prod)
+Provider changes should not force a new mental model. The docs keep the same command language across local, GCP, AWS, and Snowflake.
 
-### 5. Open and Extensible
-
-- **Open source** (Apache 2.0) and community-driven
-- **Custom providers** — build one in ~40 lines of Python
-- **LLM integration** — plug in any AI model for copilot-powered generation
-- **Open standards** — export to ODPS v4.1, ODCS v3.1, data mesh catalogs
-
----
-
-## The Data Product Lifecycle
-
-Fluid Forge covers the full journey:
+## Lifecycle
 
 ### Design
 
 ```bash
-fluid wizard                              # Interactive guided setup
-fluid forge --mode copilot                # AI-powered generation
-fluid blueprint list --category analytics # Browse templates
+fluid init my-project --quickstart
+fluid forge --llm-provider openai --llm-model gpt-4o-mini
 ```
 
-### Validate
+### Validate and govern
 
 ```bash
-fluid validate contract.yaml              # Schema + semantic checks
-fluid contract-tests contract.yaml        # Contract test suites
-fluid policy-check contract.yaml          # Governance compliance
+fluid validate contract.fluid.yaml
+fluid policy-check contract.fluid.yaml
 ```
 
 ### Plan
 
 ```bash
-fluid plan contract.yaml                  # Preview changes (no side effects)
-fluid viz-graph contract.yaml             # Visualize data lineage
-fluid diff contract.yaml --env prod       # Compare environments
+fluid plan contract.fluid.yaml
+fluid diff contract.fluid.yaml --env prod
 ```
 
 ### Deploy
 
 ```bash
-fluid apply contract.yaml --yes           # Execute against target provider
-fluid verify contract.yaml                # Post-deployment verification
-fluid generate-airflow contract.yaml      # Generate orchestration
+fluid apply contract.fluid.yaml --yes
+fluid verify contract.fluid.yaml
+fluid generate schedule --scheduler airflow
 ```
 
 ### Operate
 
 ```bash
-fluid diff contract.yaml --exit-on-drift  # Monitor drift in CI/CD
-fluid policy-apply policy.yaml            # Enforce governance changes
-fluid export-opds contract.yaml           # Export to open data standards
+fluid test contract.fluid.yaml
+fluid publish contract.fluid.yaml
+fluid market --search "customer analytics"
 ```
 
----
+## Versioning in the docs
 
-## How It Compares
+- Current CLI release baseline: `0.7.9`
+- Current scaffolded contract examples: `fluidVersion: 0.7.2`
 
-| DevOps Concept | Fluid Forge Equivalent |
-|----------------|------------------------|
-| Infrastructure as Code (Terraform) | **Data Products as Code** |
-| GitOps | **DataOps — contracts in version control** |
-| CI/CD Pipelines | **Automated data deployments** |
-| Policy as Code (OPA/Sentinel) | **Governance as Code** |
-| Observability | **Drift detection + contract verification** |
-
----
+That split is intentional. The CLI release and the contract schema version move on related but different timelines.
 
 ## Roadmap
 
-| Milestone | What's Included | Timeline |
-|-----------|----------------|----------|
-| **v0.7.1** (current) | GCP + AWS + Snowflake production, Airflow/Dagster/Prefect export, governance engine | ✅ Released |
-| **Azure Provider** | Synapse Analytics, Data Lake Gen2, Azure Functions | Q3 2026 |
-| **Databricks Provider** | Databricks SQL, Delta Lake, MLflow, Unity Catalog | Q4 2026 |
-| **Data Marketplace v2** | Publish, discover, and compose data products across teams | 2027 |
+| Milestone | Notes |
+| --- | --- |
+| `0.7.9` docs baseline | Promoted CLI surface, local-first onboarding, `forge` refresh |
+| `0.8.x` | Azure-related provider work remains on the roadmap |
+| `0.9.x` | Databricks and broader platform integrations remain future work |
 
----
+## Get involved
 
-## Get Involved
-
-Fluid Forge is open source and built in the open.
-
-- **Star & Fork** — [github.com/Agentics-Rising/forge-cli](https://github.com/Agentics-Rising/forge-cli)
-- **Report Issues** — [Issue Tracker](https://github.com/Agentics-Rising/forge-cli/issues)
-- **Contribute** — [Contributing Guide](/contributing)
-- **Discussions** — [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions)
-
-## Ready to Build?
-
-**[Get Started →](/getting-started/)**
-
----
-
-<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://fluidhq.io">Agentics Transformation Pty Ltd</a> · Open source under Apache 2.0</p>
+- [Getting Started](/getting-started/)
+- [CLI Reference](/cli/)
+- [Providers](/providers/)
+- [Contributing](/contributing)

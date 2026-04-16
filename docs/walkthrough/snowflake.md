@@ -21,9 +21,13 @@ For shared environments, assume the team is using explicit environment-specific 
 
 ### Roles
 
-- **Data engineer** uses copilot mode to scaffold the first draft from local SQL, sample data, and a short README.
+- **Data engineer** uses `fluid forge` to scaffold the first draft from local SQL, sample data, and a short README.
 - **Platform engineer** reviews Snowflake-specific deployment choices, RBAC, retention, and policy outputs.
 - **Reviewer** signs off on the business shape and the deployment impact using the contract diff plus plan output.
+
+::: warning Syntax note
+This walkthrough now treats `fluid forge` as the public entry point. Older `fluid forge --mode copilot` examples are historical only.
+:::
 
 ---
 
@@ -41,16 +45,16 @@ customer-orders/
 └── README.md
 ```
 
-Those files are enough for copilot mode to infer table names, column types, Snowflake hints, and business vocabulary before generation.
+Those files are enough for `fluid forge` to infer table names, column types, Snowflake hints, and business vocabulary before generation.
 
 ---
 
 ## Step 2: Data Engineer Drafts The Project
 
-The data engineer starts with discovery-enabled copilot mode:
+The data engineer starts with discovery-enabled `fluid forge`:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --provider snowflake \
   --discovery-path ./data \
   --llm-provider openai \
@@ -83,7 +87,7 @@ feat: add Snowflake weekly revenue data product
 ```md
 This PR adds the first FLUID contract for the Snowflake weekly revenue mart used by finance reporting.
 
-I used `fluid forge --mode copilot` with local discovery against the repo's SQL and sample data, then tightened the generated contract by hand.
+I used `fluid forge` with local discovery against the repo's SQL and sample data, then tightened the generated contract by hand.
 
 Changes in this PR:
 - add `contract.fluid.yaml`

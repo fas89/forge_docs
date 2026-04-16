@@ -3,8 +3,12 @@
 Deploy data products to Amazon Web Services — S3, Glue, Athena — using the same contract and CLI commands as every other provider.
 
 **Status:** ✅ Production  
-**Version:** 0.7.1  
+**Docs Baseline:** CLI `0.7.9`  
 **Tested Services:** S3, Glue Data Catalog, Athena, IAM
+
+::: warning Compatibility note
+This page preserves some older `0.7.1` contract snippets for backward-compatibility context. Current scaffolds emit `fluidVersion: 0.7.2`, and orchestration guidance now prefers `fluid generate schedule --scheduler airflow`.
+:::
 
 ---
 
@@ -15,7 +19,7 @@ The AWS provider turns a FLUID contract into real cloud infrastructure:
 - ✅ **Plan & Apply** — S3 buckets, Glue databases/tables, Athena workgroups
 - ✅ **IAM Policy Compilation** — `fluid policy-compile` generates S3, Glue, and Athena IAM bindings from `accessPolicy` grants
 - ✅ **Sovereignty Validation** — Region allow/deny lists enforced before deployment
-- ✅ **Airflow DAG Generation** — `fluid generate-airflow` produces AWS-operator DAGs
+- ✅ **Orchestration Generation** — prefer `fluid generate schedule --scheduler airflow` for current docs and automation
 - ✅ **Governance** — Classification, column masking, row-level policies, audit labels
 - ✅ **Universal Pipeline** — Same Jenkinsfile as GCP and Snowflake — zero provider logic
 

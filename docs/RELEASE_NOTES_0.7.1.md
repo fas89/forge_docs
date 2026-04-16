@@ -1,5 +1,9 @@
 # Fluid Forge v0.7.1 - Multi-Provider Export Release
 
+::: warning Archived release notes
+This page is preserved for historical context. The primary docs baseline now tracks CLI `0.7.9`, and current scaffolded contract examples use `fluidVersion: 0.7.2`.
+:::
+
 **Release Date:** January 30, 2026  
 **Status:** ✅ Production Ready
 

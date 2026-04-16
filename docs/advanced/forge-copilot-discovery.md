@@ -1,369 +1,82 @@
-# Forge Copilot Discovery Guide
+# Forge Discovery Guide
 
-This guide explains, step by step, how `fluid forge --mode copilot` discovers local context inside the current adaptive copilot flow before it generates a production-ready FLUID contract.
+This guide explains how the current `fluid forge` flow discovers local context before it scaffolds a project.
 
-## What Discovery Is For
+## Current public entry point
 
-Discovery gives copilot grounded local context so it can generate a better contract on the first attempt and ask fewer follow-up questions.
+Use `fluid forge`, not the older `fluid forge --mode copilot` examples that may still appear in archived material.
 
-Instead of asking the LLM to guess your data shape, Forge scans local assets and sends a metadata summary such as:
+Examples:
 
-- column names
-- inferred column types
-- SQL table references
-- existing provider hints
-- existing FLUID contract conventions
+```bash
+fluid forge
+fluid forge --discovery-path ./data
+fluid forge --discovery-path ../shared-schemas
+fluid forge --no-discover
+```
 
-The goal is simple: better contract generation with less hallucination and less repetitive questioning.
+## What discovery is for
 
-## Step 1: Install Copilot Discovery Helpers
+Discovery gives Forge grounded local context so it can:
 
-Basic copilot works with the built-in LLM adapters alone. If you also want schema-aware discovery for Parquet and Avro files, install the optional discovery helpers:
+- ask fewer follow-up questions
+- infer useful provider or domain hints
+- summarize local schemas without sending raw rows
+- generate a stronger first contract draft
+
+## What Forge scans
+
+Forge may inspect local:
+
+- SQL files
+- dbt projects
+- Terraform files
+- existing FLUID contracts
+- README headings
+- sample CSV, JSON, JSONL, Parquet, and Avro files
+
+## Optional helpers
+
+If you want richer Parquet and Avro schema inspection, install the optional discovery helpers:
 
 ```bash
 pip install "fluid-forge[copilot]"
 ```
 
-That extra installs:
+That adds local readers such as `pyarrow` and `fastavro`. Without them, Forge can still discover files, but schema extraction is more limited.
 
-- `pyarrow` for Parquet schema inspection
-- `fastavro` for Avro schema inspection
+## Privacy boundary
 
-You can also install them directly:
+Discovery is metadata-first.
 
-```bash
-pip install pyarrow fastavro
-```
-
-If you skip these packages:
-
-- CSV, JSON, JSONL, SQL, dbt, Terraform, README, and FLUID contract discovery still work
-- Parquet and Avro files are still noticed
-- Forge just cannot extract their schema metadata
-
-## Step 2: Point Forge At The Right Files
-
-Forge always scans the current workspace. Use `--discovery-path` when the most useful inputs live elsewhere or in a focused subdirectory.
-
-Examples:
-
-```bash
-fluid forge --mode copilot --discovery-path ./data
-fluid forge --mode copilot --discovery-path ../shared-schemas
-```
-
-Use `--no-discover` if you want copilot to rely only on explicit context and whatever the user answers during the interview.
-
-## Step 3: Understand What Forge Scans
-
-Forge scans local files and directories and classifies them into discovery buckets.
-
-### SQL Files
-
-Forge extracts:
-
-- referenced table names
-- line counts
-
-This helps copilot reuse naming conventions and source references already in the repo.
-
-### dbt Projects
-
-Forge extracts:
-
-- project name
-- profile name
-- model paths
-- provider hints from config text
-
-### Terraform Files
-
-Forge extracts:
-
-- resource types
-- resource names
-- provider hints such as GCP, AWS, or Snowflake
-
-### README Files
-
-Forge extracts:
-
-- headings
-- approximate word count
-
-It does not send the full README body.
-
-### Existing FLUID Contracts
-
-Forge extracts:
-
-- FLUID version
-- contract kind
-- contract id and name
-- build ids
-- expose ids
-- provider bindings
-
-This helps copilot stay consistent with the patterns already used in the codebase.
-
-### Sample Data Files
-
-Forge supports these local sample formats:
-
-- CSV
-- JSON
-- JSONL
-- Parquet
-- Avro
-
-## Step 4: What Forge Extracts From Each Sample Format
-
-### CSV
-
-Forge reads a small number of rows locally and derives:
+Forge sends distilled summaries such as:
 
 - column names
-- inferred scalar types such as `integer`, `number`, `boolean`, `date`, `datetime`, `string`
+- inferred scalar types
+- referenced tables
+- provider hints
+- existing contract ids and expose ids
 
-Forge does not send the row values themselves.
-
-### JSON And JSONL
-
-Forge reads a bounded local sample and derives:
-
-- top-level keys
-- inferred types from observed values
-
-It supports object arrays, JSONL rows, and simple columnar JSON shapes.
-
-Discovery is best-effort here:
-
-- UTF-8 BOM markers are ignored for JSON and JSONL inputs
-- empty `.json` files are treated as empty samples
-- malformed or unreadable JSON or JSONL files produce a discovery warning and do not abort copilot
-
-That means Forge can keep using the rest of the workspace context even if one sample file is messy.
-
-### Parquet
-
-Forge inspects Parquet schema metadata locally.
-
-When `pyarrow` is available, Forge extracts:
-
-- column names
-- logical types from the Parquet schema
-- row count from file metadata when available
-
-When `duckdb` is available but `pyarrow` is not, Forge can still infer:
-
-- column names
-- approximate logical types from `DESCRIBE read_parquet(...)`
-
-Forge does not read and upload Parquet rows to the LLM.
-
-### Avro
-
-Forge inspects Avro schema metadata locally.
-
-When `fastavro` is available, Forge extracts:
-
-- field names
-- top-level field types
-- logical types such as `date` and `timestamp`
-
-When the classic `avro` package is available, Forge can also read the writer schema.
-
-Forge does not upload Avro records to the LLM.
-
-## Step 5: Privacy Boundary
-
-This is the most important rule in the discovery pipeline:
-
-Forge sends metadata summaries only.
-
-Forge does **not** send:
+Forge does not send:
 
 - raw sample rows
 - full file contents
-- bearer tokens
+- secrets
 - API keys
 - passwords
-- service-account JSON blobs
 
-Examples of data that may be sent:
+## How discovery affects generation
 
-- `"columns": {"customer_id": "integer", "created_at": "datetime"}`
-- `"referenced_tables": ["raw.orders", "raw.customers"]`
+Discovery is combined with:
 
-Examples of data that are not sent:
+- CLI flags
+- current-run answers
+- optional project memory
+- built-in defaults
 
-- actual customer email addresses from CSV rows
-- full SQL statements
-- full README paragraphs
-- raw Parquet or Avro payload data
+That combined context shapes the contract draft and any follow-up prompts.
 
-## Step 6: How Discovery Feeds Generation
+## Related guides
 
-After discovery, Forge builds a normalized `DiscoveryReport` and sends that metadata to the selected LLM adapter together with:
-
-- your current-run answers and interview summary
-- project-scoped memory when `runtime/.state/copilot-memory.json` exists and memory is enabled
-- the local capability matrix
-- a seed FLUID contract
-- repair feedback from any previous failed attempt
-
-In interactive copilot mode, discovery also affects the interview itself:
-
-- if discovery is strong, Forge may ask nothing else
-- if discovery is thin, Forge may ask a small number of focused follow-up questions
-- current-run answers still take precedence over discovery when they conflict
-
-Built-in provider discovery is also best-effort in this stage:
-
-- Forge tries to inspect the locally available `local`, `gcp`, `aws`, and `snowflake` providers
-- if one of those checks fails locally, Forge warns and continues instead of aborting copilot
-- if provider verification is incomplete, Forge falls back to safe built-in provider defaults for planning
-- you can still review or override the provider later in the generated project
-
-Sample-file discovery follows the same best-effort rule:
-
-- Forge keeps scanning when a CSV, JSON, or JSONL sample cannot be summarized
-- discovery warnings are carried forward so you can diagnose the noisy file later
-- successfully summarized files still influence copilot generation in the same run
-
-The LLM is asked to return:
-
-- a full FLUID contract
-- README content
-- any extra text files needed for scaffolding
-- template/provider recommendations
-
-If saved project memory and the current discovery report conflict, Forge prefers the current discovery report.
-
-At a high level, precedence is:
-
-1. explicit CLI flags and current-run answers
-2. current discovery results
-3. saved project memory
-4. safe defaults
-
-## Step 7: Validation And Repair
-
-Once the LLM returns a draft, Forge validates it locally.
-
-Validation checks include:
-
-- FLUID schema validation
-- supported template name
-- supported provider name
-- provider/build engine compatibility
-- required build fields
-- required expose bindings
-
-If validation fails:
-
-1. Forge collects the validation errors
-2. sends those errors back to the LLM
-3. asks for a repaired contract
-4. retries up to 3 total attempts
-
-If the interactive run still fails because the business intent is too ambiguous, Forge can ask one final clarification round and then retry once more.
-
-If all attempts fail, Forge exits non-zero and writes no project files.
-
-## Step 8: Scaffolding Only After Success
-
-If validation succeeds, Forge uses the validated contract as the source of truth and then writes:
-
-- `contract.fluid.yaml`
-- `README.md`
-- `requirements.txt`
-- provider config stubs
-
-## Related Guide
-
-To see how successful runs can influence later copilot generations, see [Forge Copilot Memory Guide](./forge-copilot-memory.md).
-- helper scripts
-- any additional safe text files returned by copilot
-
-This means downstream commands like these start from a validated contract:
-
-```bash
-fluid validate contract.fluid.yaml
-fluid plan contract.fluid.yaml --out runtime/plan.json
-fluid apply contract.fluid.yaml --yes
-fluid execute contract.fluid.yaml
-```
-
-## Step 9: Typical Commands
-
-OpenAI with focused discovery:
-
-```bash
-export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot \
-  --llm-provider openai \
-  --llm-model gpt-4o-mini \
-  --discovery-path ./data
-```
-
-Ollama with local discovery:
-
-```bash
-export OLLAMA_HOST=http://localhost:11434
-fluid forge --mode copilot \
-  --llm-provider ollama \
-  --llm-model llama3.1 \
-  --llm-endpoint http://localhost:11434/v1/chat/completions \
-  --discovery-path ./samples
-```
-
-## Step 10: Troubleshooting
-
-### Parquet files are discovered but columns are empty
-
-Install one of these local readers:
-
-```bash
-pip install pyarrow
-```
-
-Or:
-
-```bash
-pip install duckdb
-```
-
-### Avro files are discovered but fields are empty
-
-Install:
-
-```bash
-pip install fastavro
-```
-
-Or:
-
-```bash
-pip install avro
-```
-
-### I don’t want Forge to scan my workspace
-
-Use:
-
-```bash
-fluid forge --mode copilot --no-discover
-```
-
-### I only want a specific subdirectory scanned
-
-Use:
-
-```bash
-fluid forge --mode copilot --discovery-path ./exact-folder
-```
-
-## Related Guides
-
-- [Built-in and custom LLM agents](./custom-llm-agents.md)
+- [Forge memory guide](./forge-copilot-memory.md)
+- [CLI reference for `fluid forge`](/cli/forge.md)
