@@ -305,6 +305,27 @@ raise ProviderInternalError(f"Unexpected API response: {status_code}")
 - Log context before raising: `self.err_kv(evt="table_missing", table="orders")`
 - Capture partial progress in `ApplyResult.results` even when something fails
 
+### Typed errors operators see
+
+The agent layer raises a separate, finer-grained typed-error hierarchy
+when LLM calls fail. These are distinct from the `ProviderError` /
+`ProviderInternalError` shown above (which are for infrastructure
+providers); they're for callers that drive a copilot run and need to
+distinguish rate-limits from context overflow from auth failures.
+Operators may see them in CLI output when something goes wrong:
+
+| Class | When it fires |
+|---|---|
+| `RateLimitError` | Provider returned 429 (or 5xx with `Retry-After`). The retry envelope honors the server-supplied `retry_after` instead of fixed exponential backoff. |
+| `ContextOverflowError` | Pre-flight token check refused the prompt, or provider returned a context-length error. **Non-retryable** — the agent loop must compact before retrying. |
+| `ProviderTimeoutError` | HTTP read/connect timeout. Retryable with backoff. |
+| `ProviderAuthError` | 401/403 response. Non-retryable — surfaces immediately so users fix their key. |
+| `ProviderServerError` | Transient 5xx without a `Retry-After`. Retryable with exponential backoff. |
+| `SchemaValidationError` | LLM returned output that failed Pydantic / JSON-schema validation. The agent loop routes corrective feedback to the LLM instead of retrying the same prompt. |
+| `ToolValidationError` | A tool call's args didn't match the tool's input schema. |
+
+See the [Typed Errors reference](/forge_docs/advanced/typed-errors.md) for what each class carries, the corrective-feedback flow, and the SECURITY_REVIEW S-013 invariant that scrubs raw exception text before it round-trips into the LLM context.
+
 ## Testing Your Provider
 
 ### Unit Tests for `plan()`

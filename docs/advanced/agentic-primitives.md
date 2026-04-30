@@ -184,6 +184,53 @@ When the running total exceeds the limit, the forge aborts with
 `CostLimitExceeded($X.XX > $Y.YY)`. Defends against runaway
 agentic runs from blowing through your budget.
 
+## Token-budget pre-flight & compaction
+
+Before every staged LLM call, the agent layer counts the system + user
+prompt against the model's context window and refuses prompts that
+won't fit. If you submit something already too big, the legacy path
+would eat a 4xx + a useless retry storm; pre-flight raises
+`ContextOverflowError` instead, which the
+[typed-error retry envelope](typed-errors.md) treats as
+non-retryable so it surfaces immediately.
+
+The token counter is the pure-Python `len(text) / 3.5` heuristic —
+slightly over-estimating so the bias is "fail fast", not "bill the
+user for a doomed call". The CLI does NOT ship a Rust-extension
+tokenizer; modern context windows are 128K–1M tokens and the
+~10–20% heuristic error is far below the precision required to make
+a different decision.
+
+When the multi-turn agent loop runs longer than `FLUID_AGENT_COMPACT_AFTER`
+iterations (default `6`), middle messages get compacted to keep
+total tokens under the budget. Three strategies:
+
+| Strategy | Set via | Behaviour |
+|---|---|---|
+| `truncate` (default) | `FLUID_COMPACTION_STRATEGY=truncate` (or unset) | Char-aware truncation that preserves head + last-N tail messages, clips middle text content, and shrinks `tool_use` argument blobs into a structured `_truncated/_preview/_total_chars` marker. Tool *names* stay visible so the LLM still knows what it called. |
+| `summarize` | `FLUID_COMPACTION_STRATEGY=summarize` | LLM-backed compression. Calls your provider's fast tier (Haiku for Anthropic, `gpt-4.1-nano` for OpenAI, `gemini-2.5-flash` for Gemini) once per compaction trigger via `LlmProvider.build_request` + `httpx`. No new SDK dependencies — reuses the same HTTP shape, headers, and credential resolution as the main run. |
+| `hybrid` | `FLUID_COMPACTION_STRATEGY=hybrid` | Truncate first, then summarize the truncated middle if a summarizer is configured. Useful for very long agent loops where naive truncation alone discards too much context. |
+
+The summarizer is wired into `run_copilot_agent_loop` automatically
+when you enable it — no extra setup. Worst-case extra cost is one
+fast-tier call per long agent loop. Synthetic transcripts compress
+~5 messages of tool-call/result bytes into a 3–5-sentence English
+summary that preserves the user's goal, the tools called, and the
+agent's current decision state.
+
+<iframe
+  src="/forge_docs/reels/compaction-and-warnings.html"
+  width="100%"
+  height="540"
+  style="border: 1px solid #232a3d; border-radius: 12px; max-width: 1100px;"
+  loading="lazy"
+  title="Compaction strategies + capability warnings walkthrough">
+</iframe>
+
+The compaction layer is provider-agnostic — you can plug your own
+`Callable[[str], str]` summarizer if the default fast-tier route
+isn't what you want.
+
 ## CriticAgent
 
 Heuristic (LLM-free) reviewer between staged outputs.

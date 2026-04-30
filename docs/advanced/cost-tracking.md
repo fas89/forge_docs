@@ -125,6 +125,21 @@ The counter increments on two paths:
 Ollama is special-cased: its `(0, 0)` baseline is legitimate
 (local compute, no token counts) so 0/0 calls there don't flag.
 
+::: tip Streaming runs now report accurate usage
+Pre-fix, every SSE-streamed call landed on path #2 above because
+the iterator discarded the terminal `usage` event. The footer was
+the *default* state for any user with `FLUID_LLM_STREAMING=1`.
+
+The provider classes now extract token usage from the SSE wire on
+all four supported providers (OpenAI's terminal usage chunk,
+Anthropic's `message_start` + `message_delta` accumulation,
+Gemini's `usageMetadata`, Ollama's OpenAI-compatible final chunk
+on Ollama 0.3.x+) and stash it in a thread-local that
+`BaseStageAgent._call_once` reads after the streaming context
+exits. Cost summaries on streamed runs now match the blocking-path
+numbers.
+:::
+
 The counter resets per run. `fluid forge data-model` calls
 `reset_run_tracker()` at start so the summary reflects only the
 current invocation.
@@ -169,6 +184,19 @@ get_run_tracker().record_call(
     output_tokens=int(usage.get("output_tokens", 0) or 0),
 )
 ```
+
+::: tip Anthropic prompt-cache tokens are visible in the breakdown
+On Anthropic, the `usage` block also carries `cache_read_input_tokens`
+and `cache_creation_input_tokens` (and Gemini emits
+`cachedContentTokenCount` for its context-cache feature). When you
+run a multi-stage pipeline (`fluid forge data-model from-intent`) the
+system prompt is identical across stages, so the cache hit rate tends
+to be 80–90% on calls 2..N. Concretely: a 9-stage Anthropic run that
+would have charged for 36K input tokens at full rate often comes in
+around 7K equivalent input-token cost — the discount shows up in the
+per-call cost figures because the price table maps cache-read tokens
+to the discounted rate.
+:::
 
 The tracker is a module-level singleton because it has to be
 written from threads (parallel-physical fan-out runs three

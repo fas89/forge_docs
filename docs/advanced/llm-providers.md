@@ -18,10 +18,10 @@ fluid forge data-model from-intent intent.yaml -o customer_orders.fluid.yaml
 
 | Provider | Default / common model | Notes |
 | --- | --- | --- |
-| Anthropic | `claude-sonnet-4-6` | Tool-forced structured output and provider-native prompt caching |
-| OpenAI | `gpt-4.1-mini` | Strict JSON Schema output where available; seed support. Tiered runs use `gpt-4.1` for deep logical modeling. |
+| Anthropic | `claude-sonnet-4-6` | Tool-forced structured output and provider-native prompt caching. Streamed runs report accurate token usage in cost summaries (was previously "missing usage" on every streamed call). |
+| OpenAI | `gpt-4.1-mini` | Strict JSON Schema output where available; seed support. Tiered runs use `gpt-4.1` for deep logical modeling. Set `FLUID_OPENAI_STRICT_SCHEMA=1` to harden the response-format schema for `gpt-4o`/`gpt-4.1`/o-series models that reject permissive nested objects. |
 | Gemini | `gemini-2.5-pro` | Uses Gemini response schema where suitable and validator repair when needed |
-| Ollama | `FLUID_OLLAMA_MODEL` such as `gemma4:latest` | Local-only; JSON mode is model-gated |
+| Ollama | `FLUID_OLLAMA_MODEL` such as `gemma4:latest` | Local-only; JSON mode is model-gated. Capability + token-budget catalogs cover `gemma` 1–4, `qwen3-coder`, `qwen3`, `qwen2.5`, `llama3.1`/`3.2`/`3.3`, `mistral`, `mixtral`, `deepseek`, `phi`. See [Capability Warnings](capability-warnings.md) for tool-use accuracy notes per family. |
 | Azure OpenAI | `FLUID_AZURE_DEPLOYMENT` | OpenAI-compatible wire shape with deployment names |
 
 Inspect the active catalog with:
@@ -79,6 +79,8 @@ fluid forge data-model from-intent intent.yaml \
 
 ## Environment variables
 
+### Provider + credentials
+
 | Env var | Purpose |
 | --- | --- |
 | `FLUID_LLM_PROVIDER` | Active provider for the run |
@@ -90,6 +92,24 @@ fluid forge data-model from-intent intent.yaml \
 | `OLLAMA_HOST` | Ollama endpoint; local addresses only |
 | `FLUID_OLLAMA_MODEL` | Ollama model name |
 
+### Agent-loop tuning
+
+| Env var | Purpose |
+| --- | --- |
+| `FLUID_AGENT_COMPACT_AFTER` | Iteration count after which the multi-turn agent loop compacts older tool results to stay under the model's context window. Default `6`. Set to a higher number for long-context Anthropic / Gemini runs; lower for tight-context Ollama models. |
+| `FLUID_COMPACTION_STRATEGY` | `truncate` (default — char/token-aware truncation), `summarize` (LLM-backed; calls your provider's fast tier once per compaction trigger), or `hybrid` (truncate first, then summarize the rest if still over budget). See [Agentic primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-preflight-and-compaction). |
+| `FLUID_TOKEN_COUNTER` | Internal — selects the token-counting backend. Default is the pure-Python char-based heuristic; the CLI does not require an external tokenizer. |
+| `FLUID_OPENAI_STRICT_SCHEMA` | `1` to enable the recursive strict-schema walker for OpenAI's `response_format = json_schema` mode. Closes the "Invalid schema for response_format 'ForgeContract'" 400 some `gpt-4o`/`gpt-4.1`/o-series deployments return when nested objects are free-form. Free-form fields are rewritten to JSON-encoded strings under strict mode. |
+| `FLUID_QUIET` / `FLUID_NONINTERACTIVE` | `1` to silence the v2-preview banner and capability-degradation warnings. The warnings are still recorded to telemetry. |
+
 Use `fluid ai setup` for interactive setup and key storage. Provider and model choices are saved in `~/.fluid/ai_config.json`; API keys go to the OS keyring by default. Plaintext API-key persistence requires explicit opt-in with `FLUID_ALLOW_PLAINTEXT_AI_SECRETS=1`.
+
+## Run-start capability warnings
+
+When you pick a provider/model whose declared capabilities don't satisfy what the run needs (e.g. `gpt-3.5` in agent-loop mode, an Ollama model with no tool-use support, or a model not yet in the capability catalog), the CLI prints a one-paragraph warning at the start of `fluid forge data-model from-intent` and continues with degraded behaviour. See [Capability Warnings](capability-warnings.md) for the matrix and a worked example reel.
+
+## Operator-facing errors
+
+When a provider call fails, the CLI raises a typed exception that distinguishes rate limits, context-overflow, auth failures, transient server errors, and schema-validation failures so retries honor `Retry-After` and the agent loop can route corrective feedback to the LLM. See [Typed Errors](typed-errors.md) for the full reference.
 
 For complete command journeys, see [AI Forge And Data-Model Journeys](../walkthrough/ai-forge-data-model.md).
