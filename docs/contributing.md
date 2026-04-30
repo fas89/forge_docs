@@ -116,6 +116,40 @@ class MyProvider(BaseProvider):
         )
 ```
 
+### Contribute a Forge Tool (`@forge_tool`)
+
+Tools are what the multi-turn copilot agent calls during a run
+(`discover_workspace`, `read_sample_schema`, `propose_contract`, …).
+The new `@forge_tool` decorator collapses tool registration to a
+single declaration where the Pydantic args-model is the source of
+truth and JSON Schema is derived from it:
+
+```python
+from pydantic import BaseModel, Field
+from fluid_build.cli.forge_tool import forge_tool
+
+class FetchOrdersArgs(BaseModel):
+    since: str = Field(description="ISO-8601 lower bound, e.g. 2024-01-01")
+    limit: int = Field(default=100, ge=1, le=1000)
+
+@forge_tool(
+    name="fetch_orders",
+    description="Page through the orders table since a given date.",
+    args_schema=FetchOrdersArgs,
+    workspace_root_aware=True,  # security: workspace_root is dispatcher-injected
+)
+def fetch_orders(args: FetchOrdersArgs, *, workspace_root):
+    return _fetch_impl(workspace_root, args.since, args.limit)
+```
+
+The decorator handles registration in `FORGE_TOOL_REGISTRY`,
+JSON Schema generation, args-model validation, `workspace_root`
+injection (security boundary — the LLM cannot supply this field), and
+the typed-error return shape that `dispatch_tool_call` consumes. See
+the [Authoring Forge Tools guide](/forge_docs/advanced/forge-tools)
+for the migration path from the legacy `_register` pattern, the S-013
+exception-text scrubbing invariant, and the testing checklist.
+
 ## Add a Catalog Adapter
 
 Catalog adapters are the **source-side** complement to providers:

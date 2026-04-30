@@ -189,10 +189,13 @@ export default defineUserConfig({
             '/advanced/forge-copilot-discovery.md',
             '/advanced/forge-copilot-memory.md',
             '/advanced/llm-providers.md',
+            '/advanced/capability-warnings.md',
             '/advanced/mcp.md',
             '/advanced/credential-resolver.md',
             '/advanced/cost-tracking.md',
             '/advanced/agentic-primitives.md',
+            '/advanced/typed-errors.md',
+            '/advanced/forge-tools.md',
             '/advanced/v1.5-architecture.md',
             '/advanced/v1.5-release-notes.md'
           ]

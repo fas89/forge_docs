@@ -30,6 +30,21 @@ footer: Apache 2.0 Licensed | Documentation for the Fluid Forge CLI
 
 > **Fluid Forge is for data engineers who want to write a data product contract once and deploy it anywhere.** Build and test locally with DuckDB, then push the same contract to BigQuery, Athena, or Snowflake — no pipeline glue code to maintain.
 
+## See it run
+
+A 60-second walkthrough of `fluid forge data-model from-intent` against four LLM providers (Anthropic Haiku 4.5, OpenAI gpt-4.1-mini, Gemini 2.5-flash, local Ollama gemma4) — every token count is from a real production call.
+
+<iframe
+  src="/forge_docs/reels/whats-new-pr78-82.html"
+  width="100%"
+  height="540"
+  style="border: 1px solid #232a3d; border-radius: 12px; max-width: 1100px;"
+  loading="lazy"
+  title="Fluid Forge — agentic stack walkthrough">
+</iframe>
+
+Use ←/→ to step scenes, space to pause, r to restart.
+
 ## Start with the current workflow
 
 ```bash
