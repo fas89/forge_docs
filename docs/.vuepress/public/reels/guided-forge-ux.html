@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fluid Forge — what's new in the agentic stack</title>
+<title>23 questions, skipped — Fluid Forge</title>
 <style>
   :root {
     --bg-0: #07090f;
@@ -475,139 +475,237 @@
 
 const SCENES = [
   {
-    kind: "hero",
-    duration: 4500,
-    body: `
-      <div class="brand">FLUID FORGE · AGENTIC STACK</div>
-      <h1>fluid&nbsp;forge</h1>
-      <div class="tag">A <em>lightweight</em>, <em>AI-native</em> data-product compiler.</div>
-      <div class="tag">From <em>business intent</em> → <em>validated FLUID contract</em> in seconds.</div>
-      <div class="badges">
-        <span class="badge">Anthropic · OpenAI · Gemini · Ollama</span>
-        <span class="badge alt">Typed errors · capability warnings · accurate streaming usage</span>
-        <span class="badge good">Pure-Python · zero new runtime deps</span>
-      </div>
-      <div class="meta">every cost figure below is from a real production call</div>
-    `,
+    "kind": "hero",
+    "duration": 5500,
+    "body": "\n      <div class=\"brand\">FLUID FORGE · GUIDED UX</div>\n      <h1>23 questions,<br/>skipped.</h1>\n      <div class=\"tag\">Most CLIs ask <em>27 questions</em> before they help you.</div>\n      <div class=\"tag\">Forge asks <em>four</em>. The rest, it already knows.</div>\n      <div class=\"badges\">\n        <span class=\"badge\">47 ms welcome scan</span>\n        <span class=\"badge alt\">5-mode picker</span>\n        <span class=\"badge good\">never writes blind</span>\n      </div>\n    "
   },
   {
-    kind: "term",
-    duration: 8500,
-    title: "customer_orders.intent.yaml",
-    headline: "Describe the data product",
-    sub: "23 lines of YAML — no imperative code, no hand-written DDL.",
-    lines: [
-      { cls: "prompt cmd", text: "cat customer_orders.intent.yaml", typingSpeed: 30 },
-      { cls: "dim spaced", html: '<span class="key">data_product</span>:' },
-      { cls: "dim", html: '  <span class="key">name</span>: customer_orders' },
-      { cls: "dim", html: '  <span class="key">domain</span>: retail' },
-      { cls: "dim", html: '<span class="key">grain</span>:' },
-      { cls: "dim", html: '  <span class="key">entity</span>: order_line' },
-      { cls: "dim", html: '  <span class="key">time_dimension</span>: order_date' },
-      { cls: "dim", html: '<span class="key">dimensions</span>:' },
-      { cls: "dim", html: '  <span class="key">entities</span>: [customer, product, store]' },
-      { cls: "dim", html: '<span class="key">metrics</span>:' },
-      { cls: "dim", html: '  - <span class="key">name</span>: total_revenue' },
-      { cls: "dim", html: '<span class="key">modeling</span>:' },
-      { cls: "dim", html: '  <span class="key">technique</span>: dimensional' },
+    "kind": "term",
+    "duration": 7500,
+    "title": "fluid forge",
+    "headline": "Welcome scan in 50 ms.",
+    "sub": "Parallel detect — workspace, AI configured, return-user — before any prompt.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "fluid forge",
+        "typingSpeed": 60
+      },
+      {
+        "cls": "faint spaced",
+        "text": "[welcome scan · 47 ms]"
+      },
+      {
+        "cls": "dim",
+        "text": "  ✓ workspace            no contracts yet"
+      },
+      {
+        "cls": "dim",
+        "text": "  ✓ AI configured        anthropic/claude-sonnet-4-6"
+      },
+      {
+        "cls": "dim",
+        "text": "  ✓ docker installed     yes"
+      },
+      {
+        "cls": "dim",
+        "text": "  ✓ return user          (3 prior runs)"
+      }
     ],
+    "callout": "Bounded — drops if &gt;50 ms. Zero network. Read-only."
   },
   {
-    kind: "term",
-    duration: 12000,
-    title: "anthropic · claude-haiku-4-5",
-    headline: "Forge it — Anthropic Haiku 4.5",
-    sub: "Streaming output, prompt-cache aware, accurate token attribution.",
-    lines: [
-      { cls: "prompt cmd", text: "fluid forge data-model from-intent customer_orders.intent.yaml \\", typingSpeed: 34 },
-      { cls: "cmd", text: "  -o customer_orders.fluid.yaml \\", delay: 80 },
-      { cls: "cmd", text: "  --llm-provider anthropic --llm-model claude-haiku-4-5-20251001", delay: 80 },
-      { cls: "faint spaced", text: "HTTP Request: POST https://api.anthropic.com/v1/messages \"HTTP/1.1 200 OK\"", delay: 380 },
-      { cls: "info", html: '⏵ <span style="color:var(--text)">LogicalAgent</span>     <span class="dim">streaming</span> <span class="tokens-flow"><span class="tok"></span><span class="tok"></span><span class="tok"></span><span class="tok"></span></span>', delay: 280 },
-      { cls: "info", html: '⏵ <span style="color:var(--text)">ContractForgeAgent</span> <span class="dim">deterministic</span>', delay: 200 },
-      { cls: "success spaced", text: "✔ Validation passed (score=10)", delay: 220 },
-      { cls: "dim", text: "Wrote contract     customer_orders.fluid.yaml" },
-      { cls: "dim", text: "Wrote logical sidecar customer_orders.fluid.yaml.model.json" },
-      { cls: "dim", text: "Wrote model document  customer_orders.fluid.yaml.model.md" },
+    "kind": "term",
+    "duration": 8500,
+    "title": "the picker · routes you fast",
+    "headline": "5 modes, pre-highlighted",
+    "sub": "Don't drop into AI. Route to the mode that fits what you're actually doing.",
+    "lines": [
+      {
+        "cls": "info spaced",
+        "text": "What kind of run is this?"
+      },
+      {
+        "cls": "rule",
+        "text": "  ─────────────────────────────────────────────"
+      },
+      {
+        "cls": "info",
+        "html": "  1. AI Copilot                 ▸ <span class=\"alt\">highlighted</span>"
+      },
+      {
+        "cls": "dim",
+        "text": "  2. Compose from existing     — chain SDPs into ADP/CDP"
+      },
+      {
+        "cls": "dim",
+        "text": "  3. Refine a contract         — load + 'what to change?'"
+      },
+      {
+        "cls": "dim",
+        "text": "  4. Template                  — start from a built-in"
+      },
+      {
+        "cls": "dim",
+        "text": "  5. Blank scaffold            — empty, no AI"
+      },
+      {
+        "cls": "rule",
+        "text": "  ─────────────────────────────────────────────"
+      },
+      {
+        "cls": "prompt cmd",
+        "text": "Pick 1–5, or hit enter ▸ ",
+        "typingSpeed": 100
+      }
     ],
-    callout: "<strong>Cost summary</strong> · <span style='color:var(--text)'>912 in</span> · <span style='color:var(--text)'>5,433 out</span> · <span style='color:var(--good)'>$0.0281</span> &nbsp; <span style='color:var(--text-faint)'>(streamed; usage captured from SSE wire — pre-fix this would have reported \"missing usage\")</span>",
+    "callout": "Picker default is highlighted by the welcome scan. Hit enter to accept."
   },
   {
-    kind: "term",
-    duration: 11000,
-    title: "openai · gpt-4.1-mini · same intent",
-    headline: "Switch providers, same command",
-    sub: "Provider abstraction is one flag. Same intent → same valid contract.",
-    lines: [
-      { cls: "prompt cmd", text: "fluid forge data-model from-intent customer_orders.intent.yaml \\", typingSpeed: 36 },
-      { cls: "cmd", html: '  --llm-provider <span class="alt">openai</span> --llm-model gpt-4.1-mini', delay: 60 },
-      { cls: "faint spaced", text: "HTTP Request: POST https://api.openai.com/v1/chat/completions \"HTTP/1.1 200 OK\"", delay: 380 },
-      { cls: "success spaced", text: "✔ Validation passed (score=10)", delay: 240 },
-      { cls: "rule spaced", text: "─────────────────────────────────────────────────────────────────" },
-      { cls: "info", html: 'Cost summary' },
-      { cls: "rule", text: "─────────────────────────────────────────────────────────────────" },
-      { cls: "cmd", html: '  <span class="alt">openai</span> / gpt-4.1-mini      <span class="num">5,647</span> in   <span class="num">1,767</span> out   <span class="num">$0.0019</span>' },
-      { cls: "rule", text: "─────────────────────────────────────────────────────────────────" },
-      { cls: "info spaced", html: 'Per-agent attribution' },
-      { cls: "cmd", html: '  modeler/ModelerAgent       <span class="num">5,647</span> in   <span class="num">1,767</span> out   calls=1' },
+    "kind": "term",
+    "duration": 9500,
+    "title": "interview · 4 questions skipped",
+    "headline": "Inferences-first.",
+    "sub": "Detected facts skip questions. Type :auto to accept any default. :help, :doctor any time.",
+    "lines": [
+      {
+        "cls": "info spaced",
+        "text": "[interview · 4 questions auto-resolved]"
+      },
+      {
+        "cls": "success",
+        "text": "  ✓ name           customer-orders   (from cwd)"
+      },
+      {
+        "cls": "success",
+        "text": "  ✓ domain         retail            (from --domain)"
+      },
+      {
+        "cls": "success",
+        "text": "  ✓ provider       local             (from welcome scan)"
+      },
+      {
+        "cls": "success",
+        "text": "  ✓ memory         loaded            (3 prior products)"
+      },
+      {
+        "cls": "info spaced",
+        "text": "▸ What's the product type? [SDP/ADP/CDP, or :auto] :"
+      },
+      {
+        "cls": "prompt cmd",
+        "text": ":auto",
+        "typingSpeed": 100
+      },
+      {
+        "cls": "success",
+        "text": "  → CDP (consumer-aligned)"
+      }
     ],
+    "callout": "Slash commands at every prompt: <code>:ai-setup · :override · :show-work · :doctor · :help · :quit</code>"
   },
   {
-    kind: "term",
-    duration: 11000,
-    title: "ollama · gemma4:31b · local inference",
-    headline: "Run it offline — Ollama gemma4",
-    sub: "Capability warnings fire because the staged-pipeline profile asks for structured output. Run still produces a valid contract, $0 cost.",
-    lines: [
-      { cls: "prompt cmd", text: "fluid forge data-model from-intent customer_orders.intent.yaml \\", typingSpeed: 36 },
-      { cls: "cmd", html: '  --llm-provider <span class="pkg">ollama</span> --llm-model gemma4:31b \\', delay: 60 },
-      { cls: "cmd", text: "  --llm-endpoint http://localhost:11434/v1/chat/completions", delay: 60 },
-      { cls: "warn spaced", text: "⚠ ollama/gemma4:31b does not reliably support structured output — agent runs may produce degraded output." },
-      { cls: "warn", text: "⚠ Note for ollama/gemma4:31b: tool-use accuracy is acceptable for the staged pipeline; the multi-turn agent loop may need more iterations." },
-      { cls: "faint spaced", text: "HTTP Request: POST http://localhost:11434/v1/chat/completions \"HTTP/1.1 200 OK\"", delay: 360 },
-      { cls: "success spaced", text: "✔ Validation passed (score=10)", delay: 220 },
-      { cls: "dim", text: "Wrote contract     ollama_e2e.fluid.yaml" },
+    "kind": "term",
+    "duration": 9000,
+    "title": "the cost cap · in your face",
+    "headline": "Set a budget. Watch it.",
+    "sub": "FLUID_COST_LIMIT_USD_PER_RUN=0.50 · Spotify-style progress prefix on every prompt.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "FLUID_COST_LIMIT_USD_PER_RUN=0.50 fluid forge",
+        "typingSpeed": 28
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────────────────────────────────────────────"
+      },
+      {
+        "cls": "info",
+        "html": "  [<span class=\"num\">$0.012/$0.50</span> · <span class=\"num\">12%</span> · gemini-2.5-flash] domain?"
+      },
+      {
+        "cls": "dim",
+        "text": "  retail"
+      },
+      {
+        "cls": "info",
+        "html": "  [<span class=\"num\">$0.024/$0.50</span> · <span class=\"num\">24%</span> · gemini-2.5-flash] dimensional?"
+      },
+      {
+        "cls": "dim",
+        "text": "  yes"
+      },
+      {
+        "cls": "info",
+        "html": "  [<span class=\"num\">$0.041/$0.50</span> · <span class=\"num\">41%</span> · gemini-2.5-flash] product type?"
+      },
+      {
+        "cls": "dim",
+        "text": "  CDP"
+      },
+      {
+        "cls": "rule",
+        "text": "─────────────────────────────────────────────"
+      }
     ],
-    callout: "<strong>Cost summary</strong> · <span style='color:var(--text)'>2,761 in</span> · <span style='color:var(--text)'>1,706 out</span> · <span style='color:var(--good)'>$0.0000</span> &nbsp; <span style='color:var(--text-faint)'>(local inference; gemma4:31b on Ollama 0.22.0)</span>",
+    "callout": "Hit the cap, the run aborts loud — no surprise <code>$30</code> bill at month-end."
   },
   {
-    kind: "term",
-    duration: 10000,
-    title: "fluid validate · all four contracts",
-    headline: "Validate the output",
-    sub: "Same v0.7.2 schema validates Anthropic / OpenAI / Gemini / Ollama. Provider-agnostic correctness.",
-    lines: [
-      { cls: "prompt cmd", text: "for f in customer_orders_*.fluid.yaml; do fluid validate $f; done", typingSpeed: 32 },
-      { cls: "faint spaced", text: "── claude-haiku-4-5 ──", delay: 240 },
-      { cls: "success", text: "✅ Valid FLUID contract (schema v0.7.2)" },
-      { cls: "faint", text: "── gpt-4.1-mini ──" },
-      { cls: "success", text: "✅ Valid FLUID contract (schema v0.7.2)" },
-      { cls: "faint", text: "── gemini-2.5-flash ──" },
-      { cls: "success", text: "✅ Valid FLUID contract (schema v0.7.2)" },
-      { cls: "faint", text: "── ollama / gemma4:31b ──" },
-      { cls: "success", text: "✅ Valid FLUID contract (schema v0.7.2)" },
+    "kind": "term",
+    "duration": 9500,
+    "title": "before the write · always",
+    "headline": "Pre-write panel.",
+    "sub": "Files, cost, run-id. Always. Even with --yes the panel renders.",
+    "lines": [
+      {
+        "cls": "rule spaced",
+        "text": "┌──────────────── About to write ────────────────┐"
+      },
+      {
+        "cls": "dim",
+        "text": "│ Will create:                                     │"
+      },
+      {
+        "cls": "dim",
+        "text": "│   ./customer-orders/contract.fluid.yaml          │"
+      },
+      {
+        "cls": "dim",
+        "text": "│   ./customer-orders/data/orders.csv              │"
+      },
+      {
+        "cls": "dim",
+        "text": "│                                                  │"
+      },
+      {
+        "cls": "dim",
+        "html": "│ Run-id:  <span class=\"num\">2026-04-30T14-22-08</span>                     │"
+      },
+      {
+        "cls": "dim",
+        "html": "│ Cost:    <span class=\"num\">$0.012</span>  (3,840 in / 720 out)            │"
+      },
+      {
+        "cls": "dim",
+        "text": "│ Model:   anthropic/claude-sonnet-4-6              │"
+      },
+      {
+        "cls": "info",
+        "text": "│ Proceed? [Y/n] ▸                                 │"
+      },
+      {
+        "cls": "rule",
+        "text": "└──────────────────────────────────────────────────┘"
+      }
     ],
+    "callout": "Ctrl-C here loses nothing — transcript + reasoning already on disk."
   },
   {
-    kind: "closing",
-    duration: 6500,
-    body: `
-      <h2>One contract. Four providers. Zero glue code.</h2>
-      <div class="scene-sub" style="font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;">
-        Typed-error retries · capability warnings · accurate streaming usage ·
-        <em style="color:var(--accent);font-style:normal">all backed by real production calls.</em>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="num">4/4</div><div class="lbl">providers verified E2E</div></div>
-        <div class="stat"><div class="num">0</div><div class="lbl">new runtime deps</div></div>
-        <div class="stat"><div class="num">10</div><div class="lbl">CI checks per PR ✓</div></div>
-        <div class="stat"><div class="num">v0.7.2</div><div class="lbl">FLUID contract schema</div></div>
-      </div>
-      <div class="meta" style="margin-top:34px;color:var(--text-faint);font-family:var(--mono);font-size:12px;">
-        ← → step · space pause · r restart
-      </div>
-    `,
-  },
+    "kind": "closing",
+    "duration": 7000,
+    "body": "\n      <h2>50 ms scan. 4 skipped questions.<br/>$0 surprise.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        Self-healing schema repair. Streaming preview as you answer.\n        Cost cap before you write. Slash commands wherever you are.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">47ms</div><div class=\"lbl\">welcome scan</div></div>\n        <div class=\"stat\"><div class=\"num\">4 / 5</div><div class=\"lbl\">questions auto-resolved</div></div>\n        <div class=\"stat\"><div class=\"num\">$0.50</div><div class=\"lbl\">hard cost cap</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">surprise files written</div></div>\n      </div>\n    "
+  }
 ];;
 
 // ─────────────────────────────────────────────────────────────────────────

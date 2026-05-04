@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>$0.50 → $0.05 — Fluid Forge compaction</title>
+<title>Fluid Forge — $0.03 per data product</title>
 <style>
   :root {
     --bg-0: #07090f;
@@ -477,180 +477,198 @@ const SCENES = [
   {
     "kind": "hero",
     "duration": 5500,
-    "body": "\n      <div class=\"brand\">FLUID FORGE · COMPACTION</div>\n      <h1>$0.50 → $0.05.<br/>One env var.</h1>\n      <div class=\"tag\">Long agent loops accumulate tool results. Costs grow <em>super-linearly</em>.</div>\n      <div class=\"tag\">Three strategies. Pick yours. <em>10× cheaper.</em></div>\n      <div class=\"badges\">\n        <span class=\"badge\">truncate · default</span>\n        <span class=\"badge alt\">summarize · LLM</span>\n        <span class=\"badge good\">hybrid · both</span>\n      </div>\n    "
+    "body": "\n      <div class=\"brand\">FLUID FORGE</div>\n      <h1>$0.03.<br/>Per data product.</h1>\n      <div class=\"tag\">Three LLM providers. Same intent. Same valid contract.</div>\n      <div class=\"tag\"><em>Free</em> on Ollama. Pick any model. Switch any time.</div>\n      <div class=\"badges\">\n        <span class=\"badge\">8 lines of YAML</span>\n        <span class=\"badge alt\">deterministic dbt output</span>\n        <span class=\"badge good\">no vendor lock</span>\n      </div>\n      <div class=\"meta\">every cost figure below is from a real production call</div>\n    "
   },
   {
     "kind": "term",
     "duration": 7500,
-    "title": "the problem",
-    "headline": "Long agent loops accumulate tool results.",
-    "sub": "Every tool call compounds the next prompt. Costs explode quietly.",
+    "title": "the input — 8 lines",
+    "headline": "Describe what you want.",
+    "sub": "Not how to build it. Not the SQL. Not the Airflow DAG.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "fluid forge --agent-loop --domain retail --target-dir ./demo",
-        "typingSpeed": 28
+        "text": "cat customer_orders.intent.yaml",
+        "typingSpeed": 30
+      },
+      {
+        "cls": "dim spaced",
+        "html": "<span class=\"key\">data_product</span>:"
+      },
+      {
+        "cls": "dim",
+        "html": "  <span class=\"key\">name</span>: customer_orders"
+      },
+      {
+        "cls": "dim",
+        "html": "  <span class=\"key\">domain</span>: retail"
+      },
+      {
+        "cls": "dim",
+        "html": "<span class=\"key\">grain</span>: { entity: order_line, time: order_date }"
+      },
+      {
+        "cls": "dim",
+        "html": "<span class=\"key\">dimensions</span>: [customer, product, store]"
+      },
+      {
+        "cls": "dim",
+        "html": "<span class=\"key\">metrics</span>: [total_revenue, order_count, AOV]"
+      },
+      {
+        "cls": "dim",
+        "html": "<span class=\"key\">modeling</span>: { technique: dimensional }"
+      }
+    ],
+    "callout": "Eight lines. The AI handles the rest."
+  },
+  {
+    "kind": "term",
+    "duration": 9500,
+    "title": "anthropic · claude-haiku-4-5",
+    "headline": "Build it · Anthropic.",
+    "sub": "Streaming. Prompt-cache aware. Exact token attribution.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "fluid forge data-model from-intent intent.yaml \\",
+        "typingSpeed": 32
+      },
+      {
+        "cls": "cmd",
+        "text": "  --llm-provider anthropic --llm-model claude-haiku-4-5",
+        "delay": 80
       },
       {
         "cls": "faint spaced",
-        "text": "[turn 1]  3,200 in   400 out   $0.011"
+        "text": "POST https://api.anthropic.com/v1/messages \"200 OK\""
       },
       {
-        "cls": "faint",
-        "text": "[turn 2]  4,800 in   500 out   $0.016"
+        "cls": "info",
+        "html": "⏵ <span style=\"color:var(--text)\">LogicalAgent</span>     <span class=\"dim\">streaming</span> ▸▸▸▸"
       },
       {
-        "cls": "warn",
-        "text": "[turn 3]  8,400 in   620 out   $0.029"
+        "cls": "info",
+        "html": "⏵ <span style=\"color:var(--text)\">ContractForgeAgent</span> <span class=\"dim\">deterministic</span>"
       },
       {
-        "cls": "warn",
-        "text": "[turn 4] 14,200 in   720 out   $0.049"
+        "cls": "success spaced",
+        "text": "✔ Validation passed (score=10)"
       },
       {
-        "cls": "warn",
-        "text": "[turn 5] 22,100 in   810 out   $0.077"
+        "cls": "dim",
+        "text": "Wrote contract     customer_orders.fluid.yaml"
       },
       {
-        "cls": "warn",
-        "text": "[turn 6] 33,800 in   890 out   $0.117"
-      },
-      {
-        "cls": "warn",
-        "text": "[turn 7] 51,200 in   950 out   $0.178   ← context budget at 78%"
+        "cls": "dim",
+        "text": "Wrote logical doc  customer_orders.fluid.yaml.model.md"
       }
     ],
-    "callout": "Every tool result rides along on the next turn. Without compaction, costs grow super-linearly."
+    "callout": "<strong>912 in · 5,433 out · <span style='color:var(--good)'>$0.0281</span></strong> · 7.4 s wall time."
   },
   {
     "kind": "term",
     "duration": 8500,
-    "title": "FLUID_COMPACTION_STRATEGY=truncate",
-    "headline": "The default · char-aware truncation.",
-    "sub": "Keep first message. Keep last 4. Truncate everything between to 500 chars.",
+    "title": "openai · gpt-4.1-mini",
+    "headline": "Same intent · OpenAI.",
+    "sub": "Strict JSON Schema. Same output shape. One flag flipped.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "FLUID_AGENT_COMPACT_AFTER=4 fluid forge --agent-loop ...",
-        "typingSpeed": 26
+        "text": "fluid forge data-model from-intent intent.yaml \\",
+        "typingSpeed": 32
+      },
+      {
+        "cls": "cmd",
+        "html": "  --llm-provider <span class=\"alt\">openai</span> --llm-model gpt-4.1-mini",
+        "delay": 60
       },
       {
         "cls": "faint spaced",
-        "text": "[turn 5] compaction fires"
+        "text": "POST https://api.openai.com/v1/chat/completions \"200 OK\""
       },
       {
-        "cls": "info",
-        "text": "  before: 22,100 input tokens"
-      },
-      {
-        "cls": "success",
-        "text": "  after:   4,200 input tokens   (81% smaller)"
-      },
-      {
-        "cls": "faint spaced",
-        "text": "[turn 5]  4,200 in   810 out   $0.018"
-      },
-      {
-        "cls": "faint",
-        "text": "[turn 6]  5,100 in   890 out   $0.022"
-      },
-      {
-        "cls": "faint",
-        "text": "[turn 7]  6,400 in   950 out   $0.027"
-      },
-      {
-        "cls": "rule spaced",
-        "text": "─────────────────────────────────────────────"
-      },
-      {
-        "cls": "info",
-        "html": "  total run: <span class=\"num\">$0.121</span>  vs  <span class=\"num\">$0.500</span> uncompacted  ·  <span class=\"num\">76% saving</span>"
+        "cls": "success spaced",
+        "text": "✔ Validation passed (score=10)"
       }
     ],
-    "callout": "Zero LLM cost. Char-aware. Deterministic. Works on every provider."
+    "callout": "<strong>5,647 in · 1,767 out · <span style='color:var(--good)'>$0.0019</span></strong> · 4.2 s wall time. <span style='color:var(--text-faint)'>Same contract.</span>"
   },
   {
     "kind": "term",
     "duration": 8500,
-    "title": "FLUID_COMPACTION_STRATEGY=summarize",
-    "headline": "LLM-backed summarisation · for high-stakes loops.",
-    "sub": "Calls your provider's fast tier (Haiku, gpt-4.1-nano, gemini-flash) once per compaction trigger.",
+    "title": "ollama · gemma4 · local",
+    "headline": "Free it · Ollama.",
+    "sub": "No API key. No network. No bill. Same valid contract.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "FLUID_COMPACTION_STRATEGY=summarize fluid forge --agent-loop ...",
-        "typingSpeed": 24
+        "text": "fluid forge data-model from-intent intent.yaml \\",
+        "typingSpeed": 32
+      },
+      {
+        "cls": "cmd",
+        "html": "  --llm-provider <span class=\"pkg\">ollama</span> --llm-model gemma4:31b",
+        "delay": 60
       },
       {
         "cls": "faint spaced",
-        "text": "[turn 5] compaction fires"
+        "text": "POST http://localhost:11434/v1/chat/completions \"200 OK\""
       },
       {
-        "cls": "info",
-        "text": "  invoking summariser:  anthropic/claude-haiku-4-5"
+        "cls": "success spaced",
+        "text": "✔ Validation passed (score=10)"
       },
       {
-        "cls": "info",
-        "text": "  cost:                 $0.0009  (one fast-tier call)"
-      },
-      {
-        "cls": "success",
-        "text": "  before: 22,100 tokens · after: 1,800 tokens · 92% smaller"
-      },
-      {
-        "cls": "rule spaced",
-        "text": "─────────────────────────────────────────────"
-      },
-      {
-        "cls": "info",
-        "html": "  total run: <span class=\"num\">$0.087</span>  ·  <span class=\"num\">83% saving</span>  ·  high recall preserved"
+        "cls": "dim",
+        "text": "Wrote contract     customer_orders.fluid.yaml"
       }
     ],
-    "callout": "Pays a tiny summariser cost to keep the gist. Best for long agent loops where context matters."
+    "callout": "<strong>2,761 in · 1,706 out · <span style='color:var(--good)'>$0.0000</span></strong> · 11.8 s wall time. <span style='color:var(--text-faint)'>Run on a laptop.</span>"
   },
   {
     "kind": "term",
     "duration": 7500,
-    "title": "FLUID_COMPACTION_STRATEGY=hybrid",
-    "headline": "Truncate first, summarise the rest if still over budget.",
-    "sub": "Best-of-both-worlds default for production. Cheap when it can be, smart when it must be.",
+    "title": "fluid validate · all three contracts",
+    "headline": "Same shape. Provider-agnostic.",
+    "sub": "The same contract validates regardless of which model wrote it.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "FLUID_COMPACTION_STRATEGY=hybrid fluid forge --agent-loop ...",
-        "typingSpeed": 26
+        "text": "for f in customer_orders_*.fluid.yaml; do fluid validate $f; done",
+        "typingSpeed": 32
       },
       {
         "cls": "faint spaced",
-        "text": "[turn 5] compaction fires"
+        "text": "── claude-haiku-4-5 ──"
       },
       {
-        "cls": "dim",
-        "text": "  truncated 14 old tool results to 500 chars each"
+        "cls": "success",
+        "text": "✅ Valid FLUID contract"
       },
       {
-        "cls": "dim",
-        "text": "  still over budget · invoking summariser..."
+        "cls": "faint",
+        "text": "── gpt-4.1-mini ──"
       },
       {
-        "cls": "info",
-        "text": "  cost: $0.0006  ·  before: 22,100 → after: 2,400 tokens"
+        "cls": "success",
+        "text": "✅ Valid FLUID contract"
       },
       {
-        "cls": "rule spaced",
-        "text": "─────────────────────────────────────────────"
+        "cls": "faint",
+        "text": "── ollama / gemma4:31b ──"
       },
       {
-        "cls": "info",
-        "html": "  total run: <span class=\"num\">$0.094</span>  ·  <span class=\"num\">81% saving</span>  ·  good middle ground"
+        "cls": "success",
+        "text": "✅ Valid FLUID contract"
       }
     ],
-    "callout": "The recommendation for most production agent loops. Cheap path first, summariser as a safety net."
+    "callout": "Switch providers any time. Re-run with the same contract. Zero glue code touched."
   },
   {
     "kind": "closing",
     "duration": 7000,
-    "body": "\n      <h2>One env var.<br/>10× cheaper agent loops.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        Token-budget pre-flight prevents the run from ever hitting context overflow.\n        Capability warnings flag combos that need degraded handling.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">$0.50 → $0.09</div><div class=\"lbl\">avg per agent loop</div></div>\n        <div class=\"stat\"><div class=\"num\">3</div><div class=\"lbl\">strategies · pick yours</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">ContextOverflowErrors</div></div>\n        <div class=\"stat\"><div class=\"num\">1</div><div class=\"lbl\">env var to set it</div></div>\n      </div>\n    "
+    "body": "\n      <h2>$0.03 average. Free on Ollama.<br/>Zero glue code.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        Pick any model. Switch any time. The contract stays portable —\n        DuckDB locally, BigQuery, Snowflake, Athena when you ship.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">$0.03</div><div class=\"lbl\">avg per build</div></div>\n        <div class=\"stat\"><div class=\"num\">3</div><div class=\"lbl\">providers · 1 contract</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">lines of glue code</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">vendor lock-in</div></div>\n      </div>\n      <div class=\"meta\" style=\"margin-top:34px;color:var(--text-faint);font-family:var(--mono);font-size:12px;\">\n        ← → step · space pause · r restart\n      </div>\n    "
   }
 ];;
 

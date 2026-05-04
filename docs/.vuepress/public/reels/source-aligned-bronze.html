@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fluid Forge — capability warnings</title>
+<title>Six months → sixty seconds — Fluid Forge</title>
 <style>
   :root {
     --bg-0: #07090f;
@@ -475,58 +475,195 @@
 
 const SCENES = [
   {
-    kind: "hero",
-    duration: 3500,
-    body: `
-      <div class="brand">FLUID FORGE · CAPABILITY MATRIX</div>
-      <h1 style="font-size:56px">Pick a degraded combo →<br>see the warning at run start</h1>
-      <div class="tag">No more silent quality regressions when you switch providers.</div>
-    `,
+    "kind": "hero",
+    "duration": 5500,
+    "body": "\n      <div class=\"brand\">FLUID FORGE · INGESTION</div>\n      <h1>Six months.<br/>Or sixty seconds.</h1>\n      <div class=\"tag\">Airbyte cluster, Airflow DAGs, JVM heap tuning, Helm charts.</div>\n      <div class=\"tag\">Or one CLI command: <em>fluid init --discover</em>.</div>\n      <div class=\"badges\">\n        <span class=\"badge\">no Airflow</span>\n        <span class=\"badge alt\">no Airbyte cluster</span>\n        <span class=\"badge good\">no Helm chart</span>\n      </div>\n    "
   },
   {
-    kind: "term",
-    duration: 7500,
-    title: "openai · o1-mini · agent-loop profile",
-    headline: "Run with a degraded combo",
-    sub: "o1-mini lacks tool-use AND streaming. Agent loop will degrade to single-shot prompts.",
-    lines: [
-      { cls: "prompt cmd", text: "fluid forge --agent-loop \\", typingSpeed: 32 },
-      { cls: "cmd", html: '  --llm-provider <span class="alt">openai</span> --llm-model o1-mini', delay: 80 },
-      { cls: "warn spaced", text: "⚠ openai/o1-mini does not reliably support tool use — agent runs may produce degraded output." },
-      { cls: "warn", text: "⚠ Note for openai/o1-mini: o1 reasoning models do not support tool use or streaming." },
-      { cls: "warn", text: "  Multi-turn tool loops will degrade to single-shot prompts." },
-      { cls: "faint spaced", text: "capability_warnings_count=2 provider=openai model=o1-mini" },
-      { cls: "info spaced", text: "(run continues with degraded behaviour — your call to abort or proceed)" },
+    "kind": "term",
+    "duration": 9500,
+    "title": "step 1 · point at a Postgres",
+    "headline": "fluid init --discover",
+    "sub": "Forge introspects the schema. Emits a contract per table. Redacts the password.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "fluid init --discover postgres://acme:acme@localhost:5432/acme",
+        "typingSpeed": 26
+      },
+      {
+        "cls": "faint spaced",
+        "text": "▸ connecting"
+      },
+      {
+        "cls": "info",
+        "text": "▸ found 3 tables: public.orders · public.customers · public.products"
+      },
+      {
+        "cls": "info",
+        "text": "▸ inferred metadata.layer=Bronze · metadata.productType=SDP"
+      },
+      {
+        "cls": "info",
+        "text": "▸ password redacted to ${PGPASSWORD}"
+      },
+      {
+        "cls": "success spaced",
+        "text": "✓ wrote 3 acquisition contracts"
+      }
     ],
+    "callout": "<strong>1.2 s · 3 contracts · safe to commit.</strong> Passwords are placeholders."
   },
   {
-    kind: "term",
-    duration: 6500,
-    title: "openai · gpt-4.1-mini · agent-loop profile",
-    headline: "Pick a supported combo — silent",
-    sub: "gpt-4.1-mini supports tool-use + structured output + streaming. Capability check passes silently.",
-    lines: [
-      { cls: "prompt cmd", text: "fluid forge --agent-loop \\", typingSpeed: 32 },
-      { cls: "cmd", html: '  --llm-provider <span class="alt">openai</span> --llm-model gpt-4.1-mini', delay: 80 },
-      { cls: "faint spaced", text: "(no warnings — combo satisfies agent_loop profile requirements)" },
-      { cls: "info spaced", text: "[loop] iteration 1/12 · 0 messages · system prompt cached" },
-      { cls: "success spaced", text: "✔ Validation passed (score=10)" },
+    "kind": "term",
+    "duration": 8500,
+    "title": "step 2 · validate + apply",
+    "headline": "DuckDB does the ingestion in-process.",
+    "sub": "No Airbyte server. No Kafka cluster. No JVM. Just DuckDB's postgres_scan.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "fluid validate public.orders.fluid.yaml",
+        "typingSpeed": 28
+      },
+      {
+        "cls": "success",
+        "text": "  ✅ bronze.crm_orders         no errors"
+      },
+      {
+        "cls": "prompt cmd spaced",
+        "text": "fluid apply --build ingest_orders public.orders.fluid.yaml --yes",
+        "typingSpeed": 26
+      },
+      {
+        "cls": "info spaced",
+        "text": "▸ Materializing bronze.crm_orders ..."
+      },
+      {
+        "cls": "dim",
+        "text": "  ▸ acquired schema   public.orders (5 columns, 8 rows)"
+      },
+      {
+        "cls": "dim",
+        "text": "  ▸ ran preLand hooks dlp_scan ✓ · quality_gate ✓"
+      },
+      {
+        "cls": "dim",
+        "text": "  ▸ wrote Parquet     ./out/orders.parquet"
+      },
+      {
+        "cls": "success spaced",
+        "text": "  ✓ 1 build applied · 0 errors · 2.4 s"
+      }
     ],
+    "callout": "<strong>2.4 s end-to-end.</strong> No infra to maintain. Lineage emitted. DLP scanned."
   },
   {
-    kind: "closing",
-    duration: 4000,
-    body: `
-      <h2 style="font-size:38px">Catch degradation at run start, not in production</h2>
-      <div class="scene-sub" style="font-size:16px;color:var(--text-dim);max-width:580px;text-align:center;">
-        The capability catalog covers Anthropic 3.x/4.x, OpenAI 4.x/o-series,
-        Gemini 1.5/2.x, and 10 Ollama families.
-      </div>
-      <div class="meta" style="margin-top:24px;color:var(--text-faint);font-family:var(--mono);font-size:12px;">
-        FLUID_QUIET=1 to silence · warnings still go to telemetry
-      </div>
-    `,
+    "kind": "term",
+    "duration": 9500,
+    "title": "step 3 · need scale? change one word.",
+    "headline": "engine: duckdb → engine: airbyte → engine: debezium",
+    "sub": "Same contract. Same day-2 ops. Pick the engine that matches your scale.",
+    "lines": [
+      {
+        "cls": "rule spaced",
+        "text": "─────── duckdb ───────"
+      },
+      {
+        "cls": "dim",
+        "text": "  embedded · zero infra · CSV / Parquet / Postgres / MySQL / SQLite / HTTP"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────── dlt ──────────"
+      },
+      {
+        "cls": "dim",
+        "text": "  Python-native sources · @dlt.source modules · verified sources"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────── meltano ──────"
+      },
+      {
+        "cls": "dim",
+        "text": "  Singer protocol · 600+ taps unlock with one runner"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────── airbyte ──────"
+      },
+      {
+        "cls": "dim",
+        "text": "  REST control · Cosign image signature verification"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────── kafka-connect ─"
+      },
+      {
+        "cls": "dim",
+        "text": "  full connector lifecycle · JDBC / S3 / Snowflake / BigQuery"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────── debezium ─────"
+      },
+      {
+        "cls": "dim",
+        "text": "  CDC · Postgres / MySQL / Mongo / SQL Server / Oracle"
+      }
+    ],
+    "callout": "Six engines. Same contract shape. Same `fluid runs status` works on every one."
   },
+  {
+    "kind": "term",
+    "duration": 7500,
+    "title": "step 4 · day-2 is automatic",
+    "headline": "fluid runs status",
+    "sub": "Run history, freshness, error rate — same surface across all six engines.",
+    "lines": [
+      {
+        "cls": "prompt cmd",
+        "text": "fluid runs status bronze.crm_orders",
+        "typingSpeed": 28
+      },
+      {
+        "cls": "info spaced",
+        "text": "Recent runs · bronze.crm_orders / ingest_orders"
+      },
+      {
+        "cls": "rule",
+        "text": "─────────────────────────────────────────────"
+      },
+      {
+        "cls": "dim",
+        "text": "  2026-04-30T14:22  success  8 rows  2.4 s"
+      },
+      {
+        "cls": "dim",
+        "text": "  2026-04-30T10:22  success  8 rows  2.6 s"
+      },
+      {
+        "cls": "dim",
+        "text": "  2026-04-30T06:22  success  7 rows  2.3 s"
+      },
+      {
+        "cls": "rule",
+        "text": "─────────────────────────────────────────────"
+      },
+      {
+        "cls": "info",
+        "text": "Freshness: 145 s  ·  Error rate (24h): 0.0%"
+      }
+    ],
+    "callout": "DLP. Quality gates. Lineage. Cosign verification. All built in."
+  },
+  {
+    "kind": "closing",
+    "duration": 7000,
+    "body": "\n      <h2>Six engines. One contract.<br/>Zero clusters.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        Start with DuckDB on your laptop. Switch <code>engine:</code> to Airbyte\n        / Meltano / Debezium when you outgrow it. Contract stays portable.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">60s</div><div class=\"lbl\">discover → apply</div></div>\n        <div class=\"stat\"><div class=\"num\">6</div><div class=\"lbl\">engines · 1 contract</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">infra to set up</div></div>\n        <div class=\"stat\"><div class=\"num\">$0</div><div class=\"lbl\">on the laptop path</div></div>\n      </div>\n    "
+  }
 ];;
 
 // ─────────────────────────────────────────────────────────────────────────
