@@ -1,9 +1,9 @@
-<!-- DESIGNER SLOT: 1200x400 SVG hero illustration goes here when produced.
-     Drop the SVG into docs/.vuepress/public/hero.svg and reference it
-     from this comment block. Until then, the centered logo below is the hero. -->
+<p align="center">
+  <img src="docs/.vuepress/public/hero.svg" alt="One Fluid Forge contract deploys to four cloud platforms — GCP, AWS, Snowflake, Local DuckDB" width="900">
+</p>
 
 <p align="center">
-  <img src="docs/.vuepress/public/logo.png" alt="Fluid Forge" width="480">
+  <img src="docs/.vuepress/public/logo.png" alt="Fluid Forge" width="280">
 </p>
 
 <h1 align="center">Fluid Forge</h1>
@@ -293,10 +293,26 @@ Real, runnable example projects you can clone and adapt today. Each one is a com
 
 <table>
 <tr>
-<td align="center" width="25%"><strong>🏠 Local<br>(DuckDB)</strong><br><sub>Develop & test instantly<br>No cloud account needed</sub></td>
-<td align="center" width="25%"><strong>☁️ GCP<br>(BigQuery + GCS)</strong><br><sub>Production analytics<br>Cloud Composer, Pub/Sub, IAM</sub></td>
-<td align="center" width="25%"><strong>🔶 AWS<br>(S3 + Athena + Glue)</strong><br><sub>Serverless queries<br>on your data lake</sub></td>
-<td align="center" width="25%"><strong>❄️ Snowflake</strong><br><sub>Enterprise warehouse<br>Snowpark & dbt integration</sub></td>
+<td align="center" width="25%">
+<img src="docs/.vuepress/public/providers/duckdb.svg" alt="DuckDB" width="48" height="48"><br>
+<strong>Local<br>(DuckDB)</strong><br>
+<sub>Develop & test instantly<br>No cloud account needed</sub>
+</td>
+<td align="center" width="25%">
+<img src="docs/.vuepress/public/providers/gcp.svg" alt="GCP" width="48" height="48"><br>
+<strong>GCP<br>(BigQuery + GCS)</strong><br>
+<sub>Production analytics<br>Cloud Composer, Pub/Sub, IAM</sub>
+</td>
+<td align="center" width="25%">
+<img src="docs/.vuepress/public/providers/aws.svg" alt="AWS" width="48" height="48"><br>
+<strong>AWS<br>(S3 + Athena + Glue)</strong><br>
+<sub>Serverless queries<br>on your data lake</sub>
+</td>
+<td align="center" width="25%">
+<img src="docs/.vuepress/public/providers/snowflake.svg" alt="Snowflake" width="48" height="48"><br>
+<strong>Snowflake</strong><br>
+<sub>Enterprise warehouse<br>Snowpark & dbt integration</sub>
+</td>
 </tr>
 </table>
 

@@ -243,8 +243,15 @@ export default defineUserConfig({
   }),
 
   plugins: [
-    // Cmd+K / "/" client-side search until Algolia DocSearch approval lands.
-    // Will be swapped to @vuepress/plugin-docsearch once the API key arrives.
+    // Client-side full-text search. No external service, no signup, no
+    // third-party requests — the index ships in the bundle and runs
+    // entirely in the visitor's browser. Plenty for a ~60-page site.
+    //
+    // If we want better ranking later, swap to:
+    //   @vuepress/plugin-slimsearch   (fuzzy matching, suggestion UI,
+    //                                  result highlighting, same author)
+    // No need to migrate to a hosted service unless the docs grow past
+    // ~500 pages or we want analytics on what visitors are searching.
     searchPlugin({
       locales: {
         '/': {

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fluid Forge — README hero illustration
+  ============================================================
+  Programmatic illustration: 1200x400, transparent background.
+  Centerpiece: a single contract.fluid.yaml flowing into four
+  cloud platforms via the brand-gradient "fluid apply" pipe.
+
+  Designed to drop in above the wordmark in the README without
+  changing any other layout — width is fluid up to 1200px,
+  height auto-scales.
+  ============================================================
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet" role="img" aria-label="One Fluid Forge contract deploys to four cloud platforms">
+  <defs>
+    <linearGradient id="pipe" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="60%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <linearGradient id="ymlcard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <linearGradient id="cloudCard" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fafc" />
+    </linearGradient>
+
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="6" />
+      <feOffset dx="0" dy="4" result="shadow" />
+      <feFlood flood-color="#0f172a" flood-opacity="0.18" />
+      <feComposite in2="shadow" operator="in" />
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Subtle pulse animation on the pipe -->
+    <linearGradient id="pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0">
+        <animate attributeName="offset" values="-0.3;1.2" dur="2.5s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="0.05%" stop-color="#ffffff" stop-opacity="0.6">
+        <animate attributeName="offset" values="-0.25;1.25" dur="2.5s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="0.1%" stop-color="#2563eb" stop-opacity="0">
+        <animate attributeName="offset" values="-0.2;1.3" dur="2.5s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>
+  </defs>
+
+  <!-- Left: contract.fluid.yaml card -->
+  <g transform="translate(40, 100)" filter="url(#cardShadow)">
+    <rect width="280" height="200" rx="14" fill="url(#ymlcard)" />
+    <!-- Title bar with three macOS dots -->
+    <rect width="280" height="32" rx="14" fill="rgba(255,255,255,0.04)" />
+    <circle cx="18" cy="16" r="5" fill="#ff5f58" />
+    <circle cx="36" cy="16" r="5" fill="#ffbd2e" />
+    <circle cx="54" cy="16" r="5" fill="#28c840" />
+    <text x="140" y="20" text-anchor="middle"
+          font-family="ui-monospace, 'JetBrains Mono', Menlo, monospace"
+          font-size="11" fill="#94a3b8">contract.fluid.yaml</text>
+
+    <!-- YAML body — colored tokens -->
+    <g font-family="ui-monospace, 'JetBrains Mono', Menlo, monospace" font-size="12">
+      <text x="20" y="60"  fill="#94a3b8">fluidVersion:</text><text x="135" y="60"  fill="#fbbf24">"0.7.2"</text>
+      <text x="20" y="80"  fill="#94a3b8">kind:</text>          <text x="65"  y="80"  fill="#7dd3fc">DataProduct</text>
+      <text x="20" y="100" fill="#94a3b8">id:</text>            <text x="55"  y="100" fill="#fbbf24">gold.crypto.btc_v1</text>
+      <text x="20" y="120" fill="#94a3b8">exposes:</text>
+      <text x="32" y="140" fill="#94a3b8">- exposeId:</text>    <text x="120" y="140" fill="#fbbf24">btc_prices</text>
+      <text x="44" y="160" fill="#94a3b8">binding:</text>
+      <text x="56" y="180" fill="#94a3b8">platform:</text>      <text x="135" y="180" fill="#a7f3d0">local</text>
+    </g>
+  </g>
+
+  <!-- Center: fluid apply pipe -->
+  <g transform="translate(320, 180)">
+    <rect x="0" y="0" width="280" height="40" rx="20" fill="url(#pipe)" />
+    <rect x="0" y="0" width="280" height="40" rx="20" fill="url(#pulse)" />
+    <text x="140" y="26" text-anchor="middle"
+          font-family="ui-monospace, 'JetBrains Mono', Menlo, monospace"
+          font-size="14" font-weight="700" fill="#ffffff">$ fluid apply</text>
+  </g>
+
+  <!-- Connecting lines from pipe to clouds -->
+  <g stroke="url(#pipe)" stroke-width="2" fill="none" opacity="0.5">
+    <path d="M600,200 L740,90"  />
+    <path d="M600,200 L740,170" />
+    <path d="M600,200 L740,250" />
+    <path d="M600,200 L740,330" />
+  </g>
+
+  <!-- Right: 4 cloud destination cards -->
+  <g transform="translate(720, 50)" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif">
+    <!-- GCP -->
+    <g transform="translate(20, 20)" filter="url(#cardShadow)">
+      <rect width="200" height="50" rx="10" fill="url(#cloudCard)" stroke="#e2e8f0" />
+      <text x="20" y="22" font-size="20">☁️</text>
+      <text x="56" y="22" font-size="14" font-weight="700" fill="#0f172a">GCP / BigQuery</text>
+      <text x="56" y="40" font-size="11" fill="#64748b">platform: gcp</text>
+    </g>
+    <!-- AWS -->
+    <g transform="translate(20, 100)" filter="url(#cardShadow)">
+      <rect width="200" height="50" rx="10" fill="url(#cloudCard)" stroke="#e2e8f0" />
+      <text x="20" y="22" font-size="20">🔶</text>
+      <text x="56" y="22" font-size="14" font-weight="700" fill="#0f172a">AWS / Athena</text>
+      <text x="56" y="40" font-size="11" fill="#64748b">platform: aws</text>
+    </g>
+    <!-- Snowflake -->
+    <g transform="translate(20, 180)" filter="url(#cardShadow)">
+      <rect width="200" height="50" rx="10" fill="url(#cloudCard)" stroke="#e2e8f0" />
+      <text x="20" y="22" font-size="20">❄️</text>
+      <text x="56" y="22" font-size="14" font-weight="700" fill="#0f172a">Snowflake</text>
+      <text x="56" y="40" font-size="11" fill="#64748b">platform: snowflake</text>
+    </g>
+    <!-- Local -->
+    <g transform="translate(20, 260)" filter="url(#cardShadow)">
+      <rect width="200" height="50" rx="10" fill="url(#cloudCard)" stroke="#e2e8f0" />
+      <text x="20" y="22" font-size="20">🏠</text>
+      <text x="56" y="22" font-size="14" font-weight="700" fill="#0f172a">Local / DuckDB</text>
+      <text x="56" y="40" font-size="11" fill="#64748b">platform: local</text>
+    </g>
+  </g>
+
+  <!-- Tagline at bottom -->
+  <text x="600" y="380" text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif"
+        font-size="14" font-weight="500" fill="#64748b">
+    1 file. 4 clouds. 0 rewrites.
+  </text>
+</svg>

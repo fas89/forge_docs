@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Snowflake — six-pointed snowflake brand mark
+  Uses Snowflake's signature blue (#29B5E8). The six-arm snowflake
+  is the canonical product mark; we simplify to a single layer.
+  ============================================================
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Snowflake">
+  <defs>
+    <linearGradient id="snow-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#29B5E8"/>
+      <stop offset="100%" stop-color="#1B96D5"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="url(#snow-bg)"/>
+  <!-- 6-arm snowflake — three intersecting lines + small tips -->
+  <g stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" fill="none" transform="translate(32 32)">
+    <!-- 3 axes through center -->
+    <line x1="-18" y1="0" x2="18" y2="0"/>
+    <line x1="-9" y1="-15.6" x2="9" y2="15.6"/>
+    <line x1="-9" y1="15.6" x2="9" y2="-15.6"/>
+    <!-- Tips on each arm: arrowhead-like crystal sub-arms -->
+    <g>
+      <!-- right -->
+      <line x1="18" y1="0" x2="14" y2="-3"/>
+      <line x1="18" y1="0" x2="14" y2="3"/>
+      <!-- left -->
+      <line x1="-18" y1="0" x2="-14" y2="-3"/>
+      <line x1="-18" y1="0" x2="-14" y2="3"/>
+      <!-- upper-right -->
+      <line x1="9" y1="-15.6" x2="5.5" y2="-13.6"/>
+      <line x1="9" y1="-15.6" x2="11" y2="-12"/>
+      <!-- lower-left -->
+      <line x1="-9" y1="15.6" x2="-5.5" y2="13.6"/>
+      <line x1="-9" y1="15.6" x2="-11" y2="12"/>
+      <!-- upper-left -->
+      <line x1="-9" y1="-15.6" x2="-5.5" y2="-13.6"/>
+      <line x1="-9" y1="-15.6" x2="-11" y2="-12"/>
+      <!-- lower-right -->
+      <line x1="9" y1="15.6" x2="5.5" y2="13.6"/>
+      <line x1="9" y1="15.6" x2="11" y2="12"/>
+    </g>
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="2" fill="#ffffff" stroke="none"/>
+  </g>
+</svg>

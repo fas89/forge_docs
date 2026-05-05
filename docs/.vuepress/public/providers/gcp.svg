@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  GCP / BigQuery — simplified brand mark
+  Programmatic, brand-color-correct, no logo trademark assets — uses
+  the four-quadrant Google color block as a recognizable cloud cue.
+  ============================================================
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GCP / BigQuery">
+  <defs>
+    <linearGradient id="gcp-cloud" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4285F4"/>
+      <stop offset="100%" stop-color="#1A73E8"/>
+    </linearGradient>
+  </defs>
+  <!-- Cloud silhouette -->
+  <path d="M44 26c0-8.8-7.2-16-16-16s-16 7.2-16 16h-1c-5 0-9 4-9 9s4 9 9 9h35c6.6 0 12-5.4 12-12s-5.4-12-12-12c-0.7 0-1.4 0.1-2 0.2z"
+        fill="url(#gcp-cloud)"/>
+  <!-- BigQuery prism inside -->
+  <g transform="translate(20, 24)">
+    <circle cx="11" cy="9" r="9" fill="#fff" opacity="0.95"/>
+    <path d="M5 9 a6 6 0 0 1 12 0 a6 6 0 0 1 -12 0z M11 9 L15 13" stroke="#1A73E8" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

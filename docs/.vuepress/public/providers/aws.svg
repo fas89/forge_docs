@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  AWS / Athena — simplified brand mark
+  Uses the AWS orange (#FF9900) with a stylized data-cube motif
+  evoking S3 + Athena query.
+  ============================================================
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="AWS / Athena">
+  <defs>
+    <linearGradient id="aws-cube" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9900"/>
+      <stop offset="100%" stop-color="#EC7211"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect x="4" y="4" width="56" height="56" rx="12" fill="#232F3E"/>
+  <!-- Stylized AWS chevron / pipe -->
+  <path d="M16 38 L32 30 L48 38 L48 46 L32 54 L16 46 Z"
+        fill="url(#aws-cube)"/>
+  <path d="M16 30 L32 22 L48 30 L32 38 Z"
+        fill="url(#aws-cube)" opacity="0.85"/>
+  <!-- Athena lambda glyph -->
+  <path d="M28 14 Q32 10 36 14 L34 18 L30 18 Z" fill="#fff" opacity="0.9"/>
+</svg>
