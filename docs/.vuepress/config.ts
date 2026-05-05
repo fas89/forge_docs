@@ -1,10 +1,9 @@
 import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { viteBundler } from '@vuepress/bundler-vite'
-import { copyCodePlugin } from '@vuepress/plugin-copy-code'
+import { markdownChartPlugin } from '@vuepress/plugin-markdown-chart'
 import { searchPlugin } from '@vuepress/plugin-search'
 import { sitemapPlugin } from '@vuepress/plugin-sitemap'
-import { mdEnhancePlugin } from 'vuepress-plugin-md-enhance'
 
 const SITE_URL = 'https://agentics-rising.github.io/forge_docs/'
 const SITE_HOSTNAME = 'agentics-rising.github.io'
@@ -199,29 +198,20 @@ export default defineUserConfig({
       hotKeys: ['s', '/'],
     }),
 
-    // One-click copy on every code block.
-    copyCodePlugin({
-      // Show the button on every code block, not just multi-line.
-      // Default behavior is fine for most repos; tweaks here if needed.
-    }),
-
     // /sitemap.xml for SEO + crawlability. Hostname sets canonical URL.
     sitemapPlugin({
       hostname: SITE_URL,
     }),
 
-    // Rich markdown features: Mermaid diagrams render natively on the
-    // published site (not just on GitHub), tabs, alerts, etc.
-    mdEnhancePlugin({
-      mermaid: true,        // ```mermaid blocks render as SVG
-      tabs: true,           // ::: tabs / ::: code-tabs
-      codetabs: true,       // language-grouped code blocks
-      align: true,          // ::: center / right
-      mark: true,           // ==highlighted text==
-      hint: true,           // ::: tip / warning / danger / info / note (extended)
-      figure: true,         // captioned figures
-      imgLazyload: true,    // <img loading="lazy"> on every doc image
-      imgSize: true,        // dimension hints to prevent CLS
+    // Mermaid + Chart.js + ECharts diagrams rendering as SVG inside the
+    // published docs (not just on GitHub). The README's mental-model
+    // flowchart now renders on the live site too.
+    markdownChartPlugin({
+      mermaid: true,
     }),
+
+    // Note: copy-on-code button + tip/warning/danger callouts +
+    // tab containers all ship with @vuepress/theme-default by default
+    // in rc.128 — no extra plugin wiring needed.
   ],
 })

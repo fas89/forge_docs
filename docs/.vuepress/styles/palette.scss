@@ -9,6 +9,8 @@
 // switches between them via the `[data-theme]` attribute on <html>.
 // =====================================================================
 
+@use "sass:color";
+
 // ---------------------------------------------------------------------
 // Brand primitives — change once, ripples through every other variable.
 // ---------------------------------------------------------------------
@@ -30,6 +32,9 @@ $ff-amber-300: #fcd34d;
 $ff-amber-400: #fbbf24;   // accent (forge fire)
 $ff-amber-500: #f59e0b;
 $ff-amber-600: #d97706;
+$ff-amber-700: #b45309;
+$ff-amber-800: #92400e;
+$ff-amber-900: #78350f;
 
 $ff-slate-50:  #f8fafc;
 $ff-slate-100: #f1f5f9;
@@ -127,7 +132,7 @@ $ff-slate-900: #0f172a;
 
   --ff-c-accent:        #{$ff-amber-400};
   --ff-c-accent-hover:  #{$ff-amber-300};
-  --ff-c-accent-soft:   rgba(#{red($ff-amber-400)}, #{green($ff-amber-400)}, #{blue($ff-amber-400)}, 0.15);
+  --ff-c-accent-soft:   #{color.change($ff-amber-400, $alpha: 0.15)};
 
   --vp-c-bg:            #{$ff-slate-900};
   --vp-c-bg-alt:        #{$ff-slate-800};
@@ -147,11 +152,11 @@ $ff-slate-900: #0f172a;
   --code-bg-color:      #{$ff-slate-900};
   --code-c-text:        #{$ff-slate-100};
 
-  --vp-c-tip-bg:        rgba(#{red($ff-blue-500)}, #{green($ff-blue-500)}, #{blue($ff-blue-500)}, 0.1);
+  --vp-c-tip-bg:        #{color.change($ff-blue-500, $alpha: 0.1)};
   --vp-c-tip-text:      #{$ff-blue-300};
   --vp-c-tip-border:    #{$ff-blue-700};
 
-  --vp-c-warning-bg:    rgba(#{red($ff-amber-500)}, #{green($ff-amber-500)}, #{blue($ff-amber-500)}, 0.1);
+  --vp-c-warning-bg:    #{color.change($ff-amber-500, $alpha: 0.1)};
   --vp-c-warning-text:  #{$ff-amber-300};
   --vp-c-warning-border:#{$ff-amber-700};
 
