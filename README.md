@@ -302,22 +302,25 @@ Real, runnable example projects you can clone and adapt today. Each one is a com
 
 **Plus:** Build your own providers with the [Provider SDK](https://github.com/Agentics-Rising/fluid-provider-sdk) — Databricks, Azure, Postgres, anything.
 
-## ⚡ 44 Commands — Everything You Need
+## ⚡ The full command surface
 
-Fluid Forge isn't just `apply`. It's a complete data product lifecycle toolkit:
+Fluid Forge isn't just `apply`. It's a complete data-product lifecycle toolkit. The taxonomy below mirrors `fluid --help` in v0.8.0 — every group, every command, every name verified against the running CLI.
 
-| Category | Commands | What It Does |
-|----------|----------|-------------|
-| **Declare & Deploy** | `init` · `validate` · `plan` · `apply` · `execute` | Build, validate, and deploy data products from YAML contracts |
-| **Test & Verify** | `test` · `verify` · `contract-tests` · `diff` | Live resource validation, schema compatibility, drift detection |
-| **Orchestration** | `export` · `generate-airflow` · `scaffold-composer` · `scaffold-ci` | Auto-generate Airflow DAGs, Dagster graphs, Prefect flows, CI/CD pipelines |
-| **Governance** | `policy-check` · `policy-compile` · `policy-apply` | Validate policies, compile to native IAM, and enforce — all from the contract |
-| **Visualization** | `viz-graph` · `viz-plan` · `preview` | Lineage diagrams (SVG/PNG/HTML), execution plan visualization |
-| **Publishing** | `publish` · `export-opds` · `odcs` · `datamesh-manager` | Register in catalogs, export to OPDS/ODCS, push to Data Mesh Manager |
-| **AI & Blueprints** | `forge --mode copilot` · `forge --mode agent` · `blueprint` · `marketplace` | Adaptive AI-assisted creation, spec-backed domain agents, blueprint templates, marketplace discovery |
-| **Config & Admin** | `context` · `providers` · `doctor` · `auth` · `wizard` | Provider management, diagnostics, interactive onboarding |
+| Group | Commands | What it does |
+|-------|----------|--------------|
+| **Core workflow** | `init` · `forge` · `validate` · `plan` · `apply` | Scaffold a project, build a contract (with the AI copilot via `forge`), check syntax + provider rules, preview execution, deploy. |
+| **Generate** | `generate transformation` · `generate schedule` · `generate ci` · `generate standard` · `generate artifacts` | Auto-generate dbt/SQL/Spark transformations, Airflow / Dagster / Prefect / Composer / MWAA schedules, GitHub Actions / GitLab CI pipelines, OPDS / ODCS / ODPS-Bitol exports, and the bundled artifact fanout. |
+| **Integrations** | `publish` · `market` · `import` | Register in enterprise data catalogs, browse blueprints + community marketplace, import existing dbt / Terraform / SQL projects. |
+| **Pipeline stages** *(11-stage production flow — each command is a CI gate)* | `bundle` → `validate` → `generate artifacts` → `validate-artifacts` → `diff` → `plan` → `apply` → `policy-apply` → `verify` → `publish` → `schedule-sync` | Sign contracts into tgz bundles, fan out to ODCS/ODPS/schedule/policy artifacts, verify SHA-256 manifests, detect drift, plan + deploy, enforce IAM/GRANTs, confirm deployed state, push to catalogs, sync DAGs to Composer/MWAA/Astronomer. |
+| **Quality & governance** | `policy-check` · `test` | Lint contracts for policy violations, test contracts against live data with `--strict` and JSON output. |
+| **Safety & supply chain** | `rollback` · `verify-signature` | Restore from auto-snapshots taken before every `apply`, verify cosign signatures + SLSA attestations on bundles. |
+| **Utilities** | `config` · `split` · `auth` · `doctor` · `providers` · `version` | Set defaults (provider/project/region), split contracts into composable fragments, manage cloud credentials (`login`/`status`/`logout`), check system health, list providers, show version. |
 
-> Run `fluid doctor` to verify your setup, or `fluid wizard` for interactive onboarding.
+> Run `fluid doctor` to verify your setup. `fluid <command> -h` opens per-command help.
+
+> **⚡ Quick paths:**
+> - **Dev quickstart:** `fluid init  →  forge  →  validate  →  plan  →  apply`
+> - **Production pipeline:** `bundle  →  validate  →  generate artifacts  →  diff  →  plan  →  apply  →  verify  →  publish`
 
 ## 🛡 Built-In Governance & Compliance
 
