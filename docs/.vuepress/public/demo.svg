@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 540" width="820" height="540" role="img" aria-label="Fluid Forge — 30 second demo">
+  <title>Fluid Forge — 30 second demo</title>
+  <desc>A terminal recording showing pip install fluid-forge, fluid init, fluid validate, and fluid apply — deploying a data product to DuckDB locally in under 30 seconds.</desc>
+
+  <!-- Window background with subtle drop shadow -->
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+    <linearGradient id="titlebar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a3a4a"/>
+      <stop offset="1" stop-color="#2a2a38"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Terminal window -->
+  <g filter="url(#shadow)">
+    <rect x="10" y="10" width="800" height="520" rx="10" fill="#1e1e2e"/>
+
+    <!-- Title bar -->
+    <rect x="10" y="10" width="800" height="32" rx="10" fill="url(#titlebar)"/>
+    <rect x="10" y="32" width="800" height="10" fill="url(#titlebar)"/>
+
+    <!-- Traffic lights -->
+    <circle cx="32" cy="26" r="6" fill="#ff5f57"/>
+    <circle cx="52" cy="26" r="6" fill="#febc2e"/>
+    <circle cx="72" cy="26" r="6" fill="#28c840"/>
+
+    <!-- Title text -->
+    <text x="410" y="30" font-family="-apple-system, system-ui, sans-serif" font-size="13" fill="#aaa" text-anchor="middle">fluid — bash — 80×24</text>
+  </g>
+
+  <!-- Terminal content -->
+  <g font-family="'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace" font-size="14">
+
+    <!-- Line 1: install -->
+    <text x="30" y="72" fill="#a6e3a1">$</text>
+    <text x="50" y="72" fill="#cdd6f4"> pip install fluid-forge</text>
+    <text x="30" y="92" fill="#9399b2">Successfully installed fluid-forge-0.7.9</text>
+
+    <!-- Spacer -->
+    <text x="30" y="112" fill="#cdd6f4"> </text>
+
+    <!-- Line 2: init -->
+    <text x="30" y="132" fill="#a6e3a1">$</text>
+    <text x="50" y="132" fill="#cdd6f4"> fluid init my-project --quickstart</text>
+    <text x="30" y="152" fill="#cdd6f4">  ✓ Created my-project/contract.fluid.yaml</text>
+    <text x="30" y="172" fill="#cdd6f4">  ✓ Created my-project/data/customers.csv</text>
+    <text x="30" y="192" fill="#cdd6f4">  ✓ Created my-project/data/orders.csv</text>
+    <text x="30" y="212" fill="#cdd6f4">  ✓ Initialized .fluid/ state directory</text>
+
+    <!-- Spacer -->
+    <text x="30" y="232" fill="#cdd6f4"> </text>
+
+    <!-- Line 3: validate -->
+    <text x="30" y="252" fill="#a6e3a1">$</text>
+    <text x="50" y="252" fill="#cdd6f4"> cd my-project &amp;&amp; fluid validate contract.fluid.yaml</text>
+    <text x="30" y="272" fill="#a6e3a1">✅ Contract validation passed</text>
+    <text x="30" y="292" fill="#9399b2">   schema: 4 fields  · quality rules: 2  · access policies: 2</text>
+
+    <!-- Spacer -->
+    <text x="30" y="312" fill="#cdd6f4"> </text>
+
+    <!-- Line 4: apply -->
+    <text x="30" y="332" fill="#a6e3a1">$</text>
+    <text x="50" y="332" fill="#cdd6f4"> fluid apply contract.fluid.yaml --yes</text>
+    <text x="30" y="352" fill="#cdd6f4">  ⏳ Reading sources from data/...</text>
+    <text x="30" y="372" fill="#cdd6f4">  ⏳ Running 1 build (sql/embedded-logic)...</text>
+    <text x="30" y="392" fill="#cdd6f4">  ⏳ Writing exposed table → DuckDB (crypto_data.bitcoin_prices)</text>
+    <text x="30" y="412" fill="#cdd6f4">  ⏳ Verifying quality rules...</text>
+    <text x="30" y="432" fill="#a6e3a1">✅ Pipeline complete in 1.24s</text>
+    <text x="30" y="452" fill="#9399b2">   24 rows written  · 2/2 quality rules passed  · 0 drift</text>
+
+    <!-- Spacer -->
+    <text x="30" y="472" fill="#cdd6f4"> </text>
+
+    <!-- Tagline -->
+    <text x="30" y="492" fill="#f5c2e7">→ Same contract. Swap </text>
+    <text x="218" y="492" fill="#fab387">platform: local</text>
+    <text x="338" y="492" fill="#f5c2e7"> to </text>
+    <text x="370" y="492" fill="#fab387">platform: gcp</text>
+    <text x="476" y="492" fill="#f5c2e7"> for production.</text>
+
+    <!-- Caret -->
+    <text x="30" y="512" fill="#a6e3a1">$</text>
+    <rect x="50" y="500" width="9" height="16" fill="#cdd6f4">
+      <animate attributeName="opacity" values="1;1;0;0" dur="1.06s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>
