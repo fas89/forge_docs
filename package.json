@@ -28,10 +28,16 @@
   "author": "Agentics Transformation Pty Ltd (https://github.com/Agentics-Rising)",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@fontsource-variable/inter": "^5.1.0",
+    "@fontsource-variable/jetbrains-mono": "^5.1.0",
     "@vuepress/bundler-vite": "^2.0.0-rc.26",
     "@vuepress/client": "^2.0.0-rc.26",
+    "@vuepress/plugin-copy-code": "^2.0.0-rc.40",
+    "@vuepress/plugin-search": "^2.0.0-rc.40",
+    "@vuepress/plugin-sitemap": "^2.0.0-rc.40",
     "@vuepress/theme-default": "^2.0.0-rc.125",
     "sass-embedded": "^1.97.2",
-    "vuepress": "^2.0.0-rc.26"
+    "vuepress": "^2.0.0-rc.26",
+    "vuepress-plugin-md-enhance": "^2.0.0-rc.108"
   }
 }
