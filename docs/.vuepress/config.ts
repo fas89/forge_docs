@@ -88,6 +88,7 @@ export default defineUserConfig({
         ],
       },
       { text: 'CLI Reference', link: '/cli/' },
+      { text: 'Playground', link: '/playground/' },
       {
         text: 'Providers',
         children: [
