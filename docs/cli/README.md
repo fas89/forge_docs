@@ -523,7 +523,7 @@ Display version and build information.
 
 ```bash
 fluid version
-# Fluid Forge CLI v0.7.7
+# FLUID CLI v0.8.0
 ```
 
 ### `fluid providers`

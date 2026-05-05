@@ -162,7 +162,7 @@ pip install requests google-cloud-bigquery
 Create `contract.fluid.yaml`:
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: crypto.bitcoin_prices_gcp
 name: bitcoin-prices-gcp
@@ -483,7 +483,7 @@ fluid validate contract.fluid.yaml
 # Metric: validation_duration=0.017seconds
 # Metric: validation_errors=0count
 # Metric: validation_warnings=0count
-# ✅ Valid FLUID contract (schema v0.7.1)
+# ✅ Valid FLUID contract (schema v0.7.2)
 # Validation completed in 0.003s
 # Completed validate_contract in 0.02s
 ```

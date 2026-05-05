@@ -197,7 +197,7 @@ All generated DAGs include production best practices:
 ### Minimal Contract
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: Contract
 id: my-pipeline
 name: "My Data Pipeline"
@@ -218,7 +218,7 @@ exposes:
 ### Full-Featured Contract
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: Contract
 id: advanced-pipeline
 name: "Advanced Analytics Pipeline"

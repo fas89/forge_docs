@@ -16,14 +16,21 @@ When you're ready for production, switch to [GCP](/providers/gcp), [AWS](/provid
 ## Install
 
 ```bash
-pip install fluid-forge
+# Recommended: install the CLI with the Local (DuckDB) provider so the
+# 30-second quickstart below runs end-to-end with no extra setup.
+pip install "data-product-forge[local]"
 ```
+
+::: tip Cleaner alternative — pipx
+For an isolated global install (the CLI lives outside your project venv):
+`pipx install "data-product-forge[local]"`. Recommended for day-to-day use.
+:::
 
 Verify the installation:
 
 ```bash
 fluid version
-# Fluid Forge CLI v0.7.8
+# FLUID CLI v0.8.0
 
 fluid doctor
 # Reports Python version, installed providers, and dependencies

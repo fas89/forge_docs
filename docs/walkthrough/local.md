@@ -28,7 +28,7 @@ Build a **Netflix customer viewing analytics pipeline** entirely on your laptop 
 ### Install Fluid Forge
 
 ```bash
-pip install fluid-forge
+pip install data-product-forge
 ```
 
 ### Verify Installation
@@ -37,7 +37,7 @@ pip install fluid-forge
 fluid version
 
 # Should show:
-# Fluid Forge CLI v0.7.7
+# FLUID CLI v0.8.0
 # Providers: local (production), gcp (production)
 ```
 
@@ -99,7 +99,7 @@ EOF
 Create `contract.fluid.yaml` with **declarative SQL transformations**:
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: entertainment.netflix_preferences_local
 name: Netflix Customer Preferences - Local
@@ -274,7 +274,7 @@ Check that your contract is well-formed:
 fluid validate contract.fluid.yaml
 
 # Expected output:
-# ✅ Valid FLUID contract (schema v0.7.1)
+# ✅ Valid FLUID contract (schema v0.7.2)
 # Validation completed in 0.004s
 ```
 

@@ -52,7 +52,7 @@ This is a production-tested example that runs end-to-end in Jenkins CI.
 ### Contract
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: crypto.bitcoin_prices_snowflake_governed
 name: Bitcoin Price Index (FLUID 0.7.1 + Snowflake + Governance)

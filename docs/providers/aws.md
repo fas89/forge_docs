@@ -26,7 +26,7 @@ This is a production-tested example that runs end-to-end in Jenkins CI.
 ### Contract
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: crypto.market_data.bitcoin_prices_aws_v1
 name: Bitcoin Price Tracker (AWS Athena)

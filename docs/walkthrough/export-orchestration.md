@@ -25,7 +25,7 @@ Fluid Forge transforms your declarative contracts into production-ready orchestr
 
 ```yaml
 # crypto-analytics.fluid.yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: crypto.bitcoin_analytics
 name: bitcoin-analytics
@@ -80,7 +80,7 @@ aws s3 cp dags/crypto_bitcoin_analytics.py s3://your-mwaa-bucket/dags/
 
 **Contract:**
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: gcp.customer_analytics
 name: customer-analytics
@@ -194,7 +194,7 @@ with DAG(
 
 **Contract:**
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: aws.sales_analytics
 name: sales-analytics
@@ -314,7 +314,7 @@ def aws_sales_analytics():
 
 **Contract:**
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: snowflake.inventory_analytics
 name: inventory-analytics
@@ -603,7 +603,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Install Fluid Forge
-        run: pip install fluid-forge
+        run: pip install data-product-forge
       
       - name: Generate Airflow DAGs
         run: |
@@ -674,7 +674,7 @@ tasks:
 
 **Solution:** Update to latest Fluid Forge version:
 ```bash
-pip install --upgrade fluid-forge
+pip install --upgrade data-product-forge
 ```
 
 ---

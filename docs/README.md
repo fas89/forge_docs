@@ -32,12 +32,12 @@ footer: Apache 2.0 Licensed | Developed with ❤️ by DustLabs. Copyright 2025-
 
 <div class="badges" style="text-align: center; margin-bottom: 2rem;">
 
-[![PyPI version](https://img.shields.io/pypi/v/fluid-forge?color=blue)](https://pypi.org/project/fluid-forge/)
+[![PyPI version](https://img.shields.io/pypi/v/data-product-forge?color=blue)](https://pypi.org/project/data-product-forge/)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
 [![CLI CI](https://img.shields.io/github/actions/workflow/status/Agentics-Rising/forge-cli/ci.yml?label=CLI%20CI)](https://github.com/Agentics-Rising/forge-cli/actions/workflows/ci.yml)
 [![GitHub stars](https://img.shields.io/github/stars/Agentics-Rising/forge-cli?style=flat&color=yellow)](https://github.com/Agentics-Rising/forge-cli/stargazers)
-[![PyPI downloads](https://img.shields.io/pypi/dm/fluid-forge?color=blue&label=downloads)](https://pypi.org/project/fluid-forge/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/data-product-forge?color=blue&label=downloads)](https://pypi.org/project/data-product-forge/)
 [![Last commit](https://img.shields.io/github/last-commit/Agentics-Rising/forge-cli?label=last%20commit)](https://github.com/Agentics-Rising/forge-cli/commits/main)
 [![Good first issues](https://img.shields.io/github/issues/Agentics-Rising/forge-cli/good%20first%20issue?label=good%20first%20issues&color=7057ff)](https://github.com/Agentics-Rising/forge-cli/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ```bash
 # Install
-pip install fluid-forge
+pip install data-product-forge
 
 # Create a project with sample data
 fluid init my-project --quickstart

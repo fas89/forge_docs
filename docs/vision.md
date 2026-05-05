@@ -25,7 +25,7 @@ Fluid Forge introduces **Data Products as Code** — a declarative approach wher
 
 ```yaml
 # One contract. Every cloud.
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: analytics.customers
 name: Customer Analytics
@@ -76,7 +76,7 @@ You declare the desired state. Fluid Forge plans the execution, handles errors, 
 ### 2. Developer Experience
 
 ```bash
-pip install fluid-forge          # Install
+pip install data-product-forge          # Install
 fluid init my-project --quickstart  # Scaffold
 fluid apply contract.fluid.yaml --yes  # Deploy
 ```

@@ -155,7 +155,7 @@ class MyProvider(BaseProvider):
 
 | Milestone | Providers | Timeline |
 |-----------|----------|----------|
-| v0.7.1 (current) | GCP, AWS, Snowflake, Local, ODPS, ODCS | ✅ Released |
+| v0.7.9 (current) | GCP, AWS, Snowflake, Local, ODPS, ODCS | ✅ Released |
 | v0.8.x | Azure (Synapse, Data Lake Gen2) | Q3 2026 |
 | v0.9.x | Databricks (SQL, Delta Lake, Unity Catalog) | Q4 2026 |
 

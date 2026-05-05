@@ -142,7 +142,7 @@ validate >> fetch_price >> insert_price >> run_dbt >> check_quality
 Your **data product contract** (`contract.fluid.yaml`) already contains everything needed:
 
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 id: crypto.bitcoin_prices_gcp
 name: bitcoin-prices-gcp

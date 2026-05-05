@@ -21,11 +21,11 @@
 </p>
 
 <p align="center">
-  <a href="https://pypi.org/project/fluid-forge/"><img src="https://img.shields.io/pypi/v/fluid-forge?color=blue&label=PyPI" alt="PyPI"></a>
+  <a href="https://pypi.org/project/data-product-forge/"><img src="https://img.shields.io/pypi/v/data-product-forge?color=blue&label=PyPI" alt="PyPI"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.9%2B-blue" alt="Python 3.9+"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
   <a href="https://github.com/Agentics-Rising/forge_docs/actions/workflows/deploy-docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/Agentics-Rising/forge_docs/deploy-docs.yml?label=docs" alt="Docs Build"></a>
-  <a href="https://pypi.org/project/fluid-forge/"><img src="https://img.shields.io/pypi/dm/fluid-forge?color=blue&label=downloads" alt="PyPI downloads"></a>
+  <a href="https://pypi.org/project/data-product-forge/"><img src="https://img.shields.io/pypi/dm/data-product-forge?color=blue&label=downloads" alt="PyPI downloads"></a>
   <a href="https://github.com/Agentics-Rising/forge-cli/commits/main"><img src="https://img.shields.io/github/last-commit/Agentics-Rising/forge-cli?label=last%20commit" alt="Last commit"></a>
   <a href="https://github.com/Agentics-Rising/forge-cli/pulls"><img src="https://img.shields.io/github/issues-pr/Agentics-Rising/forge-cli?label=open%20PRs" alt="Open PRs"></a>
   <a href="https://github.com/Agentics-Rising/forge-cli/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22"><img src="https://img.shields.io/github/issues/Agentics-Rising/forge-cli/good%20first%20issue?label=good%20first%20issues&color=7057ff" alt="Good first issues"></a>
@@ -134,7 +134,7 @@ The trade-off is real: Fluid Forge is opinionated. If you need to crank a single
 ## 🚀 From Zero to Data Product in 30 Seconds
 
 ```bash
-pip install fluid-forge
+pip install data-product-forge
 fluid init my-project --quickstart
 fluid apply contract.fluid.yaml --yes
 ```

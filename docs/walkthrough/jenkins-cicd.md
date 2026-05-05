@@ -234,7 +234,7 @@ Starting validate_contract
 Metric: validation_duration=0.042seconds
 Metric: validation_errors=0count
 Metric: validation_warnings=0count
-✅ Valid FLUID contract (schema v0.7.1)
+✅ Valid FLUID contract (schema v0.7.2)
 ```
 
 ### Stage 3: Static Analysis
@@ -608,7 +608,7 @@ post {
 **Solution:**
 ```yaml
 # Add at top of contract.fluid.yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: DataProduct
 ```
 

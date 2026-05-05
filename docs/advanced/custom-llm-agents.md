@@ -161,7 +161,7 @@ Parquet and Avro discovery are metadata-only features. They use optional local r
 Install the optional copilot discovery dependencies:
 
 ```bash
-pip install "fluid-forge[copilot]"
+pip install "data-product-forge[copilot]"
 ```
 
 Or install the readers directly:

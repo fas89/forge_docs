@@ -280,7 +280,7 @@ Line 5: Missing required field 'metadata.provider'
 
 **Fix:**
 ```yaml
-fluidVersion: "0.7.1"
+fluidVersion: "0.7.2"
 kind: Contract
 id: my-contract
 name: "My Contract"
@@ -377,7 +377,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Install Fluid Forge
-        run: pip install fluid-forge
+        run: pip install data-product-forge
       
       - name: Validate All Contracts
         run: |

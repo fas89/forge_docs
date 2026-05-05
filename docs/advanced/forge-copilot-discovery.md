@@ -21,7 +21,7 @@ The goal is simple: better contract generation with less hallucination and less 
 Basic copilot works with the built-in LLM adapters alone. If you also want schema-aware discovery for Parquet and Avro files, install the optional discovery helpers:
 
 ```bash
-pip install "fluid-forge[copilot]"
+pip install "data-product-forge[copilot]"
 ```
 
 That extra installs:

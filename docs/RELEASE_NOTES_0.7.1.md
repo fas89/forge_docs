@@ -90,7 +90,7 @@ All exports include automatic validation:
 ### Install Latest Version
 
 ```bash
-pip install --upgrade fluid-forge
+pip install --upgrade data-product-forge
 ```
 
 ### Generate Airflow DAGs
@@ -253,7 +253,7 @@ No migration needed! If you're already using Fluid Forge v0.7.0:
 
 ```bash
 # Upgrade
-pip install --upgrade fluid-forge
+pip install --upgrade data-product-forge
 
 # Existing contracts work as-is
 fluid validate contract.yaml  # Still works
