@@ -25,7 +25,7 @@
     "infrastructure-as-code",
     "dataops"
   ],
-  "author": "Agentics Transformation Pty Ltd <hello@fluidhq.io> (https://fluidhq.io)",
+  "author": "Agentics Transformation Pty Ltd (https://github.com/Agentics-Rising)",
   "license": "Apache-2.0",
   "devDependencies": {
     "@vuepress/bundler-vite": "^2.0.0-rc.26",

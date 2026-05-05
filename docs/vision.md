@@ -189,4 +189,4 @@ Fluid Forge is open source and built in the open.
 
 ---
 
-<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://fluidhq.io">Agentics Transformation Pty Ltd</a> · Open source under Apache 2.0</p>
+<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://github.com/Agentics-Rising">Agentics Transformation Pty Ltd</a> · Open source under Apache 2.0</p>

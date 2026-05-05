@@ -105,4 +105,4 @@ By contributing, you agree that your work will be licensed under [Apache 2.0](ht
 
 ---
 
-<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://fluidhq.io">Agentics Transformation Pty Ltd</a> · Open source under <a href="https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE">Apache 2.0</a></p>
+<p style="text-align: center; opacity: 0.7; font-size: 0.9rem;">Copyright 2025-2026 <a href="https://github.com/Agentics-Rising">Agentics Transformation Pty Ltd</a> · Open source under <a href="https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE">Apache 2.0</a></p>

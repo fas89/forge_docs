@@ -445,7 +445,7 @@ For detailed guidelines, see [CONTRIBUTING.md](docs/contributing.md) and our [Co
 
 ## License
 
-Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://fluidhq.io).
+Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://github.com/Agentics-Rising).
 
 Licensed under the **Apache License, Version 2.0**. See [LICENSE](LICENSE) for the full license text and [NOTICE](NOTICE) for attribution details.
 

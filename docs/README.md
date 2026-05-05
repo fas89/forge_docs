@@ -318,7 +318,7 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 <div class="about-section" style="text-align: center; padding: 2rem 0 1rem; opacity: 0.85;">
 
 **Developed with pride by [DustLabs](https://dustlabs.co.za/)** ·
-Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://fluidhq.io) · Open source under [Apache 2.0](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
+Copyright 2025-2026 [Agentics Transformation Pty Ltd](https://github.com/Agentics-Rising) · Open source under [Apache 2.0](https://github.com/Agentics-Rising/forge-cli/blob/main/LICENSE)
 
 </div>
 
