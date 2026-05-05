@@ -87,8 +87,10 @@ export default defineUserConfig({
           { text: 'Universal Pipeline', link: '/walkthrough/universal-pipeline' },
         ],
       },
+      { text: 'Concepts', link: '/concepts/' },
       { text: 'CLI Reference', link: '/cli/' },
       { text: 'Playground', link: '/playground/' },
+      { text: 'Recipes', link: '/recipes/' },
       {
         text: 'Providers',
         children: [
@@ -102,6 +104,7 @@ export default defineUserConfig({
           { text: 'Roadmap', link: '/providers/roadmap' },
         ],
       },
+      { text: 'FAQ', link: '/faq/' },
       {
         text: 'GitHub',
         link: 'https://github.com/Agentics-Rising/forge-cli',
@@ -126,12 +129,24 @@ export default defineUserConfig({
     sidebar: {
       '/': [
         {
-          text: 'Introduction',
+          text: 'Get Started',
           children: [
             '/README.md',
             '/getting-started/',
             '/getting-started/snowflake.md',
-            '/vision.md',
+          ],
+        },
+        {
+          text: 'Concepts',
+          children: [
+            '/concepts/README.md',
+            '/concepts/contract.md',
+            '/concepts/builds-exposes-bindings.md',
+            '/concepts/providers-vs-platforms.md',
+            '/concepts/quality-sla-lineage.md',
+            '/concepts/governance-policy.md',
+            '/concepts/agent-policy.md',
+            '/concepts/vs-alternatives.md',
           ],
         },
         {
@@ -159,6 +174,15 @@ export default defineUserConfig({
           ],
         },
         {
+          text: 'Recipes',
+          children: [
+            '/recipes/README.md',
+            '/recipes/add-a-quality-rule.md',
+            '/recipes/switch-clouds.md',
+            '/recipes/tag-pii.md'
+          ]
+        },
+        {
           text: 'Providers',
           children: [
             '/providers/README.md',
@@ -184,10 +208,17 @@ export default defineUserConfig({
           ],
         },
         {
-          text: 'Project',
+          text: 'FAQ',
           children: [
-            '/contributing.md',
+            '/faq/README.md',
+          ],
+        },
+        {
+          text: 'About',
+          children: [
+            '/vision.md',
             '/RELEASE_NOTES_0.7.1.md',
+            '/contributing.md',
           ],
         },
       ],
