@@ -2,13 +2,21 @@ import { defineUserConfig } from 'vuepress'
 import { defaultTheme } from '@vuepress/theme-default'
 import { viteBundler } from '@vuepress/bundler-vite'
 import { markdownChartPlugin } from '@vuepress/plugin-markdown-chart'
+import { readingTimePlugin } from '@vuepress/plugin-reading-time'
 import { searchPlugin } from '@vuepress/plugin-search'
 import { sitemapPlugin } from '@vuepress/plugin-sitemap'
+import { getDirname, path } from 'vuepress/utils'
+
+const __dirname = getDirname(import.meta.url)
 
 const SITE_URL = 'https://agentics-rising.github.io/forge_docs/'
 const SITE_HOSTNAME = 'agentics-rising.github.io'
 
 export default defineUserConfig({
+  // Override default theme's NotFound layout (and any future custom
+  // layouts) via the client config.
+  clientConfigFile: path.resolve(__dirname, './client.ts'),
+
   lang: 'en-US',
   title: 'Fluid Forge',
   description: 'Declarative Data Products — Write YAML, Deploy Anywhere. One contract, every cloud.',
@@ -45,16 +53,18 @@ export default defineUserConfig({
     ['meta', { property: 'og:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud. What Terraform did for infrastructure, Fluid Forge does for data products.' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:url', content: SITE_URL }],
-    ['meta', { property: 'og:image', content: SITE_URL + 'logo.png' }],
+    ['meta', { property: 'og:image', content: SITE_URL + 'og-card.png' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: 'Fluid Forge — Declarative Data Products. 1 file. 4 clouds. 0 rewrites.' }],
     ['meta', { property: 'og:site_name', content: 'Fluid Forge' }],
 
     // Twitter / X
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Fluid Forge — Declarative Data Products' }],
     ['meta', { name: 'twitter:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud.' }],
-    ['meta', { name: 'twitter:image', content: SITE_URL + 'logo.png' }],
+    ['meta', { name: 'twitter:image', content: SITE_URL + 'og-card.png' }],
+    ['meta', { name: 'twitter:image:alt', content: 'Fluid Forge — Declarative Data Products. 1 file. 4 clouds. 0 rewrites.' }],
 
     ['meta', { name: 'keywords', content: 'data products, declarative, data engineering, GCP, BigQuery, AWS, Athena, Snowflake, DuckDB, infrastructure as code, DataOps' }],
   ],
@@ -94,6 +104,21 @@ export default defineUserConfig({
       {
         text: 'GitHub',
         link: 'https://github.com/Agentics-Rising/forge-cli',
+      },
+      // Versioned docs selector. Today only one version is hosted, but the
+      // mechanism is in place so that when 0.9 ships:
+      //   1. snapshot the current docs/ tree to docs/v0.8/
+      //   2. add { text: 'v0.8.x', link: '/v0.8/' } as a child
+      //   3. update the 'latest' label to point at the next stable
+      // The dropdown stays in the navbar at all times so visitors can
+      // sense the version surface even before there are multiple snapshots.
+      {
+        text: 'v0.8.x (latest)',
+        children: [
+          { text: 'v0.8.x — current docs', link: '/' },
+          { text: 'Release notes', link: '/RELEASE_NOTES_0.7.1.html' },
+          { text: 'Changelog (CLI repo)', link: 'https://github.com/Agentics-Rising/forge-cli/blob/main/CHANGELOG.md' },
+        ],
       },
     ],
 
@@ -209,6 +234,19 @@ export default defineUserConfig({
     markdownChartPlugin({
       mermaid: true,
     }),
+
+    // Inject `readingTime` into every page's data so we can display it
+    // in the page header (small but high-leverage UX cue — visitors
+    // self-select into a 2-min read vs a 15-min walkthrough).
+    readingTimePlugin({
+      // Default: 200 words per minute. Override here if needed.
+    }),
+
+    // Note: @vuepress/plugin-medium-zoom is bundled with theme-default
+    // in rc.128, so we don't register it explicitly. The dep is kept in
+    // package.json for documentation/version-pinning. Lazy-loading is
+    // also automatic via the bundled plugin — no manual loading="lazy"
+    // attribute is needed on doc images.
 
     // Note: copy-on-code button + tip/warning/danger callouts +
     // tab containers all ship with @vuepress/theme-default by default
