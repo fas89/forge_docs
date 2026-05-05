@@ -43,7 +43,7 @@ export default defineUserConfig({
   // having the file at the canonical path.)
 
   head: [
-    ['link', { rel: 'icon', href: '/forge_docs/logo.png' }],
+    ['link', { rel: 'icon', href: '/forge_docs/logo.webp' }],
     ['meta', { name: 'theme-color', content: '#2563eb' }], // brand blue (was Google blue #1a73e8)
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
@@ -53,7 +53,7 @@ export default defineUserConfig({
     ['meta', { property: 'og:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud. What Terraform did for infrastructure, Fluid Forge does for data products.' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:url', content: SITE_URL }],
-    ['meta', { property: 'og:image', content: SITE_URL + 'og-card.png' }],
+    ['meta', { property: 'og:image', content: SITE_URL + 'og-card.webp' }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
     ['meta', { property: 'og:image:alt', content: 'Fluid Forge — Declarative Data Products. 1 file. 4 clouds. 0 rewrites.' }],
@@ -63,14 +63,14 @@ export default defineUserConfig({
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'Fluid Forge — Declarative Data Products' }],
     ['meta', { name: 'twitter:description', content: 'Write YAML, Deploy Anywhere. One contract, every cloud.' }],
-    ['meta', { name: 'twitter:image', content: SITE_URL + 'og-card.png' }],
+    ['meta', { name: 'twitter:image', content: SITE_URL + 'og-card.webp' }],
     ['meta', { name: 'twitter:image:alt', content: 'Fluid Forge — Declarative Data Products. 1 file. 4 clouds. 0 rewrites.' }],
 
     ['meta', { name: 'keywords', content: 'data products, declarative, data engineering, GCP, BigQuery, AWS, Athena, Snowflake, DuckDB, infrastructure as code, DataOps' }],
   ],
 
   theme: defaultTheme({
-    logo: '/logo.png',
+    logo: '/logo.webp',
 
     navbar: [
       { text: 'Home', link: '/' },

@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /logo.png
+heroImage: /logo.webp
 heroText: Fluid Forge
 tagline: The data-product layer that doesn't care which cloud you're on.
 actions:
