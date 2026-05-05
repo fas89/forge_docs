@@ -71,7 +71,7 @@ export default defineUserConfig({
       },
       {
         text: 'GitHub',
-        link: 'https://github.com/agentics-rising/fluid-forge-cli'
+        link: 'https://github.com/Agentics-Rising/forge-cli'
       }
     ],
 
@@ -145,8 +145,8 @@ export default defineUserConfig({
       ]
     },
 
-    repo: 'agentics-rising/fluid-forge-cli',
-    docsRepo: 'agentics-rising/forge_docs',
+    repo: 'Agentics-Rising/forge-cli',
+    docsRepo: 'Agentics-Rising/forge_docs',
     docsDir: 'docs',
     docsBranch: 'main',
     editLink: true,
