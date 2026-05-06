@@ -168,7 +168,7 @@ fluid export-opds contract.yaml           # Export to open data standards
 
 | Milestone | What's Included | Timeline |
 |-----------|----------------|----------|
-| **v0.7.1** (current) | GCP + AWS + Snowflake production, Airflow/Dagster/Prefect export, governance engine | ✅ Released |
+| **v0.8.0** (current) | GCP + AWS + Snowflake production, Airflow/Dagster/Prefect export, governance engine | ✅ Released |
 | **Azure Provider** | Synapse Analytics, Data Lake Gen2, Azure Functions | Q3 2026 |
 | **Databricks Provider** | Databricks SQL, Delta Lake, MLflow, Unity Catalog | Q4 2026 |
 | **Data Marketplace v2** | Publish, discover, and compose data products across teams | 2027 |

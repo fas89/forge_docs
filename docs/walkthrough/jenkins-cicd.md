@@ -1,6 +1,6 @@
 # Jenkins CI/CD for FLUID Data Products
 
-This walkthrough demonstrates how to implement end-to-end CI/CD for declarative data products using Jenkins and FLUID 0.7.1 framework.
+This walkthrough demonstrates how to implement end-to-end CI/CD for declarative data products using Jenkins and FLUID v0.8.0 framework.
 
 ## 📋 Overview
 
@@ -223,7 +223,7 @@ stage('Validate Contract') {
 
 **What's Validated:**
 - YAML syntax correctness
-- FLUID 0.7.1 schema compliance
+- FLUID 0.7.2 schema compliance
 - Required fields present
 - Data types valid
 - References consistent
@@ -510,11 +510,11 @@ Stage 2: FLUID Contract Validation
 🔍 Validating FLUID contract...
 
 ✅ Contract validation PASSED
-   Contract is compliant with FLUID 0.7.1 schema
+   Contract is compliant with FLUID 0.7.2 schema
 
 📊 Contract Metadata:
   ID: crypto.bitcoin_prices_gcp
-  Version: 0.7.1
+  Version: 0.8.0
   Exposes: 3 datasets
   Builds: 3 transformations
 ```

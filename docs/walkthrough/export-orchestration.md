@@ -1,6 +1,6 @@
 # Generating Orchestration Code from Contracts
 
-**Version:** 0.7.1  
+**Version:** 0.8.0  
 **Status:** ✅ Production Ready
 
 ---

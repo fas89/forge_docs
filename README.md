@@ -143,7 +143,7 @@ fluid apply contract.fluid.yaml --yes
 
 ```yaml
 # contract.fluid.yaml — your entire data product in one file
-fluidVersion: "0.7.2"            # contract schema version (CLI is 0.7.9)
+fluidVersion: "0.7.2"            # contract schema version (CLI is 0.8.0)
 kind: DataProduct
 id: gold.crypto.bitcoin_tracker_v1
 name: Bitcoin Price Tracker
@@ -209,7 +209,7 @@ accessPolicy:
     - principal: "group:data-engineering@company.com"
       permissions: ["read", "write", "admin"]
 
-agentPolicy:                     # NEW in v0.7.1: AI/LLM access boundaries
+agentPolicy:                     # Schema v0.7.1+: AI/LLM access boundaries
   allowedModels: ["gpt-4", "claude-3-opus"]
   allowedUseCases: ["analysis", "summarization"]
 ```

@@ -3,7 +3,7 @@
 Deploy data products to Amazon Web Services — S3, Glue, Athena — using the same contract and CLI commands as every other provider.
 
 **Status:** ✅ Production  
-**Version:** 0.7.1  
+**Version:** 0.8.0  
 **Tested Services:** S3, Glue Data Catalog, Athena, IAM
 
 ---
@@ -217,7 +217,7 @@ builds:
 
 ### Key Schema Patterns
 
-The 0.7.1 binding schema uses three fields to identify platform resources:
+The 0.7.2 binding schema uses three fields to identify platform resources:
 
 | Field | Purpose | AWS Values |
 |-------|---------|-----------|
@@ -232,7 +232,7 @@ This is identical to GCP (`platform: gcp`, `format: bigquery_table`) and Snowfla
 Every command is **identical** across providers. No `--provider` flag needed — the CLI reads the provider from the contract's `binding.platform` field.
 
 ```bash
-# Validate contract against 0.7.1 JSON schema
+# Validate contract against 0.7.2 JSON schema
 fluid validate contract.fluid.yaml --verbose
 
 # Generate execution plan
@@ -415,7 +415,7 @@ The AWS example uses the exact same Jenkinsfile as GCP and Snowflake — the [Un
 
 | Stage | Command | What Happens |
 |-------|---------|-------------|
-| Validate | `fluid validate` | Contract checked against 0.7.1 schema |
+| Validate | `fluid validate` | Contract checked against 0.7.2 schema |
 | Export | `fluid odps export` / `fluid odcs export` | Standards files generated |
 | Compile IAM | `fluid policy-apply --mode check` | `accessPolicy` → IAM bindings JSON |
 | Plan | `fluid plan` | Execution plan generated |

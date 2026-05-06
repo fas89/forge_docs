@@ -231,7 +231,7 @@ fluid generate schedule contract.fluid.yaml \
 """
 Airflow DAG for FLUID Data Product: bitcoin-prices-gcp
 
-Auto-generated from FLUID contract v0.7.1
+Auto-generated from FLUID contract v0.7.2
 Generated at: 2026-01-21T12:00:00
 
 Domain: crypto
@@ -334,7 +334,7 @@ We'll generate an Airflow DAG that:
 
 ```bash
 # 1. Ensure FLUID CLI is available
-fluid --version  # Should show v0.7.1 or higher
+fluid --version  # Should show v0.8.0 or higher
 
 # 2. Navigate to example
 cd examples/bitcoin-tracker

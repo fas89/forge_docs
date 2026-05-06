@@ -5,7 +5,7 @@ description: Declarative boundaries on which AI models can read which data field
 
 # Agent Policy — declarative AI governance
 
-New in `fluidVersion: "0.7.1"` — a top-level `agentPolicy` block that declares **which AI / LLM models are allowed to read this data product, for which purposes, and under what conditions**. Enforced before the model gets the row.
+Introduced in schema v0.7.1 (still supported in current schema v0.7.2) — a top-level `agentPolicy` block that declares **which AI / LLM models are allowed to read this data product, for which purposes, and under what conditions**. Enforced before the model gets the row.
 
 ## Why declarative?
 

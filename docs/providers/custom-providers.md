@@ -367,7 +367,7 @@ class TestMyDb(ProviderTestHarness):
         return {
             "id": "harness-test",
             "name": "Harness Test",
-            "fluidVersion": "0.7.1",
+            "fluidVersion": "0.7.2",
             "exposes": [{"id": "output"}],
         }
 ```
@@ -400,7 +400,7 @@ name = "fluid-provider-mydb"
 version = "1.0.0"
 description = "Fluid Forge provider for MyDB"
 requires-python = ">=3.9"
-dependencies = ["data-product-forge>=0.7.0"]
+dependencies = ["data-product-forge>=0.8.0"]
 
 [project.entry-points."fluid_build.providers"]
 mydb = "my_provider.provider:MyDbProvider"

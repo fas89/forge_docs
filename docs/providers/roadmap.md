@@ -23,7 +23,7 @@
 
 ## AWS Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (since v0.7.1)
 
 ### Infrastructure Deployment (Available Now)
 
@@ -73,7 +73,7 @@ fluid export aws-contract.yaml --engine prefect -o flows/
 
 ## Snowflake Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (since v0.7.1)
 
 ### Infrastructure Deployment (Available Now)
 
@@ -110,7 +110,7 @@ fluid generate schedule snowflake-contract.yaml --env prod -o dags/prod_pipeline
 
 ## GCP Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (since v0.7.1)
 
 The flagship provider with the most mature implementation:
 

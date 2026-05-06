@@ -3,7 +3,7 @@
 Deploy data products to Snowflake Data Cloud — databases, schemas, tables, RBAC grants — using the same contract and CLI commands as every other provider.
 
 **Status:** ✅ Production  
-**Version:** 0.7.8  
+**Version:** 0.8.0  
 **Tested Services:** Databases, Schemas, Tables, Warehouses, RBAC Grants
 
 ---
@@ -248,7 +248,7 @@ builds:
 
 ### Key Schema Patterns
 
-The 0.7.1 binding schema uses three fields to identify platform resources:
+The 0.7.2 binding schema uses three fields to identify platform resources:
 
 | Field | Purpose | Snowflake Values |
 |-------|---------|-----------------|
@@ -529,7 +529,7 @@ The Snowflake example uses the exact same Jenkinsfile as GCP and AWS — the [Un
 
 | Stage | Command | What Happens |
 |-------|---------|-------------|
-| Validate | `fluid validate` | Contract checked against 0.7.1 schema |
+| Validate | `fluid validate` | Contract checked against 0.7.2 schema |
 | Export | `fluid odps export` / `fluid odcs export` | Standards files generated |
 | Compile RBAC | `fluid policy-apply --mode check` | `accessPolicy` → Snowflake GRANT bindings |
 | Plan | `fluid plan` | Execution plan generated |

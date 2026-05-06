@@ -418,7 +418,7 @@ fluid apply contract.fluid.yaml --provider local
 
 ## What You've Learned
 
-✅ Created a declarative data product with Fluid Forge 0.7.1  
+✅ Created a declarative data product with Fluid Forge 0.8.0  
 ✅ Used `builds` section for embedded SQL transformations  
 ✅ Processed CSV data sources with DuckDB  
 ✅ Generated analytical views declaratively  

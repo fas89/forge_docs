@@ -1,7 +1,7 @@
 # GCP Provider
 
 **Status:** ✅ Production Ready  
-**Version:** 1.0.0  
+**Version:** 0.8.0  
 **Services:** BigQuery, Cloud Storage, IAM, Cloud Run, Pub/Sub
 
 ---
@@ -112,7 +112,7 @@ fluid export contract.yaml --engine prefect -o flows/
 | Signed URLs | ✅ Full | Temporary access |
 | Notifications | ✅ Full | Pub/Sub integration |
 
-### ✅ Airflow DAG Generation (v0.7.1)
+### ✅ Airflow DAG Generation (since v0.7.1)
 
 | Feature | Support | Notes |
 |---------|---------|-------|

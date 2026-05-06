@@ -108,7 +108,7 @@ fluid validate contract.yaml --verbose
 ```
 [INFO] Loading contract: contract.yaml
 [INFO] Contract ID: customer-analytics
-[INFO] Fluid version: 0.7.1
+[INFO] Fluid version: 0.8.0
 [INFO] Provider: gcp
 
 Schema Validation:
@@ -208,7 +208,7 @@ fluid validate contract.yaml --verbose --output validation-report.json
   "timestamp": "2026-01-30T10:30:00Z",
   "contract": {
     "id": "customer-analytics",
-    "version": "0.7.1",
+    "version": "0.8.0",
     "provider": "gcp"
   },
   "validation_results": {

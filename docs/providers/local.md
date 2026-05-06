@@ -1,7 +1,7 @@
 # Local Provider
 
 **Status:** ✅ Production Ready  
-**Version:** 1.0.0  
+**Version:** 0.8.0  
 **Database:** DuckDB, SQLite
 
 ---

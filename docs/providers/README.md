@@ -31,7 +31,7 @@ When you export to ODPS or publish to DataMesh Manager, Fluid Forge derives cata
 
 | Output field | Source fields | Notes |
 |--------------|---------------|-------|
-| Output port provider / type | `binding.platform`, then legacy `provider` where supported | Exports prefer the FLUID 0.7.1 `binding.platform` field. |
+| Output port provider / type | `binding.platform`, then legacy `provider` where supported | Exports prefer the FLUID 0.7.2 `binding.platform` field. |
 | Expose kind | `expose.kind`, then `expose.type` | Use `kind` in new contracts; `type` is kept as a fallback. |
 | ODPS product type | `metadata.product_type`, `metadata.type`, top-level `product_type`, top-level `type` | The first populated value is exported as the ODPS `type` custom property. |
 | ODPS tags | `metadata.tags`, then top-level `tags` | ODPS uses one tag source, with metadata taking precedence. |
@@ -155,7 +155,7 @@ class MyProvider(BaseProvider):
 
 | Milestone | Providers | Timeline |
 |-----------|----------|----------|
-| v0.7.9 (current) | GCP, AWS, Snowflake, Local, ODPS, ODCS | ✅ Released |
+| v0.8.0 (current) | GCP, AWS, Snowflake, Local, ODPS, ODCS | ✅ Released |
 | v0.8.x | Azure (Synapse, Data Lake Gen2) | Q3 2026 |
 | v0.9.x | Databricks (SQL, Delta Lake, Unity Catalog) | Q4 2026 |
 

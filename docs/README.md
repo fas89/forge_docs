@@ -105,7 +105,7 @@ client.create_table(table, exists_ok=True)
 
 ```yaml [✅ Fluid Forge — One contract for every cloud]
 # contract.fluid.yaml
-fluidVersion: "0.7.2"           # contract schema version (CLI is 0.7.9)
+fluidVersion: "0.7.2"           # contract schema version (CLI is 0.8.0)
 kind: DataProduct
 id: analytics.customers
 name: Customer Analytics

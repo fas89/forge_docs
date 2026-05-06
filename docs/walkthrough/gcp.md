@@ -510,7 +510,7 @@ fluid plan contract.fluid.yaml
 # FLUID Execution Plan
 # ============================================================
 # Contract: contract.fluid.yaml
-# Version: 0.7.1
+# Version: 0.8.0
 # Total Actions: 6
 # ============================================================
 # 
@@ -743,7 +743,7 @@ fluid odcs validate bitcoin-tracker.odcs.yaml
 |---------|---------------|------|------|
 | **Purpose** | Deployment automation | Product catalog | Data contracts |
 | **Format** | YAML | JSON | YAML |
-| **Version** | 0.7.1 | 4.1 | 3.1.0 |
+| **Version** | 0.8.0 | 4.1 | 3.1.0 |
 | **Best For** | Infrastructure-as-Code | Data marketplaces | Quality & SLAs |
 | **Governance** | Built-in | Product-focused | Contract-focused |
 | **Adoption** | Fluid Forge | Linux Foundation | Bitol.io ecosystem |

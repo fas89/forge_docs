@@ -75,7 +75,7 @@ This is the complete, production-tested Jenkinsfile used by all three provider e
 ```groovy
 #!/usr/bin/env groovy
 /**
- * FLUID Pipeline v0.7.1 — Provider-Agnostic
+ * FLUID Pipeline v0.8.0 — Provider-Agnostic
  *
  * This pipeline runs ANY FLUID data product on ANY provider without modification.
  * Zero provider-specific logic lives here — the contract is the single source of truth.
@@ -380,7 +380,7 @@ This means **adding a new provider** requires zero Jenkinsfile changes:
 | # | Stage | Command | Purpose |
 |---|-------|---------|---------|
 | 1 | Setup | — | Load credentials, detect format, print summary |
-| 2 | Validate | `fluid validate` | Check contract against 0.7.1 JSON schema |
+| 2 | Validate | `fluid validate` | Check contract against 0.7.2 JSON schema |
 | 3 | Export | `fluid odps export` / `fluid odcs export` | Generate interop standards |
 | 4 | Compile IAM | `fluid policy-apply --mode check` | Convert `accessPolicy` → provider-native IAM |
 | 5 | Plan | `fluid plan` | Generate execution plan |

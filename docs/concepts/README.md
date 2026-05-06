@@ -16,7 +16,7 @@ Everything in this section is **learn-once reference**. If you've already shippe
 | [Providers vs Platforms](./providers-vs-platforms.md) | The difference between a `binding.platform` value and the provider plugin that handles it. Why `local` runs everywhere. |
 | [Quality, SLAs & Lineage](./quality-sla-lineage.md) | `dq.rules`, `qos`, and how `lineage` is auto-derived. Block bad deploys before they happen. |
 | [Governance & Policy](./governance-policy.md) | `accessPolicy.grants`, sovereignty constraints, and how Fluid Forge compiles to native cloud IAM. |
-| [Agent Policies (LLM/AI)](./agent-policy.md) | New in v0.7.1 — declarative boundaries on which AI models can read which fields. |
+| [Agent Policies (LLM/AI)](./agent-policy.md) | Schema v0.7.1+ — declarative boundaries on which AI models can read which fields. |
 | [vs alternatives](./vs-alternatives.md) | Honest comparisons against dbt, Terraform, Airflow, OPA, and Snowpark. |
 
 ::: tip In a hurry?
