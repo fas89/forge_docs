@@ -22,7 +22,7 @@ features:
     details: Auto-generate production-ready Airflow DAGs, Dagster graphs, and Prefect flows straight from your contract. No hand-written orchestration code.
 
   - title: 🛡 Compiles to native IAM.
-    details: policy-check → policy-compile → policy-apply. Real BigQuery, Snowflake, and AWS IAM JSON emitted from the same contract as the schema. Governance-as-code.
+    details: policy-check → policy-apply. Real BigQuery, Snowflake, and AWS IAM JSON emitted from the same contract as the schema. Governance-as-code.
 
   - title: 🤖 Agentic governance, declarative.
     details: Boundaries on which AI/LLM models can read which fields — in the same contract as the schema. Plus extend everything with custom providers in ~40 lines of Python.
@@ -250,9 +250,9 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 
 | Feature | Description |
 |---------|-------------|
-| **44 CLI commands** | `validate`, `plan`, `apply`, `verify`, `generate-airflow`, `export`, `policy-check`, and more |
+| **29+ commands** | `validate`, `plan`, `apply`, `verify`, `generate schedule`, `generate ci`, `policy-check`, and more |
 | **Blueprints** | Pre-built templates: `customer-360`, `enterprise-snowflake`, analytics starters |
-| **AI Copilot** | `fluid forge --mode copilot` — adaptive interview, discovery, validation/repair, then scaffolding |
+| **AI Copilot** | `fluid forge` — adaptive interview, discovery, validation/repair, then scaffolding |
 | **Governance Engine** | Access policies, sovereignty controls, data classification, compliance checks |
 | **Orchestration Export** | Generate Airflow DAGs, Dagster pipelines, and Prefect flows from contracts |
 | **Open Standards** | Export to ODPS v4.1, ODCS v3.1, and data mesh catalogs |

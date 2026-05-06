@@ -75,7 +75,7 @@ fluid apply contract.yaml --provider gcp
 
 ```bash
 # Generate Airflow DAG
-fluid generate-airflow contract.yaml -o dags/my_pipeline.py
+fluid generate schedule contract.yaml -o dags/my_pipeline.py
 
 # Export to Dagster
 fluid export contract.yaml --engine dagster -o pipelines/

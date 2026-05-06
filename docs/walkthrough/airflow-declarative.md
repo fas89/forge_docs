@@ -220,7 +220,7 @@ exposes:
 
 **One command:**
 ```bash
-fluid generate-airflow contract.fluid.yaml \
+fluid generate schedule contract.fluid.yaml \
   -o dags/bitcoin_tracker.py \
   --dag-id bitcoin_tracker \
   --schedule "0 * * * *"
@@ -347,7 +347,7 @@ fluid validate contract.fluid.yaml
 
 ```bash
 # Generate production-ready DAG from contract
-fluid generate-airflow contract.fluid.yaml \
+fluid generate schedule contract.fluid.yaml \
   -o airflow/dags/bitcoin_tracker_declarative.py \
   --dag-id bitcoin_tracker_declarative \
   --schedule "0 * * * *" \
@@ -463,7 +463,7 @@ builds:
 
 ```bash
 # Regenerate from updated contract
-fluid generate-airflow contract.fluid.yaml \
+fluid generate schedule contract.fluid.yaml \
   -o airflow/dags/bitcoin_tracker_declarative.py \
   --schedule "0 * * * *"
 ```
@@ -512,7 +512,7 @@ exposes:
 
 **Regenerate:**
 ```bash
-fluid generate-airflow contract.fluid.yaml -o dags/bitcoin_tracker.py
+fluid generate schedule contract.fluid.yaml -o dags/bitcoin_tracker.py
 ```
 
 **Result:** DAG automatically uses Snowflake operators instead of BigQuery! 🎉
@@ -539,7 +539,7 @@ FLUID's declarative approach offers several compelling advantages over manual DA
 fluid validate contract.fluid.yaml
 
 # Generate and test DAG
-fluid generate-airflow contract.fluid.yaml -o test_dag.py
+fluid generate schedule contract.fluid.yaml -o test_dag.py
 python3 test_dag.py  # Syntax check
 ```
 
@@ -557,7 +557,7 @@ python3 test_dag.py  # Syntax check
 ```bash
 # Before: Write 300 lines of Python
 # After: Run 1 command
-fluid generate-airflow contract.yaml -o dag.py
+fluid generate schedule contract.yaml -o dag.py
 ```
 
 ---
@@ -570,19 +570,19 @@ While FLUID generates DAGs declaratively from your contract, you can customize t
 
 ```bash
 # Different schedules for different environments
-fluid generate-airflow contract.yaml -o dag.py --schedule "*/15 * * * *"  # Every 15 min
-fluid generate-airflow contract.yaml -o dag.py --schedule "0 2 * * *"      # Daily at 2 AM
+fluid generate schedule contract.yaml -o dag.py --schedule "*/15 * * * *"  # Every 15 min
+fluid generate schedule contract.yaml -o dag.py --schedule "0 2 * * *"      # Daily at 2 AM
 ```
 
 ### Override DAG ID
 
 ```bash
 # Environment-specific DAG IDs
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o dags/bitcoin_prod.py \
   --dag-id bitcoin_tracker_prod
 
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o dags/bitcoin_dev.py \
   --dag-id bitcoin_tracker_dev
 ```
@@ -591,12 +591,12 @@ fluid generate-airflow contract.yaml \
 
 ```bash
 # Generate from dev environment
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o dags/bitcoin_dev.py \
   --env dev
 
 # Generate from prod environment
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o dags/bitcoin_prod.py \
   --env prod
 ```
@@ -634,7 +634,7 @@ You've learned how FLUID's declarative approach transforms Airflow DAG developme
 
 **FLUID Declarative Approach (The New Way):**
 1. Write data product contract ✅
-2. Run `fluid generate-airflow contract.yaml -o dag.py` ✅
+2. Run `fluid generate schedule contract.yaml -o dag.py` ✅
 3. Deploy generated DAG ✅
 4. Maintain **only** the contract ✅
 
@@ -651,7 +651,7 @@ You've learned how FLUID's declarative approach transforms Airflow DAG developme
 
 ```bash
 cd examples/bitcoin-tracker
-fluid generate-airflow contract.fluid.yaml -o airflow/dags/my_dag.py --schedule "0 * * * *"
+fluid generate schedule contract.fluid.yaml -o airflow/dags/my_dag.py --schedule "0 * * * *"
 ```
 
 **Welcome to the declarative future of data orchestration!** 🎉

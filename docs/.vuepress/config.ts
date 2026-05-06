@@ -170,7 +170,7 @@ export default defineUserConfig({
             '/cli/plan.md',
             '/cli/apply.md',
             '/cli/verify.md',
-            '/cli/generate-airflow.md',
+            '/cli/generate-schedule.md',
           ],
         },
         {

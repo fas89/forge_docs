@@ -16,7 +16,7 @@
 
 **Legend:**
 - **Plan / Apply**: `fluid plan` + `fluid apply` — Deploy actual cloud resources
-- **Code Generation**: `fluid generate-airflow` / `fluid export` — Generate orchestration code
+- **Code Generation**: `fluid generate schedule` / `fluid export` — Generate orchestration code
 - **Data Catalog**: `fluid odps` / `fluid odcs` — Export to open data standards
 
 ---
@@ -49,12 +49,12 @@ Generate production-ready orchestration code:
 
 ```bash
 # Generate Airflow DAG
-fluid generate-airflow aws-contract.yaml -o dags/aws_pipeline.py
+fluid generate schedule aws-contract.yaml -o dags/aws_pipeline.py
 
 # With verbose output
 ```bash
 # Airflow
-fluid generate-airflow aws-contract.yaml -o dags/pipeline.py --verbose
+fluid generate schedule aws-contract.yaml -o dags/pipeline.py --verbose
 
 # Dagster
 fluid export aws-contract.yaml --engine dagster -o pipelines/
@@ -90,13 +90,13 @@ Full plan/apply lifecycle:
 
 ```bash
 # Airflow
-fluid generate-airflow snowflake-contract.yaml -o dags/snowflake_pipeline.py
+fluid generate schedule snowflake-contract.yaml -o dags/snowflake_pipeline.py
 
 # Dagster
 fluid export snowflake-contract.yaml --engine dagster -o pipelines/
 
 # With environment overlay
-fluid generate-airflow snowflake-contract.yaml --env prod -o dags/prod_pipeline.py
+fluid generate schedule snowflake-contract.yaml --env prod -o dags/prod_pipeline.py
 ```
 
 **Supported Operations:**
@@ -126,7 +126,7 @@ The flagship provider with the most mature implementation:
 
 ```bash
 # All three engines supported
-fluid generate-airflow gcp-contract.yaml -o dags/pipeline.py
+fluid generate schedule gcp-contract.yaml -o dags/pipeline.py
 fluid export gcp-contract.yaml --engine dagster -o pipelines/
 fluid export gcp-contract.yaml --engine prefect -o flows/
 ```

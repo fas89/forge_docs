@@ -1,6 +1,6 @@
 # CLI Reference
 
-Fluid Forge ships with 45 top-level commands organized into functional categories. Run `fluid --help` for the full list or `fluid <command> -h` for per-command details.
+Fluid Forge v0.8.0 ships with ~29 commands organized into functional categories — Core Workflow, Generate, Integrations, Pipeline Stages, Quality & Governance, Safety & Supply Chain, and Utilities. Run `fluid --help` for the full list or `fluid <command> -h` for per-command details. The taxonomy below mirrors the actual `fluid --help` output.
 
 ::: tip
 ```bash
@@ -22,54 +22,50 @@ The commands you'll use most often:
 | Deploy / run | `fluid apply contract.fluid.yaml --yes` |
 | Verify deployment | `fluid verify contract.fluid.yaml` |
 | Publish to DataMesh Manager | `fluid datamesh-manager publish contract.fluid.yaml` |
-| Run build jobs | `fluid execute contract.fluid.yaml` |
 | Detect drift | `fluid diff contract.fluid.yaml` |
-| Visualize lineage | `fluid viz-graph contract.fluid.yaml` |
-| Generate Airflow DAG | `fluid generate-airflow contract.fluid.yaml -o dag.py` |
+| Visualize lineage | `fluid graph contract.fluid.yaml` |
+| Generate Airflow DAG | `fluid generate schedule contract.fluid.yaml -o dag.py` |
 | Check governance | `fluid policy-check contract.fluid.yaml` |
-| AI-guided creation | `fluid forge --mode copilot` |
+| AI-guided creation | `fluid forge` |
 | System diagnostics | `fluid doctor` |
 
 ---
 
 ## `fluid forge`
 
-`fluid forge --mode copilot` is the primary AI-backed project creation flow.
+`fluid forge` is the primary AI-backed project creation flow in v0.8.0.
 
 What it does:
 
 1. starts with a lightweight interview and asks only the follow-up questions needed for the current scenario
 2. accepts natural-language answers, short phrases, numbers, and fuzzy wording instead of forcing exact option matches
-3. discovers local metadata from SQL, dbt, Terraform, README files, existing FLUID contracts, and sample files
-4. optionally loads project-scoped memory from `runtime/.state/copilot-memory.json`
+3. discovers local metadata from SQL, dbt, Terraform, README files, existing FLUID contracts, and sample files (toggle with `--discover` / `--no-discover` / `--discovery-path`)
+4. optionally loads project-scoped memory from `runtime/.state/copilot-memory.json` (`--memory` / `--no-memory` / `--save-memory` / `--show-memory` / `--reset-memory`)
 5. asks the selected LLM to generate a full FLUID contract, README, and any additional scaffold files
 6. validates and repairs the contract locally, retrying up to 3 generation attempts
-7. in interactive mode, can ask one final clarification round if generation failed because intent was still ambiguous
+7. asks one final clarification round if generation failed because intent was still ambiguous (interactive mode only)
 8. scaffolds the project only if validation passes, then shows official `fluid validate`, `fluid plan`, and `fluid apply` next steps
 
-Common use-case categories in the interactive flow are:
+### Domain hints
 
-- `Analytics & BI`
-- `ETL / Data Pipelines`
-- `Streaming / Real-time`
-- `ML / Feature Engineering`
-- `Data Platform / Lakehouse`
-- `Other / Not sure`
+Instead of `--mode agent --agent <name>` (v0.7.x), v0.8.0 takes a `--domain` flag that biases the LLM with domain-specific questions, defaults, rules, and next-step guidance:
 
-You can still answer with your own wording such as `CDC sync`, `executive scorecards`, or `customer 360`.
+- `--domain finance` — regulated analytics, fraud, trading, compliance-heavy data products
+- `--domain healthcare` — HIPAA-aware analytics, PHI handling, clinical workflows
+- `--domain retail` — customer 360, personalization, demand, inventory
+- `--domain telco` — TM Forum SID-aligned OSS/BSS, service assurance, network-operations analytics
 
-Built-in domain-agent mode is also available through `fluid forge --mode agent`. The current built-in agents are:
+You can also bring your own domain agent with `fluid init --agent <name>`, which scaffolds a custom spec under `.fluid/agents/`.
 
-- `finance` for regulated analytics, fraud, trading, and compliance-heavy data products
-- `healthcare` for HIPAA-aware analytics, PHI handling, and clinical workflows
-- `retail` for customer 360, personalization, demand, and inventory use cases
-- `telco` for TM Forum SID-aligned OSS/BSS, service assurance, and network-operations analytics
+### Flags (v0.8.0)
 
-These built-in agents are backed by declarative YAML specs, so they share the same Forge scaffolding engine while applying domain-specific questions, defaults, rules, and next-step guidance.
+`--target-dir`, `--provider`, `--domain`, `--blank`, `--dry-run`, `--non-interactive`, `--context`, `--llm-provider`, `--llm-model`, `--llm-endpoint`, `--discover` / `--no-discover` / `--discovery-path`, `--memory` / `--no-memory` / `--save-memory` / `--show-memory` / `--reset-memory`. Full reference: `fluid forge -h`.
 
-Key copilot flags: `--llm-provider`, `--llm-model`, `--discovery-path`, `--context`, `--memory` / `--no-memory`, `--interactive` / `--non-interactive`, `--dry-run`. See the full flag table in the [`fluid forge` command reference](#fluid-forge-1) below.
+::: warning v0.7.x flags removed
+`--mode copilot` (the AI flow is now the default), `--mode agent` (replaced by `--domain`), `--interactive` (default; use `--non-interactive` to opt out), and `--agent <name>` on forge (moved to `fluid init --agent`) all returned errors in v0.8.0.
+:::
 
-Typical examples:
+### Typical examples
 
 ```bash
 export OPENAI_API_KEY=sk-...
@@ -77,7 +73,7 @@ fluid forge
 ```
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --context ./copilot-context.json \
   --discovery-path ./data \
   --llm-provider openai \
@@ -85,7 +81,7 @@ fluid forge --mode copilot \
 ```
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --non-interactive \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
@@ -98,8 +94,9 @@ fluid forge --reset-memory
 ```
 
 ```bash
-fluid forge --mode agent --agent telco
-fluid forge --mode agent --agent finance
+# Domain-biased generation (replaces --mode agent --agent <name>)
+fluid forge --domain telco
+fluid forge --domain finance --provider gcp
 ```
 
 Step-by-step guides:
@@ -124,18 +121,25 @@ fluid init <name> [options]
 | Option | Description |
 |--------|-------------|
 | `--quickstart` | Create a working example with sample data (recommended) |
-| `--scan` | Import an existing dbt / Terraform project |
-| `--wizard` | Interactive guided setup |
-| `--blank` | Empty project skeleton |
+| `--blank` | Empty project skeleton (power users) |
 | `--provider <name>` | Target provider: `local` (default), `gcp`, `aws`, `snowflake` |
 | `--template <name>` | Start from a named template (e.g. `customer-360`) |
-| `--no-run` | Don't auto-execute the pipeline after creation |
+| `--list-templates` | List available templates and exit |
+| `--agent <name>` | Scaffold a custom domain agent spec in `.fluid/agents/` |
+| `--dir <path>`, `-C` | Target directory (default: current working dir) |
 | `--dry-run` | Preview what would be created |
+| `--yes`, `-y` | Skip confirmation prompts |
+| `--quiet`, `-q` | Suppress the next-steps panel |
+
+::: tip `--wizard` / `--scan` are gone in v0.8.0
+For interactive AI-assisted setup, run [`fluid forge`](#fluid-forge) — it does an interview, scans your local files, and produces a tailored contract. The `--scan` import-from-existing flow moved to [`fluid import`](#fluid-import).
+:::
 
 ```bash
-fluid init my-project --quickstart           # Quick start (recommended)
-fluid init --scan                            # Import existing dbt project
+fluid init my-project --quickstart                # Quick start (recommended)
 fluid init analytics --provider gcp --quickstart  # GCP-targeted project
+fluid init --list-templates                       # See available templates
+fluid import ./my-dbt-project                     # Import an existing dbt project (was --scan)
 ```
 
 [Full init docs →](./init.md)
@@ -208,15 +212,9 @@ fluid apply contract.fluid.yaml --provider gcp --env prod  # Cloud
 
 [Full apply docs →](./apply.md)
 
----
-
-### `fluid execute`
-
-Run build jobs defined in the contract (manual or scheduled triggers).
-
-```bash
-fluid execute <contract-file> [--env <name>]
-```
+::: warning `fluid execute` is gone in v0.8.0
+Earlier versions had a separate `fluid execute` for "run build jobs without provisioning." That's now folded into `fluid apply` — use `fluid apply --mode amend-and-build` to refresh transforms without re-creating tables, or `fluid apply --dry-run` to render without making warehouse calls. See [`apply` docs](./apply.md) for the full `--mode` matrix.
+:::
 
 ---
 
@@ -244,12 +242,12 @@ fluid verify contract.fluid.yaml --provider gcp
 
 ## Code Generation & Export
 
-### `fluid generate-airflow`
+### `fluid generate schedule`
 
 Generate a production-ready Airflow DAG from a contract. Supports GCP, AWS, and Snowflake.
 
 ```bash
-fluid generate-airflow <contract-file> -o <output-file>
+fluid generate schedule <contract-file> -o <output-file>
 ```
 
 | Option | Description |
@@ -259,10 +257,10 @@ fluid generate-airflow <contract-file> -o <output-file>
 | `--verbose` | Detailed generation logs |
 
 ```bash
-fluid generate-airflow contract.fluid.yaml -o dags/pipeline.py
+fluid generate schedule contract.fluid.yaml -o dags/pipeline.py
 ```
 
-[Airflow generation guide →](./generate-airflow.md)
+[Airflow generation guide →](./generate-schedule.md)
 
 ### `fluid export`
 
@@ -321,22 +319,22 @@ DataMesh Manager publish uses the same contract-driven metadata rules as the pro
 
 ## Visualization
 
-### `fluid viz-graph`
+### `fluid graph`
 
 Generate data lineage and dependency graphs.
 
 ```bash
-fluid viz-graph <contract-file> [--out lineage.png]
+fluid graph <contract-file> [--out lineage.png]
 ```
 
 Supports `.dot`, `.png`, and `.svg` output formats.
 
-### `fluid viz-plan`
+### `fluid plan --html`
 
 Interactive visualization of an execution plan.
 
 ```bash
-fluid viz-plan <contract-file>
+fluid plan --html <contract-file>
 ```
 
 ---
@@ -358,12 +356,12 @@ fluid policy-check <contract-file> [options]
 | `--format` | `rich`, `text`, or `json` |
 | `--show-passed` | Include passed checks in output |
 
-### `fluid policy-compile`
+### `fluid policy-apply --mode check`
 
 Compile `accessPolicy` declarations to provider-native IAM bindings.
 
 ```bash
-fluid policy-compile <contract-file> --out runtime/policy/bindings.json
+fluid policy-apply --mode check <contract-file> --out runtime/policy/bindings.json
 ```
 
 ### `fluid policy-apply`
@@ -396,7 +394,7 @@ LLM-backed project generation and scaffolding.
 fluid forge [options]
 ```
 
-`fluid forge --mode copilot` now runs an adaptive flow:
+`fluid forge` now runs an adaptive flow:
 
 1. Bootstrap the run from CLI flags, `--context`, local discovery, and optional project memory
 2. Ask only the minimum follow-up questions needed for the current scenario
@@ -409,19 +407,20 @@ fluid forge [options]
 
 | Option | Description |
 |--------|-------------|
-| `--mode <name>` | `copilot`, `agent`, `template`, `blueprint` |
-| `--agent <name>` | Domain agent: `finance`, `healthcare`, `retail`, `telco`, or a registered custom agent |
-| `--template <name>` | Named template |
-| `--provider <name>` | Provider hint for the generated project |
-| `--llm-provider <name>` | Built-in LLM adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
+| `--target-dir <path>`, `-d` | Target directory for the generated project |
+| `--provider <name>`, `-p` | Provider hint: `local` (default), `gcp`, `aws`, `snowflake` |
+| `--domain <name>` | Domain hint: `finance`, `healthcare`, `retail`, `telco` (replaces `--mode agent --agent <name>` from v0.7.x) |
+| `--blank` | Create an empty contract without invoking the LLM |
+| `--dry-run` | Preview without creating files |
+| `--non-interactive` | Run without prompts |
+| `--context <json-or-file>` | Additional structured context for the AI flow |
+| `--llm-provider <name>` | LLM adapter: `openai`, `anthropic` (`claude` alias), `gemini`, `ollama` |
 | `--llm-model <name>` | Model identifier for the selected adapter |
-| `--llm-endpoint <url>` | Exact HTTP endpoint override for the selected adapter |
-| `--discover` / `--no-discover` | Enable or disable local metadata discovery |
+| `--llm-endpoint <url>` | HTTP endpoint override for the selected adapter |
+| `--discover` / `--no-discover` | Enable or disable local metadata discovery (default: enabled) |
 | `--discovery-path <path>` | Extra local file or directory to scan for metadata |
-| `--context <json-or-file>` | Additional structured context for copilot mode |
-| `--interactive` / `--non-interactive` | Force prompts on or off |
 | `--memory` / `--no-memory` | Enable or disable loading repo-local copilot memory |
-| `--save-memory` | Persist repo-local copilot memory after a successful non-interactive run |
+| `--save-memory` | Persist repo-local copilot memory after a successful run |
 | `--show-memory` | Show the current project-scoped copilot memory summary and exit |
 | `--reset-memory` | Delete the current project-scoped copilot memory file and exit |
 | `--quickstart` | Use smart defaults |
@@ -431,16 +430,16 @@ fluid forge [options]
 export OPENAI_API_KEY=sk-...
 fluid forge
 
-fluid forge --mode copilot --llm-provider openai --llm-model gpt-4o-mini
+fluid forge --llm-provider openai --llm-model gpt-4o-mini
 
-fluid forge --mode copilot --llm-provider ollama \
+fluid forge --llm-provider ollama \
   --llm-model llama3.1 \
   --llm-endpoint http://localhost:11434/v1/chat/completions
 
-fluid forge --mode copilot --discovery-path ./data
+fluid forge --discovery-path ./data
 fluid forge --show-memory
-fluid forge --template analytics --provider gcp
-fluid forge --mode agent --agent telco
+fluid forge --provider gcp
+fluid forge --domain telco
 ```
 
 Credential resolution:
@@ -461,29 +460,41 @@ Important behavior:
 - Built-in provider checks for `local`, `gcp`, `aws`, and `snowflake` are best-effort during copilot preparation. If local inspection fails, Forge warns and keeps going with safe defaults instead of aborting.
 - If copilot scaffolds a cloud-oriented project before provider credentials are fully configured, Forge now shows a warning instead of failing project creation. Finish provider setup before `fluid plan` or `fluid apply`.
 - `fluid doctor` is the quickest way to sanity-check provider tooling and credentials after scaffolding.
-- The public scaffolding path is `fluid forge --mode copilot`.
+- The public scaffolding path is `fluid forge`.
 
 [Advanced LLM setup →](../advanced/custom-llm-agents.md)
 [Step-by-step discovery guide →](../advanced/forge-copilot-discovery.md)
 
-### `fluid wizard`
+::: warning `fluid wizard` is gone in v0.8.0
+The interactive guided-setup command was retired. The replacement flows are:
+- **AI-powered guided creation** → `fluid forge` (above) — runs an LLM-assisted interview, scans local files, produces a tailored contract.
+- **Plain interactive setup** → `fluid init my-project` (no flags) — same prompt-driven flow without AI.
+- **Browse + scaffold from a template** → `fluid init <name> --template <blueprint>`.
+:::
 
-Step-by-step guided setup for creating contracts.
+### `fluid init --template <name>` (replaces `fluid blueprint`)
 
-### `fluid blueprint`
-
-Work with reusable data product blueprints.
+Browse and create from blueprints — what `fluid blueprint` used to do, split across two existing commands in v0.8.0:
 
 ```bash
-fluid blueprint list                                # Browse blueprints
-fluid blueprint list --category analytics --provider gcp  # Filter
-fluid blueprint describe customer-360-gcp            # Details
-fluid blueprint create customer-360-gcp -d my-project    # Create
+fluid init --list-templates                                # Local templates shipped with CLI
+fluid market --blueprints                                  # Marketplace blueprints
+fluid market --blueprints --domain customer                # Filter by domain
+fluid market --search customer-360 --blueprints            # Text search
+fluid init my-project --template customer-360-gcp          # Scaffold from a template/blueprint
 ```
 
-### `fluid scaffold-ci`
+See [Blueprints →](/advanced/blueprints) for the full migration table.
 
-Generate CI/CD configuration for Jenkins, GitHub Actions, or GitLab CI.
+### `fluid generate ci` (was `scaffold-ci`)
+
+Generate CI/CD configuration for GitHub Actions, GitLab CI, Jenkins, Azure, Bitbucket, CircleCI, or Tekton:
+
+```bash
+fluid generate ci contract.fluid.yaml --target github      # GitHub Actions
+fluid generate ci contract.fluid.yaml --target gitlab      # GitLab CI
+fluid generate ci contract.fluid.yaml --target jenkins     # Jenkinsfile
+```
 
 ---
 
@@ -491,19 +502,37 @@ Generate CI/CD configuration for Jenkins, GitHub Actions, or GitLab CI.
 
 ### `fluid publish`
 
-Publish a data product to a marketplace or catalog.
+Publish a data product to enterprise data catalogs.
 
 ```bash
-fluid publish <contract-file> [options]
+fluid publish <contract-file> [--target <catalog>]
 ```
+
+`--target` can be repeated for multi-catalog publication.
 
 ### `fluid market`
 
-Browse and discover data products from the marketplace.
+Browse and discover data products + blueprints across enterprise catalogs and marketplaces.
 
-### `fluid marketplace`
+```bash
+fluid market                              # All registered products
+fluid market --blueprints                 # Reusable templates only
+fluid market --search customer            # Text search across name/description/tags
+fluid market --domain customer --layer gold  # Filter by domain + layer
+```
 
-Extended marketplace browser with search and filtering.
+Filter flags: `--search`, `--domain`, `--owner`, `--layer`, `--status`, `--tags`, `--min-quality`, `--created-after`, `--created-before`. See `fluid market -h` for the full list.
+
+### `fluid import`
+
+Import an existing dbt / Terraform / SQL project into a Fluid contract:
+
+```bash
+fluid import ./my-dbt-project              # Auto-detect dbt
+fluid import ./my-tf-project --kind terraform
+```
+
+Use this when migrating existing infrastructure rather than starting from scratch.
 
 ---
 

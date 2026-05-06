@@ -31,12 +31,12 @@ fluid policy-check contract.fluid.yaml
 └─────────────────────────────────────────────┘
 ```
 
-### `fluid policy-compile`
+### `fluid policy-apply --mode check`
 
 Compile `accessPolicy` declarations from a FLUID contract into provider-native IAM bindings.
 
 ```bash
-fluid policy-compile contract.fluid.yaml --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --out runtime/policy/bindings.json
 ```
 
 | Option | Description | Default |
@@ -120,7 +120,7 @@ contract:
 fluid policy-check contract.fluid.yaml --strict
 
 # 3. Compile to provider-native IAM
-fluid policy-compile contract.fluid.yaml
+fluid policy-apply --mode check contract.fluid.yaml
 
 # 4. Preview what would change
 fluid policy-apply runtime/policy/bindings.json --mode check

@@ -53,10 +53,10 @@ orchestration:
 
 ```bash
 # Generate Airflow DAG
-fluid generate-airflow crypto-analytics.fluid.yaml -o dags/crypto_bitcoin_analytics.py
+fluid generate schedule crypto-analytics.fluid.yaml -o dags/crypto_bitcoin_analytics.py
 
 # With verbose output
-fluid generate-airflow crypto-analytics.fluid.yaml -o dags/pipeline.py --verbose
+fluid generate schedule crypto-analytics.fluid.yaml -o dags/pipeline.py --verbose
 ```
 
 ### 3. Deploy to Airflow
@@ -123,7 +123,7 @@ orchestration:
 
 **Generate Airflow DAG:**
 ```bash
-fluid generate-airflow gcp-analytics.yaml -o dags/gcp_customer_analytics.py
+fluid generate schedule gcp-analytics.yaml -o dags/gcp_customer_analytics.py
 ```
 
 **Generated Airflow DAG:**
@@ -465,9 +465,9 @@ if __name__ == '__main__':
 ## Engine Comparison
 
 ::: tip All Engines Available
-- **Airflow**: `fluid generate-airflow` or `fluid export --engine airflow`
-- **Dagster**: `fluid export --engine dagster`
-- **Prefect**: `fluid export --engine prefect`
+- **Airflow**: `fluid generate schedule --target airflow`
+- **Dagster**: `fluid generate schedule --target dagster`
+- **Prefect**: `fluid generate schedule --target prefect`
 :::
 
 | Feature | Airflow | Dagster | Prefect |

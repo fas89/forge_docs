@@ -13,9 +13,9 @@ Deploy data products to Amazon Web Services — S3, Glue, Athena — using the s
 The AWS provider turns a FLUID contract into real cloud infrastructure:
 
 - ✅ **Plan & Apply** — S3 buckets, Glue databases/tables, Athena workgroups
-- ✅ **IAM Policy Compilation** — `fluid policy-compile` generates S3, Glue, and Athena IAM bindings from `accessPolicy` grants
+- ✅ **IAM Policy Compilation** — `fluid policy-apply --mode check` generates S3, Glue, and Athena IAM bindings from `accessPolicy` grants
 - ✅ **Sovereignty Validation** — Region allow/deny lists enforced before deployment
-- ✅ **Airflow DAG Generation** — `fluid generate-airflow` produces AWS-operator DAGs
+- ✅ **Airflow DAG Generation** — `fluid generate schedule` produces AWS-operator DAGs
 - ✅ **Governance** — Classification, column masking, row-level policies, audit labels
 - ✅ **Universal Pipeline** — Same Jenkinsfile as GCP and Snowflake — zero provider logic
 
@@ -242,17 +242,17 @@ fluid plan contract.fluid.yaml --env dev --out plans/plan-dev.json
 fluid apply contract.fluid.yaml --env dev --yes
 
 # Compile IAM policies from accessPolicy grants
-fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 
 # Apply IAM bindings (dry-run or enforce)
 fluid policy-apply runtime/policy/bindings.json --mode check
 fluid policy-apply runtime/policy/bindings.json --mode enforce
 
 # Run the ingest script
-fluid execute contract.fluid.yaml
+fluid apply contract.fluid.yaml
 
 # Generate Airflow DAG
-fluid generate-airflow contract.fluid.yaml --out airflow-dags/bitcoin_aws.py
+fluid generate schedule contract.fluid.yaml --out airflow-dags/bitcoin_aws.py
 
 # Export standards
 fluid odps export contract.fluid.yaml --out standards/product.odps.json
@@ -261,7 +261,7 @@ fluid odcs export contract.fluid.yaml --out standards/product.odcs.yaml
 
 ## IAM Policy Compilation
 
-`fluid policy-compile` reads `accessPolicy.grants` from the contract and generates AWS IAM permission bindings:
+`fluid policy-apply --mode check` reads `accessPolicy.grants` from the contract and generates AWS IAM permission bindings:
 
 ```json
 {
@@ -417,12 +417,12 @@ The AWS example uses the exact same Jenkinsfile as GCP and Snowflake — the [Un
 |-------|---------|-------------|
 | Validate | `fluid validate` | Contract checked against 0.7.1 schema |
 | Export | `fluid odps export` / `fluid odcs export` | Standards files generated |
-| Compile IAM | `fluid policy-compile` | `accessPolicy` → IAM bindings JSON |
+| Compile IAM | `fluid policy-apply --mode check` | `accessPolicy` → IAM bindings JSON |
 | Plan | `fluid plan` | Execution plan generated |
 | Apply | `fluid apply` | S3 bucket + Glue DB/table created |
 | Apply IAM | `fluid policy-apply` | IAM bindings enforced |
-| Execute | `fluid execute` | `ingest.py` runs, writes Parquet to S3 |
-| Airflow DAG | `fluid generate-airflow` | Production DAG generated |
+| Execute | `fluid apply` | `ingest.py` runs, writes Parquet to S3 |
+| Airflow DAG | `fluid generate schedule` | Production DAG generated |
 
 ## See Also
 

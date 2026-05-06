@@ -1,6 +1,6 @@
 # Forge Copilot Discovery Guide
 
-This guide explains, step by step, how `fluid forge --mode copilot` discovers local context inside the current adaptive copilot flow before it generates a production-ready FLUID contract.
+This guide explains, step by step, how `fluid forge` discovers local context inside the current adaptive copilot flow before it generates a production-ready FLUID contract.
 
 ## What Discovery Is For
 
@@ -48,8 +48,8 @@ Forge always scans the current workspace. Use `--discovery-path` when the most u
 Examples:
 
 ```bash
-fluid forge --mode copilot --discovery-path ./data
-fluid forge --mode copilot --discovery-path ../shared-schemas
+fluid forge --discovery-path ./data
+fluid forge --discovery-path ../shared-schemas
 ```
 
 Use `--no-discover` if you want copilot to rely only on explicit context and whatever the user answers during the interview.
@@ -278,7 +278,7 @@ This means downstream commands like these start from a validated contract:
 fluid validate contract.fluid.yaml
 fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid apply contract.fluid.yaml --yes
-fluid execute contract.fluid.yaml
+fluid apply contract.fluid.yaml
 ```
 
 ## Step 9: Typical Commands
@@ -287,7 +287,7 @@ OpenAI with focused discovery:
 
 ```bash
 export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
   --discovery-path ./data
@@ -297,7 +297,7 @@ Ollama with local discovery:
 
 ```bash
 export OLLAMA_HOST=http://localhost:11434
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider ollama \
   --llm-model llama3.1 \
   --llm-endpoint http://localhost:11434/v1/chat/completions \
@@ -339,7 +339,7 @@ pip install avro
 Use:
 
 ```bash
-fluid forge --mode copilot --no-discover
+fluid forge --no-discover
 ```
 
 ### I only want a specific subdirectory scanned
@@ -347,7 +347,7 @@ fluid forge --mode copilot --no-discover
 Use:
 
 ```bash
-fluid forge --mode copilot --discovery-path ./exact-folder
+fluid forge --discovery-path ./exact-folder
 ```
 
 ## Related Guides

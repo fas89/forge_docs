@@ -93,7 +93,7 @@
 
 Data teams are drowning in glue code. Every cloud has its own APIs, its own deploy patterns, its own way of doing quality checks. You end up maintaining **N copies of the same logic** across N platforms — and it still breaks on Friday at 5pm.
 
-**Fluid Forge kills that complexity with 44 purpose-built CLI commands and a declarative contract system.**
+**Fluid Forge kills that complexity with its v0.8.0 command surface and a declarative contract system.**
 
 <details>
 <summary><strong>📖 Detailed comparison: every problem, every solution</strong></summary>
@@ -105,8 +105,8 @@ Data teams are drowning in glue code. Every cloud has its own APIs, its own depl
 | Cloud-specific deploy scripts everywhere | **One declarative YAML contract** that runs on any provider |
 | Schema drift breaks pipelines silently | **Built-in `validate` + `verify`** catches drift before and after deploy |
 | No visibility into data quality | **`test` with quality gates, SLA checks & anomaly detection** — in the contract |
-| Orchestration is hand-wired spaghetti | **`export` generates Airflow, Dagster, Prefect & Step Functions** from your contract |
-| Governance is an afterthought | **`policy-check` → `policy-compile` → `policy-apply`** — governance-as-code, compiled to native IAM |
+| Orchestration is hand-wired spaghetti | **`generate schedule` produces Airflow, Dagster, Prefect `export` generates Airflow, Dagster, Prefect & Step Functions Composer DAGs** from your contract |
+| Governance is an afterthought | **`policy-check` → `policy-apply`** — governance-as-code, compiled to native IAM |
 | Switching clouds means rewriting everything | **Swap one line** (`platform: gcp` → `platform: snowflake`) and redeploy |
 | AI/LLM access to data is ungoverned | **`agentPolicy`** — declarative boundaries on which models can consume your data |
 
@@ -350,7 +350,7 @@ Governance isn't a plugin — it's a first-class citizen in every contract:
 
 ```bash
 fluid policy-check contract.fluid.yaml     # Validate policies
-fluid policy-compile contract.fluid.yaml   # Compile to native IAM JSON
+fluid policy-apply --mode check contract.fluid.yaml   # Compile to native IAM JSON
 fluid policy-apply contract.fluid.yaml     # Enforce on infrastructure
 ```
 

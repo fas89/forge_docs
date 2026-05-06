@@ -13,9 +13,9 @@ Deploy data products to Snowflake Data Cloud — databases, schemas, tables, RBA
 The Snowflake provider turns a FLUID contract into real Snowflake infrastructure:
 
 - ✅ **Plan & Apply** — Databases, schemas, tables, warehouses
-- ✅ **RBAC Compilation** — `fluid policy-compile` generates Snowflake `GRANT` statements from `accessPolicy`
+- ✅ **RBAC Compilation** — `fluid policy-apply --mode check` generates Snowflake `GRANT` statements from `accessPolicy`
 - ✅ **Sovereignty Validation** — Region constraints enforced before deployment
-- ✅ **Airflow DAG Generation** — `fluid generate-airflow` produces Snowflake-operator DAGs
+- ✅ **Airflow DAG Generation** — `fluid generate schedule` produces Snowflake-operator DAGs
 - ✅ **Governance** — Classification, column masking, row-level security, audit labels
 - ✅ **Universal Pipeline** — Same Jenkinsfile as GCP and AWS — zero provider logic
 
@@ -285,14 +285,14 @@ fluid test contract.fluid.yaml
 fluid policy-check contract.fluid.yaml
 
 # Compile RBAC / access bindings from accessPolicy grants
-fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 
 # Apply RBAC bindings (dry-run or enforce)
 fluid policy-apply runtime/policy/bindings.json --mode check
 fluid policy-apply runtime/policy/bindings.json --mode enforce
 
 # Generate Airflow DAG
-fluid generate-airflow contract.fluid.yaml --out airflow-dags/bitcoin_snowflake.py
+fluid generate schedule contract.fluid.yaml --out airflow-dags/bitcoin_snowflake.py
 ```
 
 Recommended deployment gate for enterprise teams:
@@ -300,7 +300,7 @@ Recommended deployment gate for enterprise teams:
 1. `fluid validate`
 2. `fluid plan`
 3. `fluid policy-check`
-4. `fluid policy-compile`
+4. `fluid policy-apply --mode check`
 5. `fluid apply`
 6. `fluid verify --strict`
 7. optional `fluid test`
@@ -309,7 +309,7 @@ Every Snowflake session opened through the provider carries a `QUERY_TAG` so sta
 
 ## RBAC Policy Compilation
 
-`fluid policy-compile` reads `accessPolicy.grants` and generates Snowflake `GRANT` statements:
+`fluid policy-apply --mode check` reads `accessPolicy.grants` and generates Snowflake `GRANT` statements:
 
 ```json
 {
@@ -351,7 +351,7 @@ The permission mapping:
 Use the governance commands this way:
 
 - `fluid policy-check` validates governance declarations in the contract.
-- `fluid policy-compile` and `fluid policy-apply` manage Snowflake RBAC and access-policy bindings.
+- `fluid policy-apply --mode check` and `fluid policy-apply` manage Snowflake RBAC and access-policy bindings.
 - Snowflake governance during `apply` handles object-level controls such as tags, descriptions, and masking policies.
 - `fluid verify` checks deployed schema and drift. It does not perform a full RBAC or entitlement audit.
 
@@ -531,12 +531,12 @@ The Snowflake example uses the exact same Jenkinsfile as GCP and AWS — the [Un
 |-------|---------|-------------|
 | Validate | `fluid validate` | Contract checked against 0.7.1 schema |
 | Export | `fluid odps export` / `fluid odcs export` | Standards files generated |
-| Compile RBAC | `fluid policy-compile` | `accessPolicy` → Snowflake GRANT bindings |
+| Compile RBAC | `fluid policy-apply --mode check` | `accessPolicy` → Snowflake GRANT bindings |
 | Plan | `fluid plan` | Execution plan generated |
 | Apply | `fluid apply` | Database + schema + table created |
 | Apply RBAC | `fluid policy-apply` | RBAC grants enforced |
-| Execute | `fluid execute` | `ingest.py` runs, inserts rows to Snowflake |
-| Airflow DAG | `fluid generate-airflow` | Production DAG generated |
+| Execute | `fluid apply` | `ingest.py` runs, inserts rows to Snowflake |
+| Airflow DAG | `fluid generate schedule` | Production DAG generated |
 
 ## Snowflake Table Properties
 

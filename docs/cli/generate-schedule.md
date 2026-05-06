@@ -1,15 +1,15 @@
-# generate-airflow Command
+# `generate schedule` command
 
-Generate Airflow DAG Python code from a Fluid Forge contract.
+Generate schedule artifacts (Airflow DAG, Dagster pipeline, Prefect flow, Composer/MWAA/Astronomer/Dagster targets) from a Fluid Forge contract.
 
-::: tip Available Now
-This command is fully available in FLUID v0.7.1 for AWS, GCP, and Snowflake providers.
+::: tip Renamed in v0.8.0
+This page used to be `generate-airflow`. As of CLI v0.8.0, schedule generation is one of the four `fluid generate <subcommand>` modes alongside `transformation`, `ci`, and `standard`. The Airflow output is the default `--target` value when no other is specified.
 :::
 
 ## Syntax
 
 ```bash
-fluid generate-airflow <contract-file> [options]
+fluid generate schedule <contract-file> [options]
 ```
 
 ## Options
@@ -46,7 +46,7 @@ The command creates a production-ready Airflow DAG with:
 Generate DAG for a GCP contract:
 
 ```bash
-fluid generate-airflow gcp-analytics.yaml -o dags/gcp_pipeline.py
+fluid generate schedule gcp-analytics.yaml -o dags/gcp_pipeline.py
 ```
 
 **Output:**
@@ -62,7 +62,7 @@ fluid generate-airflow gcp-analytics.yaml -o dags/gcp_pipeline.py
 Generate for production environment:
 
 ```bash
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   --output dags/prod_pipeline.py \
   --env prod \
   --verbose
@@ -85,7 +85,7 @@ fluid generate-airflow contract.yaml \
 Generate DAG for AWS data pipeline:
 
 ```bash
-fluid generate-airflow aws-etl.yaml -o dags/aws_etl.py
+fluid generate schedule aws-etl.yaml -o dags/aws_etl.py
 ```
 
 **Generated DAG includes:**
@@ -99,7 +99,7 @@ fluid generate-airflow aws-etl.yaml -o dags/aws_etl.py
 Generate DAG for Snowflake data warehouse:
 
 ```bash
-fluid generate-airflow snowflake-dwh.yaml -o dags/snowflake_pipeline.py
+fluid generate schedule snowflake-dwh.yaml -o dags/snowflake_pipeline.py
 ```
 
 **Generated DAG includes:**
@@ -265,7 +265,7 @@ monitoring:
 **Scenario:** Load data from GCS to BigQuery daily
 
 ```bash
-fluid generate-airflow gcs-to-bq.yaml -o dags/daily_load.py
+fluid generate schedule gcs-to-bq.yaml -o dags/daily_load.py
 ```
 
 ### 2. Multi-Stage Transformation
@@ -273,7 +273,7 @@ fluid generate-airflow gcs-to-bq.yaml -o dags/daily_load.py
 **Scenario:** Extract → Transform → Load with multiple steps
 
 ```bash
-fluid generate-airflow etl-pipeline.yaml \
+fluid generate schedule etl-pipeline.yaml \
   --output dags/etl_full.py \
   --env prod
 ```
@@ -283,7 +283,7 @@ fluid generate-airflow etl-pipeline.yaml \
 **Scenario:** AWS S3 → Processing → Snowflake
 
 ```bash
-fluid generate-airflow s3-to-snowflake.yaml -o dags/cross_cloud.py
+fluid generate schedule s3-to-snowflake.yaml -o dags/cross_cloud.py
 ```
 
 ## Troubleshooting
@@ -330,7 +330,7 @@ fluid validate contract.yaml --provider gcp
 
 ```bash
 # Generate DAG
-fluid generate-airflow contract.yaml -o my_pipeline.py
+fluid generate schedule contract.yaml -o my_pipeline.py
 
 # Copy to Airflow DAGs folder
 cp my_pipeline.py $AIRFLOW_HOME/dags/
@@ -374,7 +374,7 @@ airflow dags state my_pipeline
 The `fluid export` command supports all three engines:
 
 ```bash
-# Airflow (also available via generate-airflow)
+# Airflow (also available via generate schedule)
 fluid export contract.yaml --engine airflow -o dags/
 
 # Dagster

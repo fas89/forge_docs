@@ -50,7 +50,7 @@ Those files are enough for copilot mode to infer table names, column types, Snow
 The data engineer starts with discovery-enabled copilot mode:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --provider snowflake \
   --discovery-path ./data \
   --llm-provider openai \
@@ -83,7 +83,7 @@ feat: add Snowflake weekly revenue data product
 ```md
 This PR adds the first FLUID contract for the Snowflake weekly revenue mart used by finance reporting.
 
-I used `fluid forge --mode copilot` with local discovery against the repo's SQL and sample data, then tightened the generated contract by hand.
+I used `fluid forge` with local discovery against the repo's SQL and sample data, then tightened the generated contract by hand.
 
 Changes in this PR:
 - add `contract.fluid.yaml`
@@ -215,7 +215,7 @@ The platform engineer pulls the branch and runs the standard checks:
 fluid validate contract.fluid.yaml
 fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid policy-check contract.fluid.yaml
-fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 ```
 
 ### What The Platform Engineer Checks
@@ -267,7 +267,7 @@ The data engineer addresses the review in one place: the contract.
 fluid validate contract.fluid.yaml
 fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid policy-check contract.fluid.yaml
-fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 ```
 
 ### Revised Contract Excerpt
@@ -340,7 +340,7 @@ exposes:
 > - `fluid validate contract.fluid.yaml`
 > - `fluid plan contract.fluid.yaml --out runtime/plan.json`
 > - `fluid policy-check contract.fluid.yaml`
-> - `fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json`
+> - `fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json`
 >
 > Updated plan summary for review:
 > - ensure Snowflake table `{{ env.SNOWFLAKE_DATABASE }}.{{ env.SNOWFLAKE_SCHEMA }}.CUSTOMER_ORDERS_WEEKLY_REVENUE`

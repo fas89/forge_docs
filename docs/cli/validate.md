@@ -456,4 +456,4 @@ fluid validate contract.yaml --verbose | grep "⚠️"
 
 - [plan command](./plan.md) - Preview deployment changes
 - [apply command](./apply.md) - Deploy validated contracts
-- [generate-airflow command](./generate-airflow.md) - Generate Airflow DAGs
+- [generate schedule command](./generate-schedule.md) - Generate Airflow DAGs

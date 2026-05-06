@@ -454,7 +454,7 @@ fluid apply contract.fluid.yaml --provider gcp
 Schedule daily analytics updates:
 
 ```bash
-fluid generate-airflow contract.fluid.yaml \
+fluid generate schedule contract.fluid.yaml \
   --output netflix_analytics_dag.py \
   --schedule "0 2 * * *"  # Daily at 2 AM
 ```

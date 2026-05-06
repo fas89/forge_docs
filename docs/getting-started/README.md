@@ -137,8 +137,8 @@ fluid plan contract.fluid.yaml              # Preview what will happen
 fluid apply contract.fluid.yaml --yes       # Execute the pipeline
 fluid verify contract.fluid.yaml            # Post-deployment verification
 fluid diff contract.fluid.yaml              # Detect drift from deployed state
-fluid viz-graph contract.fluid.yaml         # Visualize data lineage
-fluid generate-airflow contract.fluid.yaml  # Generate an Airflow DAG
+fluid graph contract.fluid.yaml         # Visualize data lineage
+fluid generate schedule contract.fluid.yaml  # Generate an Airflow DAG
 ```
 
 Run `fluid --help` for the full command list, or `fluid <command> -h` for per-command help.
@@ -190,7 +190,7 @@ Export your contract as production Airflow, Dagster, or Prefect code:
 
 ```bash
 # Airflow DAG
-fluid generate-airflow contract.fluid.yaml -o dags/pipeline.py
+fluid generate schedule contract.fluid.yaml -o dags/pipeline.py
 
 # Dagster pipeline
 fluid export contract.fluid.yaml --format dagster -o pipeline.py

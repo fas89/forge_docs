@@ -8,7 +8,7 @@ FLUID can automatically generate production-ready Airflow DAGs from your data pr
 
 ```bash
 # Generate declarative Airflow DAG
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o airflow/dags/my_pipeline.py \
   --dag-id my_pipeline \
   --schedule "0 * * * *"
@@ -38,36 +38,36 @@ See the **[Declarative Airflow Walkthrough](/walkthrough/airflow-declarative)** 
 ### Basic Usage
 
 ```bash
-fluid generate-airflow contract.yaml -o dag.py
+fluid generate schedule contract.yaml -o dag.py
 ```
 
 ### With Custom Schedule
 
 ```bash
 # Hourly
-fluid generate-airflow contract.yaml -o dag.py --schedule "0 * * * *"
+fluid generate schedule contract.yaml -o dag.py --schedule "0 * * * *"
 
 # Daily at 2 AM
-fluid generate-airflow contract.yaml -o dag.py --schedule "0 2 * * *"
+fluid generate schedule contract.yaml -o dag.py --schedule "0 2 * * *"
 
 # Every 15 minutes
-fluid generate-airflow contract.yaml -o dag.py --schedule "*/15 * * * *"
+fluid generate schedule contract.yaml -o dag.py --schedule "*/15 * * * *"
 ```
 
 ### With Environment Overlays
 
 ```bash
 # Development environment
-fluid generate-airflow contract.yaml -o dag_dev.py --env dev
+fluid generate schedule contract.yaml -o dag_dev.py --env dev
 
 # Production environment
-fluid generate-airflow contract.yaml -o dag_prod.py --env prod
+fluid generate schedule contract.yaml -o dag_prod.py --env prod
 ```
 
 ### With Custom DAG ID
 
 ```bash
-fluid generate-airflow contract.yaml \
+fluid generate schedule contract.yaml \
   -o dags/bitcoin_tracker.py \
   --dag-id bitcoin_tracker_prod \
   --schedule "0 * * * *" \
@@ -80,7 +80,7 @@ Deploy generated DAGs to GCP Cloud Composer:
 
 ```bash
 # Generate DAG
-fluid generate-airflow contract.yaml -o my_dag.py
+fluid generate schedule contract.yaml -o my_dag.py
 
 # Create Composer environment
 gcloud composer environments create my-env \

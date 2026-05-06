@@ -1,6 +1,6 @@
 # Built-in And Custom Forge Agents
 
-`fluid forge --mode copilot` is the primary AI-backed project creation path. It now runs as an adaptive interview plus generation loop: bootstrap context, ask only the highest-signal follow-up questions, discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
+`fluid forge` is the primary AI-backed project creation path. It now runs as an adaptive interview plus generation loop: bootstrap context, ask only the highest-signal follow-up questions, discover local metadata, generate a full FLUID contract, validate and repair it, and scaffold the project only after the contract passes validation.
 
 Built-in copilot providers:
 
@@ -16,18 +16,18 @@ Built-in domain agents:
 - `retail` for customer 360, personalization, and inventory-driven workflows
 - `telco` for TM Forum SID-aligned telecom OSS/BSS, service-assurance, and network-operations workflows
 
-Those built-in domain agents are no longer hand-coded one by one. They are backed by declarative YAML specs under `fluid_build/cli/agent_specs/*.yaml`, loaded through the shared `DeclarativeDomainAgent` path, and then exposed via `fluid forge --mode agent --agent <name>`.
+Those built-in domain agents are no longer hand-coded one by one. They are backed by declarative YAML specs under `fluid_build/cli/agent_specs/*.yaml`, loaded through the shared `DeclarativeDomainAgent` path, and then exposed via `fluid forge --domain <name>`.
 
 Use a custom agent only when you need bespoke questioning, a non-standard provider, or domain-specific planning behavior that goes beyond the built-in copilot flow or the declarative spec system.
 
-If you want a private ChatGPT GPT that drafts and reviews FLUID contracts rather than running through `fluid forge --mode copilot`, use the [FLUID Forge Contract GPT Packet](/advanced/chatgpt-forge-contract-gpt/).
+If you want a private ChatGPT GPT that drafts and reviews FLUID contracts rather than running through `fluid forge`, use the [FLUID Forge Contract GPT Packet](/advanced/chatgpt-forge-contract-gpt/).
 
 ## Built-in Copilot Configuration
 
 ### CLI Flags
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
   --discovery-path ./data
@@ -54,26 +54,26 @@ Secrets stay in the environment. Forge does not expose a `--llm-api-key` flag.
 ```bash
 # OpenAI
 export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot --llm-provider openai --llm-model gpt-4o-mini
+fluid forge --llm-provider openai --llm-model gpt-4o-mini
 
 # Anthropic / Claude
 export ANTHROPIC_API_KEY=sk-ant-...
-fluid forge --mode copilot --llm-provider anthropic --llm-model claude-3-5-sonnet-latest
+fluid forge --llm-provider anthropic --llm-model claude-3-5-sonnet-latest
 
 # Gemini
 export GEMINI_API_KEY=...
-fluid forge --mode copilot --llm-provider gemini --llm-model gemini-2.5-flash
+fluid forge --llm-provider gemini --llm-model gemini-2.5-flash
 
 # Ollama
 export OLLAMA_HOST=http://localhost:11434
-fluid forge --mode copilot --llm-provider ollama --llm-model llama3.1
+fluid forge --llm-provider ollama --llm-model llama3.1
 ```
 
 If you prefer a `.env` file, load it in your shell before running Forge:
 
 ```bash
 export $(grep -v '^#' .env | xargs)
-fluid forge --mode copilot --llm-provider openai
+fluid forge --llm-provider openai
 ```
 
 ## How The Built-In Copilot Session Works
@@ -111,14 +111,14 @@ Use it when you need:
 Examples:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider ollama \
   --llm-model llama3.1 \
   --llm-endpoint http://localhost:11434/v1/chat/completions
 ```
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
   --llm-endpoint https://gateway.example.com/v1/chat/completions
@@ -220,7 +220,7 @@ Use a custom domain agent when you need one or more of these:
 - organization-specific architecture rules
 - a domain expert that should steer template and provider selection
 
-Custom domain agents are registered for `fluid forge --mode agent --agent <name>`.
+Custom domain agents are registered for `fluid forge --domain <name>`.
 
 ## Creating A Custom Domain Agent
 
@@ -307,7 +307,7 @@ DOMAIN_AGENTS["my-domain"] = MyDomainAgent
 Then run:
 
 ```bash
-fluid forge --mode agent --agent my-domain
+fluid forge --domain my-domain
 ```
 
 ### 3. Advanced Path: Write A Python Agent Class
@@ -420,7 +420,7 @@ DOMAIN_AGENTS.update(
 ```
 
 ```bash
-fluid forge --mode agent --agent my-llm
+fluid forge --domain my-llm
 ```
 
 ### 5. Python Agent Response Contract

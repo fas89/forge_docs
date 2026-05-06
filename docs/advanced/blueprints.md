@@ -2,84 +2,103 @@
 
 Reusable, parameterized templates for common data product patterns. Blueprints let you scaffold a complete project — contract, sample data, transformations — in seconds.
 
+::: warning Command renamed in v0.8.0
+The dedicated `fluid blueprint` subcommand was retired in v0.8.0. The same workflows are now split between two existing commands:
+
+- **Browse / discover blueprints** → `fluid market --blueprints`
+- **Create a project from a template/blueprint** → `fluid init <name> --template <blueprint>`
+- **List local templates only** → `fluid init --list-templates`
+
+If you have automation that calls `fluid blueprint …`, see the [migration table](#migrating-from-fluid-blueprint) at the bottom of this page.
+:::
+
 ## Quick Start
 
 ```bash
-# List all available blueprints
-fluid blueprint list
+# 1. Browse blueprints in the marketplace
+fluid market --blueprints
 
-# Filter by category or provider
-fluid blueprint list --category analytics --provider gcp
+# 2. Search for a specific pattern
+fluid market --search customer-360 --blueprints
 
-# Describe a specific blueprint
-fluid blueprint describe customer-360-gcp
+# 3. List local templates that ship with the CLI
+fluid init --list-templates
 
-# Create a project from a blueprint
-fluid blueprint create customer-360-gcp --target-dir my-project
+# 4. Create a project from a template (or blueprint)
+fluid init my-project --template customer-360 --provider gcp
+
+# 5. Run the standard workflow
+cd my-project
+fluid validate contract.fluid.yaml
+fluid apply contract.fluid.yaml --yes
 ```
 
-## CLI Reference
+## Discovering blueprints
 
-### `fluid blueprint list`
+`fluid market --blueprints` searches the marketplace catalog (Agentics-Rising's curated set + your org's private catalogs if configured).
+
+```bash
+fluid market --blueprints                        # all blueprints
+fluid market --blueprints --domain customer      # filter by domain
+fluid market --blueprints --tags analytics       # filter by tag
+fluid market --search customer-360 --blueprints  # text search across names/descriptions
+```
+
+See the full set of `--filter` flags in [`fluid market --help`](/cli/) — `--domain`, `--owner`, `--layer`, `--status`, `--tags`, `--min-quality`, `--created-after`/`--created-before` are all supported.
+
+## Creating a project from a blueprint
+
+The canonical creation path in v0.8.0 is `fluid init` with `--template`:
+
+```bash
+fluid init my-analytics --template customer-360 --provider gcp
+```
 
 | Option | Description |
 |--------|-------------|
-| `--category` | Filter by category (e.g. `analytics`, `ml`, `ingestion`) |
-| `--complexity` | Filter by complexity level |
-| `--provider` | Filter by provider (`gcp`, `aws`, `snowflake`, `local`) |
-| `--verbose`, `-v` | Show detailed metadata |
+| `--template <name>` | Name of the template/blueprint (e.g. `customer-360`, `ml-features`) |
+| `--provider <name>` | Override the default provider (`local`, `gcp`, `aws`, `snowflake`) |
+| `--quickstart` | Add sample data + a runnable contract on top of the template |
+| `--blank` | Empty contract on the template's structure (for power users) |
+| `--list-templates` | List available local templates and exit |
+| `--dir <path>`, `-C` | Target directory (default: current working dir) |
+| `--dry-run` | Preview what would be created without doing it |
+| `--yes`, `-y` | Skip confirmation prompts |
 
-### `fluid blueprint describe <name>`
+::: tip Local templates vs marketplace blueprints
+The CLI ships with a handful of **local templates** (`customer-360`, `ml-features`, `hello-world`) — see `fluid init --list-templates`. Marketplace **blueprints** are the broader set discoverable via `fluid market --blueprints`. Both are referenced by `--template <name>`; the CLI checks local templates first, then the marketplace.
+:::
 
-Show detailed information about a blueprint including its schema, required configuration, estimated setup time, and tags.
+## Available templates (shipped with the CLI)
 
-### `fluid blueprint create <name>`
-
-| Option | Description |
-|--------|-------------|
-| `--target-dir`, `-d` | Directory to create the project in |
-| `--provider`, `-p` | Override the default provider |
-| `--quickstart`, `-q` | Use smart defaults |
-| `--dry-run` | Preview what would be created |
-
-### `fluid blueprint search <query>`
-
-Search blueprints by keyword across names, descriptions, and tags.
-
-### `fluid blueprint validate [name]`
-
-Validate one or all blueprints for correctness.
-
-## Available Blueprints
-
-| Blueprint | Category | Providers | Description |
-|-----------|----------|-----------|-------------|
+| Template | Category | Providers | Description |
+|----------|----------|-----------|-------------|
 | `customer-360` | Analytics | local | Customer analytics data product |
 | `customer-360-gcp` | Analytics | gcp | Customer analytics on BigQuery |
 | `enterprise-snowflake` | Analytics | snowflake | Enterprise data warehouse |
 | `semantic-customer-model` | Analytics | local | Semantic layer with customer data |
 
-## Creating From a Blueprint
+Run `fluid init --list-templates` for the up-to-date set on your installed CLI version. Marketplace blueprints (curated by Agentics-Rising and the community) are listed separately via `fluid market --blueprints`.
 
-```bash
-# 1. Browse options
-fluid blueprint list --verbose
+## Migrating from `fluid blueprint`
 
-# 2. Pick one and scaffold
-fluid blueprint create customer-360-gcp -d my-analytics --quickstart
+If you have scripts/CI that still call `fluid blueprint …`, here's the canonical replacement for each subcommand:
 
-# 3. Enter the project
-cd my-analytics
+| v0.7.x command | v0.8.0 equivalent |
+|----------------|-------------------|
+| `fluid blueprint list` | `fluid market --blueprints` (marketplace) **or** `fluid init --list-templates` (local) |
+| `fluid blueprint list --category analytics --provider gcp` | `fluid market --blueprints --layer analytical` |
+| `fluid blueprint describe <name>` | `fluid market --search <name> --blueprints` |
+| `fluid blueprint create <name> --target-dir d` | `fluid init d --template <name>` |
+| `fluid blueprint create <name> --quickstart` | `fluid init my-proj --template <name> --quickstart` |
+| `fluid blueprint search <query>` | `fluid market --search <query> --blueprints` |
+| `fluid blueprint validate [name]` | Folded into `fluid validate` once a project is scaffolded |
 
-# 4. Run the standard workflow
-fluid validate contract.fluid.yaml
-fluid apply contract.fluid.yaml --yes
-```
+## See also
 
-## See Also
-
-- [init command](/cli/init) — create projects from scratch or blueprints
-- [forge command](/cli/) — AI-powered project generation
+- [`fluid init`](/cli/init) — create projects from scratch, with `--quickstart`, `--blank`, or `--template`
+- [`fluid forge`](/cli/) — AI-powered project generation when you don't have a clear template in mind
+- [`fluid market`](/cli/) — discover data products and blueprints from the marketplace
 - [Getting Started](/getting-started/) — install and run your first project
 - [Custom LLM Agents](/advanced/custom-llm-agents) — AI-powered project generation with your own models
-- [Contributing](/contributing) — contribute new blueprints
+- [Contributing](/contributing) — contribute new templates and blueprints

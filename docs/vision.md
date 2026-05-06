@@ -112,16 +112,17 @@ Fluid Forge covers the full journey:
 ### Design
 
 ```bash
-fluid wizard                              # Interactive guided setup
-fluid forge --mode copilot                # AI-powered generation
-fluid blueprint list --category analytics # Browse templates
+fluid forge                                # AI-powered guided creation (v0.8.0)
+fluid init my-project --quickstart         # Working example with sample data
+fluid init --list-templates                # Browse local templates
+fluid market --blueprints                  # Browse community blueprints
 ```
 
 ### Validate
 
 ```bash
 fluid validate contract.yaml              # Schema + semantic checks
-fluid contract-tests contract.yaml        # Contract test suites
+fluid test contract.yaml        # Contract test suites
 fluid policy-check contract.yaml          # Governance compliance
 ```
 
@@ -129,7 +130,7 @@ fluid policy-check contract.yaml          # Governance compliance
 
 ```bash
 fluid plan contract.yaml                  # Preview changes (no side effects)
-fluid viz-graph contract.yaml             # Visualize data lineage
+fluid graph contract.yaml             # Visualize data lineage
 fluid diff contract.yaml --env prod       # Compare environments
 ```
 
@@ -138,7 +139,7 @@ fluid diff contract.yaml --env prod       # Compare environments
 ```bash
 fluid apply contract.yaml --yes           # Execute against target provider
 fluid verify contract.yaml                # Post-deployment verification
-fluid generate-airflow contract.yaml      # Generate orchestration
+fluid generate schedule contract.yaml      # Generate orchestration
 ```
 
 ### Operate

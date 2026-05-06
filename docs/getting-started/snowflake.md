@@ -86,7 +86,7 @@ Recommended review/deploy sequence:
 fluid validate contract.fluid.yaml
 fluid plan contract.fluid.yaml --out runtime/plan.json
 fluid policy-check contract.fluid.yaml
-fluid policy-compile contract.fluid.yaml --env dev --out runtime/policy/bindings.json
+fluid policy-apply --mode check contract.fluid.yaml --env dev --out runtime/policy/bindings.json
 fluid apply contract.fluid.yaml --yes
 fluid verify contract.fluid.yaml --strict
 fluid test contract.fluid.yaml
@@ -97,7 +97,7 @@ fluid test contract.fluid.yaml
 Use the commands this way:
 
 - `fluid policy-check` validates governance declarations in the contract.
-- `fluid policy-compile` turns `accessPolicy` rules into Snowflake RBAC bindings.
+- `fluid policy-apply --mode check` turns `accessPolicy` rules into Snowflake RBAC bindings.
 - `fluid policy-apply` applies those compiled bindings.
 - Snowflake governance during `apply` covers object-level controls such as descriptions, tags, and masking policies.
 - `fluid verify` checks deployed schema and drift. It is not a full RBAC or entitlement audit.

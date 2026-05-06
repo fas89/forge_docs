@@ -1,6 +1,6 @@
 # Forge Copilot Memory Guide
 
-This guide explains, step by step, how project-scoped memory works for `fluid forge --mode copilot` inside the new adaptive copilot flow.
+This guide explains, step by step, how project-scoped memory works for `fluid forge` inside the new adaptive copilot flow.
 
 ## What Copilot Memory Is
 
@@ -23,7 +23,7 @@ It is **not** a bypass around validation. Forge still validates every generated 
 
 ## The Short Version
 
-1. You run `fluid forge --mode copilot`.
+1. You run `fluid forge`.
 2. Forge loads `runtime/.state/copilot-memory.json` if it exists, unless you pass `--no-memory`.
 3. Forge combines:
    - your explicit CLI flags and current-run answers
@@ -46,7 +46,7 @@ Start the same way you already use copilot:
 
 ```bash
 export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini
 ```
@@ -58,7 +58,7 @@ When it does, Forge now tells you that directly in the copilot flow and shows a 
 If you want to ignore it for one run:
 
 ```bash
-fluid forge --mode copilot --no-memory
+fluid forge --no-memory
 ```
 
 ## Step 2: Understand What Forge Loads
@@ -221,7 +221,7 @@ Example:
 
 ```bash
 export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot \
+fluid forge \
   --non-interactive \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
@@ -259,7 +259,7 @@ You run:
 ```bash
 cd my-product
 export OPENAI_API_KEY=sk-...
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini
 ```
@@ -284,7 +284,7 @@ Later, from the same repo:
 
 ```bash
 cd my-product
-fluid forge --mode copilot --dry-run
+fluid forge --dry-run
 ```
 
 Forge now uses:
@@ -307,7 +307,7 @@ fluid forge --show-memory
 Ignore memory for one run:
 
 ```bash
-fluid forge --mode copilot --no-memory
+fluid forge --no-memory
 ```
 
 Delete the saved memory file:
@@ -334,7 +334,7 @@ Corrupt memory should not block project creation.
 Interactive run with discovery and memory loading:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
   --discover
@@ -343,7 +343,7 @@ fluid forge --mode copilot \
 Non-interactive run that saves memory:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --non-interactive \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
@@ -353,7 +353,7 @@ fluid forge --mode copilot \
 Ignore memory for a one-off experiment:
 
 ```bash
-fluid forge --mode copilot \
+fluid forge \
   --llm-provider openai \
   --llm-model gpt-4o-mini \
   --no-memory

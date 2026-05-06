@@ -8,13 +8,13 @@ description: The difference between a binding.platform value and the provider pl
 Two related but distinct ideas:
 
 - **Platform** — a value in your contract (`binding.platform: gcp`) describing *where* the data lands.
-- **Provider** — a Python plugin that knows *how* to make it land there. Each provider implements `plan()`, `apply()`, `verify()` and `policy-compile()` against a specific cloud.
+- **Provider** — a Python plugin that knows *how* to make it land there. Each provider implements `plan()`, `apply()`, `verify()`, and policy-compilation hooks against a specific cloud.
 
 `fluid providers` lists everything installed in your environment.
 
 ## Cloud providers shipping in `data-product-forge` 0.8.0
 
-These are the cloud-platform providers that implement `plan`/`apply`/`verify`/`policy-compile` against a target cloud:
+These are the cloud-platform providers that implement the full lifecycle (`plan` / `apply` / `verify` / policy compilation) against a target cloud:
 
 | Provider | Status | Install extra |
 |----------|--------|---------------|

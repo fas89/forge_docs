@@ -1,7 +1,19 @@
 # Fluid Forge v0.7.1 - Multi-Provider Export Release
 
-**Release Date:** January 30, 2026  
-**Status:** ✅ Production Ready
+**Release Date:** January 30, 2026
+**Status:** ✅ Production Ready (historical — superseded by v0.8.0)
+
+::: warning Historical document
+This is the v0.7.1 release archive. Several command names referenced below were renamed or retired in v0.8.0:
+- `fluid export --engine X` → `fluid generate schedule --target X`
+- `fluid generate-airflow` → `fluid generate schedule`
+- `fluid contract-tests` → `fluid test`
+- `fluid policy-compile` → folded into `fluid policy-apply --mode check`
+- `fluid wizard`, `fluid execute`, `fluid blueprint`, `fluid forge --mode <name>`, `fluid init --scan`/`--wizard` — retired entirely
+- Package renamed on PyPI: `fluid-forge` → `data-product-forge`
+
+For the current command surface, see the [CLI Reference](/cli/) and `fluid --help` on v0.8.0.
+:::
 
 ---
 
@@ -13,7 +25,7 @@ Generate production-ready Airflow DAGs from Fluid Forge contracts for **3 cloud 
 
 **New Command:**
 ```bash
-fluid generate-airflow <contract> -o dags/pipeline.py
+fluid generate schedule <contract> -o dags/pipeline.py
 ```
 
 **Supported Providers:**
@@ -22,7 +34,7 @@ fluid generate-airflow <contract> -o dags/pipeline.py
 - ✅ **Snowflake** (Databases, Tables, Queries, Warehouses, Snowpipe)
 
 **All Engines Available:**
-- ✅ **Airflow DAGs** — `fluid generate-airflow` with provider-specific operators
+- ✅ **Airflow DAGs** — `fluid generate schedule` with provider-specific operators
 - ✅ **Dagster Pipelines** — `fluid export --engine dagster` with type-safe ops
 - ✅ **Prefect Flows** — `fluid export --engine prefect` with retry logic
 
@@ -97,17 +109,17 @@ pip install --upgrade data-product-forge
 
 **GCP BigQuery:**
 ```bash
-fluid generate-airflow gcp-contract.yaml -o dags/gcp_pipeline.py
+fluid generate schedule gcp-contract.yaml -o dags/gcp_pipeline.py
 ```
 
 **AWS Glue:**
 ```bash
-fluid generate-airflow aws-contract.yaml -o dags/aws_pipeline.py
+fluid generate schedule aws-contract.yaml -o dags/aws_pipeline.py
 ```
 
 **Snowflake:**
 ```bash
-fluid generate-airflow snowflake-contract.yaml -o dags/snowflake_pipeline.py
+fluid generate schedule snowflake-contract.yaml -o dags/snowflake_pipeline.py
 ```
 
 ---
@@ -219,7 +231,7 @@ Key test categories:
 Legacy commands still work:
 ```bash
 # Still supported (equivalent to fluid export --engine airflow)
-fluid generate-airflow contract.yaml
+fluid generate schedule contract.yaml
 
 # Still supported (equivalent to fluid export --engine dagster)
 fluid generate-dagster contract.yaml

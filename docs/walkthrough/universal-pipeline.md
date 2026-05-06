@@ -213,10 +213,10 @@ pipeline {
                 sh '''
                     set -a; . .fluid-env; set +a
                     mkdir -p runtime/policy
-                    fluid policy-compile ${CONTRACT_FILE} \
+                    fluid policy-apply --mode check ${CONTRACT_FILE} \
                         --env ${ENV} \
                         --out runtime/policy/bindings.json || {
-                        echo '{"bindings":[],"warnings":["policy-compile unavailable"]}' \
+                        echo '{"bindings":[],"warnings":["policy validation unavailable"]}' \
                           > runtime/policy/bindings.json
                     }
                 '''
@@ -238,7 +238,7 @@ pipeline {
             steps {
                 sh '''
                     set -a; . .fluid-env; set +a
-                    fluid contract-tests ${CONTRACT_FILE} || true
+                    fluid test ${CONTRACT_FILE} || true
                 '''
             }
         }
@@ -284,7 +284,7 @@ pipeline {
                 sh '''
                     set -a; . .fluid-env; set +a
                     [ -f requirements.txt ] && pip3 install --quiet -r requirements.txt
-                    fluid execute ${CONTRACT_FILE}
+                    fluid apply ${CONTRACT_FILE}
                 '''
             }
         }
@@ -295,7 +295,7 @@ pipeline {
                     mkdir -p airflow-dags
                     CONTRACT_ID=$(grep -m1 "^id:" ${CONTRACT_FILE} \
                       | cut -d" " -f2 | tr -d "\"" | tr "." "_")
-                    fluid generate-airflow ${CONTRACT_FILE} \
+                    fluid generate schedule ${CONTRACT_FILE} \
                         --out airflow-dags/data_product_${ENV}.py \
                         --dag-id "${CONTRACT_ID}_${ENV}" || true
                     [ -f airflow-dags/data_product_${ENV}.py ] \
@@ -382,13 +382,13 @@ This means **adding a new provider** requires zero Jenkinsfile changes:
 | 1 | Setup | — | Load credentials, detect format, print summary |
 | 2 | Validate | `fluid validate` | Check contract against 0.7.1 JSON schema |
 | 3 | Export | `fluid odps export` / `fluid odcs export` | Generate interop standards |
-| 4 | Compile IAM | `fluid policy-compile` | Convert `accessPolicy` → provider-native IAM |
+| 4 | Compile IAM | `fluid policy-apply --mode check` | Convert `accessPolicy` → provider-native IAM |
 | 5 | Plan | `fluid plan` | Generate execution plan |
-| 6 | Tests | `fluid contract-tests` | Run contract validation tests |
+| 6 | Tests | `fluid test` | Run contract validation tests |
 | 7 | Apply Infra | `fluid apply` | Deploy cloud resources |
 | 8 | Apply IAM | `fluid policy-apply` | Enforce IAM/RBAC bindings |
-| 9 | Execute | `fluid execute` | Run build scripts (ingest, transform) |
-| 10 | Airflow DAG | `fluid generate-airflow` | Generate production orchestration |
+| 9 | Execute | `fluid apply` | Run build scripts (ingest, transform) |
+| 10 | Airflow DAG | `fluid generate schedule` | Generate production orchestration |
 | 11 | Summary | — | Print artifacts and results |
 
 ## Jenkins Setup

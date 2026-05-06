@@ -847,7 +847,7 @@ For production orchestration with robust scheduling, monitoring, and retry capab
 
 ```bash
 # The FLUID way - fully declarative
-fluid generate-airflow contract.fluid.yaml \
+fluid generate schedule contract.fluid.yaml \
   -o airflow/dags/bitcoin_tracker.py \
   --dag-id bitcoin_tracker \
   --schedule "0 * * * *" \

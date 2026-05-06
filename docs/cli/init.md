@@ -14,11 +14,15 @@ fluid init [name] [options]
 
 | Option | Description |
 |--------|-------------|
-| `--quickstart` | Create a working example with sample data **(recommended)** |
-| `--scan` | Import an existing dbt or Terraform project |
-| `--wizard` | Interactive guided setup |
-| `--blank` | Empty project skeleton |
-| `--template <name>` | Start from a named template (e.g. `customer-360`) |
+| `--quickstart` | Create a working example with sample data **(recommended, ~2 min)** |
+| `--blank` | Empty project skeleton (power users) |
+| `--template <name>` | Start from a named template (e.g. `customer-360`, `ml-features`) |
+| `--list-templates` | List available templates and exit |
+| `--agent <name>` | Scaffold a custom domain agent spec in `.fluid/agents/` |
+
+::: tip Need an interactive guided setup?
+That used to be `fluid init --wizard`. In v0.8.0 it's the AI-assisted [`fluid forge`](#fluid-forge) command — runs an interview, asks for domain context, and produces a tailored contract. Or run `fluid init my-project` (no flag) and it prompts you through the same flow.
+:::
 
 ### Additional Options
 
@@ -67,7 +71,7 @@ fluid apply contract.fluid.yaml --yes
 
 ```bash
 cd existing-dbt-project
-fluid init --scan
+fluid import .
 ```
 
 Auto-detects dbt models and converts them into a FLUID contract.
