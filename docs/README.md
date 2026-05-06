@@ -202,34 +202,34 @@ Real, runnable example projects you can clone and adapt today.
 <td align="center" width="33%" valign="top">
 <strong>🏠 Bitcoin Tracker — Local</strong><br>
 <sub>Hourly BTC price ingest, all on DuckDB. No cloud account.</sub><br><br>
-<a href="/walkthrough/local">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/local">→ Walkthrough</a>
 </td>
 <td align="center" width="33%" valign="top">
 <strong>☁️ Bitcoin Tracker — GCP</strong><br>
 <sub>Same contract, deployed to BigQuery + GCS. One-line provider swap.</sub><br><br>
-<a href="/walkthrough/gcp">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/gcp">→ Walkthrough</a>
 </td>
 <td align="center" width="33%" valign="top">
 <strong>❄️ Bitcoin Tracker — Snowflake</strong><br>
 <sub>Same contract, this time on Snowflake. Zero rewrite.</sub><br><br>
-<a href="/walkthrough/snowflake">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/snowflake">→ Walkthrough</a>
 </td>
 </tr>
 <tr>
 <td align="center" width="33%" valign="top">
 <strong>🔁 Universal CI/CD</strong><br>
 <sub>One Jenkinsfile. Every provider. Zero branching logic.</sub><br><br>
-<a href="/walkthrough/universal-pipeline">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/universal-pipeline">→ Walkthrough</a>
 </td>
 <td align="center" width="33%" valign="top">
 <strong>📦 Orchestration Export</strong><br>
 <sub>Generate Airflow DAGs, Dagster graphs, Prefect flows from a contract.</sub><br><br>
-<a href="/walkthrough/export-orchestration">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/export-orchestration">→ Walkthrough</a>
 </td>
 <td align="center" width="33%" valign="top">
 <strong>🤖 Declarative Airflow</strong><br>
 <sub>Compose Airflow tasks from contracts — no hand-wired DAGs.</sub><br><br>
-<a href="/walkthrough/airflow-declarative">→ Walkthrough</a>
+<a href="/forge_docs/walkthrough/airflow-declarative">→ Walkthrough</a>
 </td>
 </tr>
 </table>
@@ -308,7 +308,7 @@ All cloud providers use the **same CLI commands** and the **same CI/CD pipeline*
 <td align="center" width="33%" valign="top">
 <strong>📘 Contribute</strong><br>
 <sub>Workflow, conventions, and what we look for in PRs.</sub><br><br>
-<a href="/contributing">→ Contributing Guide</a>
+<a href="/forge_docs/contributing">→ Contributing Guide</a>
 </td>
 </tr>
 </table>
