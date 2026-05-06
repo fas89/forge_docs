@@ -17,27 +17,44 @@ One contract, one canonical 11-stage flow, every CI runner. Auto-generate the ru
 The v0.8.0 production flow is **eleven sequential stages**, each a CI gate that either advances or aborts. The order is **load-bearing** — earlier stages produce artifacts that later stages verify, sign, and deploy.
 
 ```mermaid
-flowchart LR
-    A([🗜  bundle]) --> B([✓ validate])
-    B --> C([📦 generate artifacts])
-    C --> D([🔍 validate-artifacts])
-    D --> E([↔️ diff])
-    E --> F([📋 plan])
-    F --> G([🚀 apply])
-    G --> H([🛡 policy-apply])
-    H --> I([✓ verify])
-    I --> J([📤 publish])
-    J --> K([📅 schedule-sync])
+flowchart TB
+    subgraph PRE["📦 Package — produce the audit unit"]
+        direction LR
+        A1([1 · bundle]) --> A2([3 · generate<br/>artifacts])
+    end
+
+    subgraph GATE["🔎 Verify — fail-fast before any deploy"]
+        direction LR
+        B1([2 · validate]) --> B2([4 · validate-<br/>artifacts]) --> B3([5 · diff<br/>--exit-on-drift])
+    end
+
+    subgraph DEPLOY["🚀 Deploy — change the warehouse"]
+        direction LR
+        C1([6 · plan<br/>--html]) --> C2([7 · apply<br/>--mode]) --> C3([8 · policy-apply<br/>--mode enforce])
+    end
+
+    subgraph POST["📤 Post-deploy — assert + publish"]
+        direction LR
+        D1([9 · verify<br/>--strict]) --> D2([10 · publish<br/>--target …]) --> D3([11 · schedule-sync<br/>--target airflow])
+    end
+
+    PRE --> GATE
+    GATE --> DEPLOY
+    DEPLOY --> POST
 
     classDef supply fill:#fef3c7,stroke:#d97706,color:#78350f;
-    classDef gate fill:#dbeafe,stroke:#2563eb,color:#1e3a8a;
+    classDef gate   fill:#dbeafe,stroke:#2563eb,color:#1e3a8a;
     classDef deploy fill:#dcfce7,stroke:#16a34a,color:#14532d;
-    classDef post fill:#fce7f3,stroke:#db2777,color:#831843;
-    class A,C,D supply
-    class B,E,F gate
-    class G,H deploy
-    class I,J,K post
+    classDef post   fill:#fce7f3,stroke:#db2777,color:#831843;
+    class A1,A2 supply
+    class B1,B2,B3 gate
+    class C1,C2,C3 deploy
+    class D1,D2,D3 post
 ```
+
+::: tip Reading the diagram
+Stage numbers reflect the actual execution order (`bundle` is stage 1, `validate` is stage 2, `generate artifacts` is stage 3 — even though they're grouped by phase visually). Each phase fails fast before the next starts: a broken bundle never reaches `validate`, drift never reaches `apply`, an apply that didn't take never reaches `publish`.
+:::
 
 ### Stage-by-stage
 
