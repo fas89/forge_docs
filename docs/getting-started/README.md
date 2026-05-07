@@ -2,6 +2,14 @@
 
 Get a working data product running in under 2 minutes — no cloud account required.
 
+<CliCast
+  src="/forge_docs/demos/local-quickstart.svg"
+  title="fluid init my-project --quickstart  →  validate  →  plan  →  apply"
+  caption="Click play above for the full local quickstart in 30 seconds. Or follow along step-by-step below."
+  width="920"
+  insight="30 seconds. No cloud account. No credit card. | The contract.fluid.yaml you wrote is the contract that ran. | Local DuckDB + Parquet artifact — exactly what production produces, but offline."
+/>
+
 ::: tip No Cloud Needed
 Fluid Forge ships with a **local** provider powered by DuckDB. Everything runs on your laptop.
 When you're ready for production, switch to [GCP](/providers/gcp), [AWS](/providers/aws), or the [Snowflake quickstart](/getting-started/snowflake).

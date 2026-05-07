@@ -1,8 +1,16 @@
 # Walkthrough: Deploy to Google Cloud Platform
 
-**Time:** 20 minutes  
-**Difficulty:** Intermediate  
+**Time:** 20 minutes
+**Difficulty:** Intermediate
 **Prerequisites:** GCP account, gcloud CLI, Python 3.9+
+
+<CliCast
+  src="/forge_docs/demos/gcp-quickstart.svg"
+  title="The same contract on BigQuery — swap one line, redeploy"
+  caption="From the local DuckDB contract to a fully-deployed BigQuery table with IAM grants applied. Click play above for the 30-second highlight; the walkthrough below covers each step with hands-on auth + contract editing."
+  width="920"
+  insight="Same contract. One line changed (platform: local → platform: gcp). | BigQuery dataset, table, IAM grants — all created from the YAML you already had. | Schema, dq.rules, agentPolicy, sovereignty — byte-identical to the local run."
+/>
 
 ---
 

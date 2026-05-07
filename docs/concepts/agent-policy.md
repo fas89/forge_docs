@@ -7,6 +7,15 @@ description: Declarative boundaries on which AI models can read which data field
 
 Introduced in schema v0.7.1 (still supported in current schema v0.7.2) — a top-level `agentPolicy` block that declares **which AI / LLM models are allowed to read this data product, for which purposes, and under what conditions**. Enforced before the model gets the row.
 
+<CliCast
+  src="/forge_docs/demos/agent-policy.svg"
+  title="agentPolicy — declare, validate, gate (fluid validate → policy-check → audit)"
+  caption="Watch agentPolicy enforce: the YAML block with allowedModels / deniedUseCases / canStore / auditRequired, schema validation, the policy-check enforcement summary, and a replay of real agent reads — gpt-4 + analysis allowed, claude-3 + training denied, an unlisted model denied, gemini summarization allowed."
+  width="920"
+  insight="The agentPolicy block is enforced at read-time, not just declared. | Models, use-cases, storage, token limits — every dimension checked per request. | auditRequired=true means every allow + every deny lands in the audit trail."
+/>
+
+
 ## Why declarative?
 
 Most teams discover their data is being read by AI agents only after it's already in a vector store. `agentPolicy` makes the intent **part of the contract**, alongside the schema and the IAM grants — so it's reviewed, versioned, and audited the same way.

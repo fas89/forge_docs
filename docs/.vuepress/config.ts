@@ -90,6 +90,7 @@ export default defineUserConfig({
       { text: 'Concepts', link: '/concepts/' },
       { text: 'CLI Reference', link: '/cli/' },
       { text: 'Playground', link: '/playground/' },
+      { text: 'Demos', link: '/demos/' },
       { text: 'Recipes', link: '/recipes/' },
       {
         text: 'Providers',

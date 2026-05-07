@@ -25,3 +25,10 @@ npm-debug.log*
 # Environment
 .env
 .env.local
+
+# Asciinema cast working files — never commit raw casts
+# (scrubbed SVGs in docs/.vuepress/public/demos/ ARE committed)
+/tmp/casts/
+*.cast.raw
+*.cast.tmp
+docs/.vuepress/public/demos/*.cast

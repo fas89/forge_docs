@@ -2,9 +2,17 @@
 
 Deploy data products to Amazon Web Services — S3, Glue, Athena — using the same contract and CLI commands as every other provider.
 
-**Status:** ✅ Production  
-**Version:** 0.8.0  
+**Status:** ✅ Production
+**Version:** 0.8.0
 **Tested Services:** S3, Glue Data Catalog, Athena, IAM
+
+<CliCast
+  src="/forge_docs/demos/aws-quickstart.svg"
+  title="AWS quickstart — S3 + Glue + Athena in 30 seconds"
+  caption="Same contract as the local quickstart, with binding.platform swapped to aws. Glue catalog auto-created, Athena workgroup wired up, IAM resource policies applied — all from one fluid apply."
+  width="920"
+  insight="Same contract. New cloud. S3 + Glue + Athena from one YAML. | IAM resource policies compiled from accessPolicy.grants — no console clicks. | Drop in --env staging or --env prod for environment promotion."
+/>
 
 ---
 

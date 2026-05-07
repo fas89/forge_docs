@@ -2,6 +2,14 @@
 
 **Time:** 10 minutes | **Difficulty:** Beginner | **Prerequisites:** Python 3.9+, pip
 
+<CliCast
+  src="/forge_docs/demos/local-quickstart.svg"
+  title="The same flow, in 30 seconds — install through deploy"
+  caption="The full local quickstart compressed: install with the [local] extra, scaffold a Bitcoin tracker contract from the quickstart template, validate against the 0.7.2 schema, preview the plan, and apply against the local DuckDB provider. The walkthrough below covers the same flow with hands-on contract editing in the middle."
+  width="920"
+  insight="30 seconds. No cloud account. No credit card. | The contract.fluid.yaml you wrote is the contract that ran. | Local DuckDB + Parquet artifact — exactly what production produces, but offline."
+/>
+
 ---
 
 ## Overview

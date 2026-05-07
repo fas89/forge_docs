@@ -14,6 +14,19 @@ In-browser validation via Pyodide is on the roadmap — for now the editor focus
   <Playground />
 </ClientOnly>
 
+## What happens after you copy this YAML
+
+The YAML you just edited becomes the input to the canonical workflow below. Click play for the 30-second tour of `validate` → `plan` → `apply`:
+
+<CliCast
+  src="/forge_docs/demos/local-quickstart.svg"
+  title="Edit YAML → fluid validate → fluid plan → fluid apply"
+  caption="The playground produces the YAML; this demo shows what happens when you save it to a file and run the CLI against it. End-to-end ~30 seconds, no cloud account."
+  width="920"
+  insight="The YAML you edit here is exactly what fluid validate sees. | No transpilation, no codegen step — it's a single-source-of-truth contract. | Save to disk → run the CLI → ship."
+/>
+
+
 ## What's in each template?
 
 - **Local · DuckDB** — runs on your laptop with `platform: local` + `format: parquet`. The fastest path from "never installed FLUID" to "deployed data product."
