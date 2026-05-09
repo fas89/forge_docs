@@ -31,7 +31,7 @@
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource-variable/jetbrains-mono": "^5.1.1",
     "@vuepress/bundler-vite": "^2.0.0-rc.26",
-    "@vuepress/client": "^2.0.0-rc.26",
+    "@vuepress/client": "^2.0.0-rc.29",
     "@vuepress/plugin-copy-code": "2.0.0-rc.128",
     "@vuepress/plugin-markdown-chart": "2.0.0-rc.128",
     "@vuepress/plugin-search": "2.0.0-rc.128",
