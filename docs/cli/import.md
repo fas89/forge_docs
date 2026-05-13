@@ -8,7 +8,7 @@ Convert existing tooling into FLUID contracts. Two modes: scan an existing dbt /
 fluid import [<engine> <source>] [options]
 ```
 
-## Mode 1 — directory scan (today's pinned 0.8.0 behavior)
+## Mode 1 — directory scan
 
 ```bash
 fluid import
@@ -28,7 +28,7 @@ This is the promoted migration path for existing dbt, Terraform, or SQL projects
 ## Mode 2 — foreign ingestion tool importer
 
 ::: tip Coming in the next release
-Importers for Meltano, Airbyte, dlt, and Singer ship in the upcoming `0.7.3` release as part of the source-aligned acquisition stack. The pinned 0.8.0 baseline only supports the directory scan above.
+Importers for Meltano, Airbyte, dlt, and Singer ship in `0.8.3` as part of the source-aligned acquisition stack. Pre-0.8.3 releases only support the directory scan above.
 :::
 
 Convert an existing ingestion-tool project into FLUID acquisition contracts (one per discovered tap / connector / source):

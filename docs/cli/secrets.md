@@ -2,8 +2,8 @@
 
 Manage secrets used by acquisition pipelines — Postgres passwords, Snowflake key-pair paths, Airbyte API tokens, etc. Lives under its own umbrella so it doesn't collide with `fluid auth` (cloud-provider auth) or `fluid ai setup` (LLM credentials).
 
-::: tip Where this fits
-`fluid secrets` ships with the source-aligned acquisition stack in the upcoming `0.7.3` release. The pinned 0.8.0 docs baseline doesn't include it yet; this page documents the surface ahead of release.
+::: tip Available in 0.8.3
+`fluid secrets` ships with the source-aligned acquisition stack in `0.8.3` (schema `0.7.3`). Earlier releases don't include it.
 :::
 
 ## Syntax

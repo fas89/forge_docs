@@ -17,7 +17,7 @@ Every typed error renders like this when printed to a terminal:
   why:   schemaEvolution.policy=strict — additive changes are not allowed.
   fix:   Set schemaEvolution.policy=evolve_safe to accept additive changes,
          or update the contract's schema block to declare the new columns.
-  doc:   /forge_docs/advanced/source-aligned-acquisition.html#schema-evolution
+  doc:   /advanced/source-aligned-acquisition.html#schema-evolution
 ```
 
 And like this when the calling command was given `--json`:
@@ -30,7 +30,7 @@ And like this when the calling command was given `--json`:
   "where": { "build": "ingest_orders", "product": "bronze.crm_orders", "run": "2026-04-30T14-22-08" },
   "why": "schemaEvolution.policy=strict — additive changes are not allowed.",
   "fix": "Set schemaEvolution.policy=evolve_safe to accept additive changes...",
-  "doc": "/forge_docs/advanced/source-aligned-acquisition.html#schema-evolution",
+  "doc": "/advanced/source-aligned-acquisition.html#schema-evolution",
   "extras": { "addedColumns": ["customer_tier", "loyalty_points"] }
 }
 ```

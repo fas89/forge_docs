@@ -5,7 +5,7 @@
 **Prerequisites:** GCP account, gcloud CLI, Python 3.10+
 
 <CliCast
-  src="/forge_docs/demos/gcp-quickstart.svg"
+  src="/demos/gcp-quickstart.svg"
   title="The same contract on BigQuery — swap one line, redeploy"
   caption="From the local DuckDB contract to a fully-deployed BigQuery table with IAM grants applied. Click play above for the 30-second highlight; the walkthrough below covers each step with hands-on auth + contract editing."
   width="920"
