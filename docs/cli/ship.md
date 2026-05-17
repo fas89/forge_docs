@@ -3,7 +3,7 @@
 Happy-path macro that chains `validate → bundle → plan → apply` in one command. Use when you've already iterated on a contract locally and just want to push it through.
 
 ::: tip Where this fits
-`fluid ship` ships with the source-aligned acquisition stack (schema 0.7.3) alongside the day-2 ops surface. The pinned 0.8.0 docs baseline doesn't include it yet; this page documents the surface ahead of release.
+`fluid ship` landed in `0.8.3` alongside the day-2 ops surface.
 :::
 
 ## Syntax

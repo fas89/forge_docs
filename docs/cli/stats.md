@@ -3,7 +3,7 @@
 Aggregate cost across forge runs. Walks `.fluid/agents/*/cost.json` records and groups by provider, product type, engine, or run.
 
 ::: tip Where this fits
-`fluid stats` ships with the source-aligned acquisition stack (schema 0.7.3) and its guided forge UX. The pinned 0.8.0 docs baseline doesn't include it yet; this is a next-release preview surface.
+`fluid stats` ships with the guided forge UX in `0.8.3`.
 :::
 
 ## Syntax

@@ -3,7 +3,7 @@
 Sweep state-root directories of run records, logs, lineage events, and DLQ entries past their retention horizons. Horizons are declared by the contract's top-level `retention:` block (schema 0.7.3); the sweeper honors them per-product.
 
 ::: tip Where this fits
-`fluid retention` ships with the source-aligned acquisition stack (schema 0.7.3). The pinned 0.8.0 docs baseline doesn't include it yet; this page documents the surface ahead of release.
+`fluid retention` ships with the source-aligned acquisition stack in `0.8.3` (schema `0.7.3`). Earlier releases don't include it.
 :::
 
 ## Syntax

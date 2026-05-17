@@ -3,7 +3,7 @@
 A minimal end-to-end walkthrough of a source-aligned Bronze (`SDP`) data product. We'll start a local Postgres with seeded data, run `fluid validate` and `fluid apply` against the included contract, and verify the output Parquet file. No Airbyte cluster, no Airflow, no cloud setup — DuckDB does the ingestion in-process.
 
 <iframe
-  src="/forge_docs/reels/source-aligned-bronze.html"
+  src="/reels/source-aligned-bronze.html"
   width="100%"
   height="500"
   style="border: 1px solid #232a3d; border-radius: 12px; max-width: 1100px;"
@@ -14,7 +14,7 @@ A minimal end-to-end walkthrough of a source-aligned Bronze (`SDP`) data product
 The 60-second reel above runs the exact flow this walkthrough documents: `fluid init --discover postgres://…` → `fluid validate --probe` → `fluid apply` → `fluid runs status`.
 
 ::: tip Where this walkthrough lives
-The exact contract, docker-compose, seed SQL, Makefile, and verification script for this walkthrough live in the `forge-cli` repo at [`examples/source-aligned-postgres-duckdb/`](https://github.com/Agenticstiger/forge-cli/tree/main/examples/source-aligned-postgres-duckdb). Schema 0.7.3 is delivered on the `feat/source-aligned-acquisition` branch — install from that branch (or wait for the next release) to follow along.
+The exact contract, docker-compose, seed SQL, Makefile, and verification script for this walkthrough live in the `forge-cli` repo at [`examples/source-aligned-postgres-duckdb/`](https://github.com/Agenticstiger/forge-cli/tree/main/examples/source-aligned-postgres-duckdb). Schema 0.7.3 is delivered in the upcoming `0.7.3` release — install the `0.7.3` prerelease (or wait for the stable cut) to follow along.
 :::
 
 ## What you'll build
@@ -32,7 +32,7 @@ Total wall time on the included fixture: under 3 seconds.
 
 - Docker (for the Postgres container)
 - `make` (for the Makefile shortcuts)
-- Fluid Forge installed from the `feat/source-aligned-acquisition` branch (schema 0.7.3 not yet on PyPI)
+- Fluid Forge `0.7.3` (the upcoming release; schema 0.7.3 — install the prerelease from PyPI or wait for the stable cut)
 
 ## The contract
 
@@ -116,7 +116,7 @@ exposes:
 
 A few things worth noting:
 
-- **Both `metadata.layer` and `metadata.productType` are set.** Either one alone would also validate. Bronze ↔ SDP is the canonical pairing — see [Product Types](/forge_docs/data-products/product-type.html) for the full mapping.
+- **Both `metadata.layer` and `metadata.productType` are set.** Either one alone would also validate. Bronze ↔ SDP is the canonical pairing — see [Product Types](/data-products/product-type.html) for the full mapping.
 - **`retention:` is at the top level**, not inside the build. It governs how long Forge keeps run records, logs, lineage events, and DLQ entries — sweep with [`fluid retention sweep`](/forge_docs/cli/retention.html).
 - **`{{ env.PGHOST }}` placeholders** resolve from environment variables at apply time; the contract is safe to commit.
 - **`pattern: acquisition` + `engine: duckdb`** triggers the embedded DuckDB runner — no external service needed.
@@ -226,7 +226,7 @@ The contract stays portable across all six engines — see [Source-Aligned Acqui
 
 ## See also
 
-- [Product Types — SDP, ADP, CDP](/forge_docs/data-products/product-type.html) — the vocabulary used in this contract
+- [Product Types — SDP, ADP, CDP](/data-products/product-type.html) — the vocabulary used in this contract
 - [Source-Aligned Acquisition](/forge_docs/advanced/source-aligned-acquisition.html) — the framework reference
 - [`fluid init --discover`](/forge_docs/cli/init.html#discover-—-introspect-a-source-into-a-bronze-contract) — auto-generate this contract by introspecting the source
 - [`fluid runs`](/forge_docs/cli/runs.html), [`fluid retention`](/forge_docs/cli/retention.html), [`fluid secrets`](/forge_docs/cli/secrets.html) — day-2 ops

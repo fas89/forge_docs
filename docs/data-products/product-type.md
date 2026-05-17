@@ -3,7 +3,7 @@
 Schema **0.7.3** introduces a Data Mesh-aligned classification, `metadata.productType`, that runs alongside the existing medallion `metadata.layer`. Both vocabularies are first-class. You can use either one, or both together. When both are set, the validator enforces the canonical pairing.
 
 ::: tip Where this fits
-Schema 0.7.3 ships with the source-aligned acquisition stack and is not in the pinned 0.8.0 docs baseline yet. Existing 0.7.2 contracts validate unchanged — the new fields are purely additive.
+Schema 0.7.3 ships in the upcoming `0.7.3` release and is not yet on PyPI. Existing 0.7.2 contracts validate unchanged — the new fields are purely additive.
 :::
 
 ## The vocabulary
@@ -130,4 +130,4 @@ Neither is required. Both are picked up by the catalog registrars (DataHub, Open
 - [Source-Aligned Acquisition](/forge_docs/advanced/source-aligned-acquisition.html) — the acquisition build pattern that powers SDP contracts
 - [`fluid contract migrate-product-type`](/forge_docs/cli/contract.html#fluid-contract-migrate-product-type) — the migrator command
 - [`fluid forge --from-product`](/forge_docs/cli/forge.html) — composition-aware AI scaffolding that respects the type rules
-- [Forge Data Model](/forge_docs/forge-data-model.html) — how the data-modelling pipeline emits productType into the generated contract
+- [Forge Data Model](/forge-data-model.html) — how the data-modelling pipeline emits productType into the generated contract

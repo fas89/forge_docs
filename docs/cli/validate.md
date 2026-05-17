@@ -26,7 +26,7 @@ fluid validate CONTRACT
 | `--format` | `text` or `json` |
 | `--list-versions` | List available schema versions |
 | `--show-schema` | Show the schema used for validation |
-| `--probe` | Run live external connectivity probes for sources / sinks declared in `acquisition` builds. **Coming with the source-aligned acquisition stack — schema 0.7.3.** |
+| `--probe` | Run live external connectivity probes for sources / sinks declared in `acquisition` builds. |
 | `--report PATH` | Write the structured validation report to a file (in addition to stdout) |
 
 ## Examples
@@ -41,8 +41,8 @@ fluid validate contract.fluid.yaml --verbose --show-schema
 
 ## `--probe` — live external connectivity checks
 
-::: tip Coming in the next release
-The `--probe` flag ships with the source-aligned acquisition stack (schema 0.7.3) as part of its acquisition support. It is not in the pinned 0.8.0 docs baseline yet.
+::: tip Available in 0.8.3
+`--probe` ships in `0.8.3` as part of schema 0.7.3 acquisition support.
 :::
 
 By default `fluid validate` is **pure schema validation** — no network. Set `--probe` to additionally test connectivity for every source / sink declared in `acquisition` builds:
@@ -65,5 +65,15 @@ Use `--probe` in CI for any environment that has network access to the declared 
 
 ## Notes
 
-- A contract can legitimately use `fluidVersion: 0.7.2` even when the installed CLI release is `0.8.0`. Schema 0.7.3 ships with the source-aligned acquisition stack — a next-release surface, not in the pinned 0.8.0 baseline yet.
+- A contract can legitimately use `fluidVersion: 0.7.2` even when the installed CLI release is `0.8.3`. Schema `0.7.3` is GA as of `0.8.3`.
 - For most users, plain `fluid validate contract.fluid.yaml` is enough. Reach for explicit schema flags when you are debugging compatibility or working across versions.
+
+## Extension point: custom validators
+
+As of `0.8.3`, `fluid validate` automatically runs any `Validator` plugin discovered via Python entry-points. After `pip install <some-validator-plugin>`, the validator's findings appear in `fluid validate` output alongside the core schema validation.
+
+This is how teams enforce governance rules (every Gold product MUST declare a steward, every contract MUST have a cost-center label, etc.) without forking the CLI.
+
+- Author a validator: [SDK & Plugins → Custom validator journey](/sdk-and-plugins/journeys/custom-validator.md)
+- Reference: [Entry points → `fluid_build.validators`](/sdk-and-plugins/reference/entry-points.md)
+- Example: [`steward-validator`](/sdk-and-plugins/examples/steward-validator.md)

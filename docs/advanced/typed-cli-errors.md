@@ -1,6 +1,6 @@
 # Typed CLI Errors
 
-The source-aligned acquisition release (schema 0.7.3) introduces a 15-class typed-error catalog at `fluid_build.cli._errors`. This is a next-release surface — not in the 0.8.0 baseline yet. Every user-facing CLI error renders the same five-field shape: **what**, **where**, **why**, **fix**, **doc**. JSON output is stable so CI log parsers and IDE integrations can consume it without regex.
+The upcoming `0.7.3` release introduces a 15-class typed-error catalog at `fluid_build.cli._errors`. Every user-facing CLI error renders the same five-field shape: **what**, **where**, **why**, **fix**, **doc**. JSON output is stable so CI log parsers and IDE integrations can consume it without regex.
 
 ::: tip Where this fits
 This is the **CLI-level** error catalog, distinct from the **agent-layer** typed errors (`RateLimitError`, `ContextOverflowError`, etc.) documented at [Typed Errors](/forge_docs/advanced/typed-errors.html). CLI errors fire from user-facing commands; agent errors fire inside the LLM provider stack.
@@ -17,7 +17,7 @@ Every typed error renders like this when printed to a terminal:
   why:   schemaEvolution.policy=strict — additive changes are not allowed.
   fix:   Set schemaEvolution.policy=evolve_safe to accept additive changes,
          or update the contract's schema block to declare the new columns.
-  doc:   /forge_docs/advanced/source-aligned-acquisition.html#schema-evolution
+  doc:   /advanced/source-aligned-acquisition.html#schema-evolution
 ```
 
 And like this when the calling command was given `--json`:
@@ -30,7 +30,7 @@ And like this when the calling command was given `--json`:
   "where": { "build": "ingest_orders", "product": "bronze.crm_orders", "run": "2026-04-30T14-22-08" },
   "why": "schemaEvolution.policy=strict — additive changes are not allowed.",
   "fix": "Set schemaEvolution.policy=evolve_safe to accept additive changes...",
-  "doc": "/forge_docs/advanced/source-aligned-acquisition.html#schema-evolution",
+  "doc": "/advanced/source-aligned-acquisition.html#schema-evolution",
   "extras": { "addedColumns": ["customer_tier", "loyalty_points"] }
 }
 ```

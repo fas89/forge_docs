@@ -110,10 +110,10 @@ The same flow is exposed via the MCP `forge_from_source` tool, so
 Claude Code / Cursor agents can drive a catalog forge from inside
 the editor.
 
-## Mode picker, refine, compose — coming in the next release
+## Mode picker, refine, compose
 
-::: tip Where this fits
-The 5-mode picker, `--refine`, `--from-product`, slash commands, preview panel, and the streaming contract preview ship with the source-aligned acquisition stack (schema 0.7.3). The pinned 0.8.0 baseline still has the older single-shot interview shape.
+::: tip Available in 0.8.3
+The 5-mode picker, `--refine`, `--from-product`, slash commands, preview panel, and the streaming contract preview ship in `0.8.3` (schema `0.7.3`). Pre-0.8.3 releases had the older single-shot interview shape.
 :::
 
 Bare `fluid forge` (TTY, no flags) lands on a 5-mode menu instead of dropping straight into AI:
@@ -131,7 +131,7 @@ The picker pre-highlights based on a parallel welcome scan that runs in <50 ms. 
 
 ### `--from-product` — composition
 
-Pick one or more upstream products; Forge resolves them, validates composition rules (SDP rejects upstreams; ADP/CDP accept SDP+ADP — see [Product Types](/forge_docs/data-products/product-type.html#composition-rules)), and pre-fills `consumes[]`:
+Pick one or more upstream products; Forge resolves them, validates composition rules (SDP rejects upstreams; ADP/CDP accept SDP+ADP — see [Product Types](/data-products/product-type.html#composition-rules)), and pre-fills `consumes[]`:
 
 ```bash
 fluid forge --from-product bronze.crm_orders
