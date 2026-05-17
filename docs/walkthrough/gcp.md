@@ -7,9 +7,9 @@
 <CliCast
   src="/demos/gcp-quickstart.svg"
   title="The same contract on BigQuery — swap one line, redeploy"
-  caption="From the local DuckDB contract to a fully-deployed BigQuery table with IAM grants applied. Click play above for the 30-second highlight; the walkthrough below covers each step with hands-on auth + contract editing."
+  caption="Click play above: the Customer 360 quickstart contract, re-pointed from local DuckDB to BigQuery by swapping one binding line. The walkthrough below hand-builds a different example step by step, with auth + contract editing."
   width="920"
-  insight="Same contract. One line changed (platform: local → platform: gcp). | BigQuery dataset, table, IAM grants — all created from the YAML you already had. | Schema, dq.rules, agentPolicy, sovereignty — byte-identical to the local run."
+  insight="Same contract. One line changed (platform: local → platform: gcp). | BigQuery dataset, table, and view — all created from the YAML you already had. | Schema, dq.rules, the 5-stage build — byte-identical to the local run."
 />
 
 ::: warning Compatibility note
@@ -197,22 +197,40 @@ labels:
   compliance-framework: "none"
   billing-tag: "crypto-analytics"
 
+description: Production Bitcoin price tracking on Google Cloud Platform
+
 metadata:
   owner:
     team: data-engineering
     email: data-eng@company.com
-  description: Production Bitcoin price tracking on Google Cloud Platform
   businessContext:
     domain: Financial Markets
     subdomain: Cryptocurrency Analytics
-    useCases:
-      - Market analysis
-      - Price monitoring
-      - Trading signals
+
+# Builds hold the view-definition SQL; each names the expose it produces.
+builds:
+  - id: build_daily_price_summary
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          DATE(price_timestamp) as date,
+          AVG(price_usd) as avg_price_usd,
+          MIN(price_usd) as min_price_usd,
+          MAX(price_usd) as max_price_usd,
+          STDDEV(price_usd) as daily_volatility,
+          SUM(volume_24h_usd) as total_volume_usd
+        FROM `fluid-crypto-tracker.crypto_data.bitcoin_prices`
+        GROUP BY DATE(price_timestamp)
+        ORDER BY date DESC
+    outputs:
+      - daily_price_summary
 
 exposes:
   - exposeId: bitcoin_prices_table
     kind: table
+    description: "Real-time Bitcoin prices from CoinGecko API"
     
     # Expose-level tags for dataset categorization
     tags:
@@ -232,27 +250,29 @@ exposes:
     
     binding:
       platform: gcp
-      resource:
-        type: bigquery_table
+      format: bigquery_table
+      location:
         project: fluid-crypto-tracker
         dataset: crypto_data
         table: bitcoin_prices
-        location: us-central1
-        
+        region: us-central1
+      
+      # Provider-specific binding properties
+      properties:
         # Time-series partitioning for performance
         partitioning:
           type: time
           field: price_timestamp
           granularity: DAY
           expirationDays: 90  # Keep 90 days of history
-        
-        # Labels propagate to BigQuery table for cost tracking
-        labels:
-          environment: production
-          data-source: coingecko-api
-          update-frequency: hourly
-          cost-center: engineering
-          team: data-platform
+      
+      # Labels propagate to BigQuery table for cost tracking
+      labels:
+        environment: production
+        data-source: coingecko-api
+        update-frequency: hourly
+        cost-center: engineering
+        team: data-platform
     
     # Data governance policies
     policy:
@@ -267,153 +287,137 @@ exposes:
           - serviceAccount:ingestion@company.iam.gserviceaccount.com
     
     contract:
-      description: "Real-time Bitcoin prices from CoinGecko API"
-      
       # Contract-level tags for data quality
       tags:
         - validated
         - production-ready
       
       schema:
-        fields:
-          - name: price_timestamp
-            type: TIMESTAMP
-            mode: REQUIRED
-            description: "When the price was recorded"
-            sensitivity: none  # Public data
-            semanticType: timestamp
-            tags:
-              - partition-key
-              - time-series
-          
-          - name: price_usd
-            type: FLOAT64
-            mode: REQUIRED
-            description: "Bitcoin price in USD"
-            sensitivity: none
-            semanticType: currency
-            businessName: "Bitcoin Price (USD)"
-            tags:
-              - metric
-              - price-data
-            labels:
-              unit: "usd"
-              precision: "2-decimals"
-          
-          - name: price_eur
-            type: FLOAT64
-            mode: REQUIRED
-            description: "Bitcoin price in EUR"
-            sensitivity: none
-            semanticType: currency
-            businessName: "Bitcoin Price (EUR)"
-            tags:
-              - metric
-              - price-data
-            labels:
-              unit: "eur"
-          
-          - name: price_gbp
-            type: FLOAT64
-            mode: REQUIRED
-            description: "Bitcoin price in GBP"
-            sensitivity: none
-            semanticType: currency
-            businessName: "Bitcoin Price (GBP)"
-            tags:
-              - metric
-              - price-data
-            labels:
-              unit: "gbp"
-          
-          - name: market_cap_usd
-            type: FLOAT64
-            mode: REQUIRED
-            description: "Total market capitalization in USD"
-            sensitivity: none
-            semanticType: currency
-            businessName: "Market Capitalization"
-            tags:
-              - metric
-              - market-data
-            labels:
-              aggregation: "sum"
-          
-          - name: volume_24h_usd
-            type: FLOAT64
-            mode: REQUIRED
-            description: "24-hour trading volume in USD"
-            sensitivity: none
-            semanticType: currency
-            businessName: "24h Trading Volume"
-            tags:
-              - metric
-              - volume-data
-            labels:
-              window: "24h"
-          
-          - name: price_change_24h_percent
-            type: FLOAT64
-            mode: NULLABLE
-            description: "24-hour price change percentage"
-            sensitivity: none
-            semanticType: percentage
-            businessName: "24h Price Change"
-            tags:
-              - metric
-              - derived
-            labels:
-              calculation: "percentage-change"
-          
-          - name: ingestion_timestamp
-            type: TIMESTAMP
-            mode: REQUIRED
-            description: "When data was ingested into BigQuery"
-            sensitivity: internal  # Operational metadata
-            semanticType: timestamp
-            tags:
-              - metadata
-              - audit-trail
+        - name: price_timestamp
+          type: TIMESTAMP
+          required: true
+          description: "When the price was recorded"
+          sensitivity: none  # Public data
+          semanticType: timestamp
+          tags:
+            - partition-key
+            - time-series
+        
+        - name: price_usd
+          type: FLOAT64
+          required: true
+          description: "Bitcoin price in USD"
+          sensitivity: none
+          semanticType: currency
+          businessName: "Bitcoin Price (USD)"
+          tags:
+            - metric
+            - price-data
+          labels:
+            unit: "usd"
+            precision: "2-decimals"
+        
+        - name: price_eur
+          type: FLOAT64
+          required: true
+          description: "Bitcoin price in EUR"
+          sensitivity: none
+          semanticType: currency
+          businessName: "Bitcoin Price (EUR)"
+          tags:
+            - metric
+            - price-data
+          labels:
+            unit: "eur"
+        
+        - name: price_gbp
+          type: FLOAT64
+          required: true
+          description: "Bitcoin price in GBP"
+          sensitivity: none
+          semanticType: currency
+          businessName: "Bitcoin Price (GBP)"
+          tags:
+            - metric
+            - price-data
+          labels:
+            unit: "gbp"
+        
+        - name: market_cap_usd
+          type: FLOAT64
+          required: true
+          description: "Total market capitalization in USD"
+          sensitivity: none
+          semanticType: currency
+          businessName: "Market Capitalization"
+          tags:
+            - metric
+            - market-data
+          labels:
+            aggregation: "sum"
+        
+        - name: volume_24h_usd
+          type: FLOAT64
+          required: true
+          description: "24-hour trading volume in USD"
+          sensitivity: none
+          semanticType: currency
+          businessName: "24h Trading Volume"
+          tags:
+            - metric
+            - volume-data
+          labels:
+            window: "24h"
+        
+        - name: price_change_24h_percent
+          type: FLOAT64
+          required: false
+          description: "24-hour price change percentage"
+          sensitivity: none
+          semanticType: percentage
+          businessName: "24h Price Change"
+          tags:
+            - metric
+            - derived
+          labels:
+            calculation: "percentage-change"
+        
+        - name: ingestion_timestamp
+          type: TIMESTAMP
+          required: true
+          description: "When data was ingested into BigQuery"
+          sensitivity: internal  # Operational metadata
+          semanticType: timestamp
+          tags:
+            - metadata
+            - audit-trail
   
   # Analytical views
   - exposeId: daily_price_summary
     kind: view
+    description: "Daily Bitcoin price statistics"
     binding:
       platform: gcp
-      resource:
-        type: bigquery_view
+      format: bigquery_table
+      location:
         project: fluid-crypto-tracker
         dataset: crypto_data
         table: daily_summary
     
     contract:
-      description: "Daily Bitcoin price statistics"
       schema:
-        fields:
-          - name: date
-            type: DATE
-          - name: avg_price_usd
-            type: FLOAT64
-          - name: min_price_usd
-            type: FLOAT64
-          - name: max_price_usd
-            type: FLOAT64
-          - name: daily_volatility
-            type: FLOAT64
-          - name: total_volume_usd
-            type: FLOAT64
-      
-      query: |
-        SELECT 
-          DATE(price_timestamp) as date,
-          AVG(price_usd) as avg_price_usd,
-          MIN(price_usd) as min_price_usd,
-          MAX(price_usd) as max_price_usd,
-          STDDEV(price_usd) as daily_volatility,
-          SUM(volume_24h_usd) as total_volume_usd
-        FROM `fluid-crypto-tracker.crypto_data.bitcoin_prices`
-        GROUP BY DATE(price_timestamp)
-        ORDER BY date DESC
+        - name: date
+          type: DATE
+        - name: avg_price_usd
+          type: FLOAT64
+        - name: min_price_usd
+          type: FLOAT64
+        - name: max_price_usd
+          type: FLOAT64
+        - name: daily_volatility
+          type: FLOAT64
+        - name: total_volume_usd
+          type: FLOAT64
 ```
 
 ::: tip Tags & Labels for Governance + FinOps
@@ -434,7 +438,7 @@ This contract showcases **multi-level tags and labels** for comprehensive govern
 - `sensitivity: internal` - Operational metadata (ingestion_timestamp)
 - Enables automated policy enforcement and access controls
 
-**� Policy classification**:
+**🛡️ Policy classification**:
 - `classification: Public` - Publicly available cryptocurrency data
 - `authz.readers` - Control who can query the data
 - `authz.writers` - Control who can insert/update data
@@ -458,21 +462,20 @@ policy:
       - serviceAccount:secure-ingestion@company.iam.gserviceaccount.com
 
 schema:
-  fields:
-    - name: user_email
-      type: STRING
-      sensitivity: pii  # Triggers access controls
-      semanticType: email
-      tags:
-        - pii
-        - restricted
-      
-    - name: credit_card
-      type: STRING  
-      sensitivity: restricted  # Highest protection
-      tags:
-        - pci-dss
-        - encrypted
+  - name: user_email
+    type: STRING
+    sensitivity: pii  # Triggers access controls
+    semanticType: email
+    tags:
+      - pii
+      - restricted
+    
+  - name: credit_card
+    type: STRING
+    sensitivity: restricted  # Highest protection
+    tags:
+      - pci-dss
+      - encrypted
 ```
 This enables:
 - 🔐 Field-level access control via sensitivity classification
@@ -521,19 +524,16 @@ fluid plan contract.fluid.yaml
 # ============================================================
 # FLUID Execution Plan
 # ============================================================
-# Contract: contract.fluid.yaml
+# Contract: bitcoin-prices-gcp
 # Version: 0.7.1
-# Total Actions: 6
+# Total Actions: 3
 # ============================================================
 # 
-# 1. schedule_build_1 (scheduleTask)
-# 2. provision_bitcoin_prices_table (provisionDataset)
-# 3. provision_price_trends (provisionDataset)
-# 4. schedule_build_2 (scheduleTask)
-# 5. schedule_build_0 (scheduleTask)
-# 6. provision_daily_price_summary (provisionDataset)
+# 1. provision_bitcoin_prices_table (provisionDataset)
+# 2. provision_daily_price_summary (provisionDataset)
+# 3. schedule_build_daily_price_summary (scheduleTask)
 # 
-# ✅ Plan saved to: runtime/plan.json
+# ✅ Plan saved to: plan.json
 ```
 
 ::: tip Environment Variables
@@ -699,7 +699,7 @@ The [Open Data Product Specification](https://github.com/Open-Data-Product-Initi
 
 ```bash
 # Export to ODPS v4.1 format
-fluid odps export contract.fluid.yaml --out bitcoin-tracker.odps.json
+fluid odps export contract.fluid.yaml --output bitcoin-tracker.odps.json
 
 # Expected output:
 # ✓ Exported to ODPS v4.1: bitcoin-tracker.odps.json
@@ -718,7 +718,7 @@ The [Open Data Contract Standard](https://github.com/bitol-io/open-data-contract
 
 ```bash
 # Export to ODCS v3.1 format
-fluid odcs export contract.fluid.yaml --out bitcoin-tracker.odcs.yaml
+fluid odcs export contract.fluid.yaml --output bitcoin-tracker.odcs.yaml
 
 # Expected output:
 # Converting FLUID contract to ODCS v3.1.0
@@ -758,7 +758,7 @@ fluid odcs validate bitcoin-tracker.odcs.yaml
 | **Version** | 0.7.1 | 4.1 | 3.1.0 |
 | **Best For** | Infrastructure-as-Code | Data marketplaces | Quality & SLAs |
 | **Governance** | Built-in | Product-focused | Contract-focused |
-| **Adoption** | Fluid Forge | Linux Foundation | Bitol.io ecosystem |
+| **Adoption** | Fluid Forge | Open Data Product Initiative | Bitol.io ecosystem |
 
 ::: details View Sample ODPS Output
 ```json
@@ -981,7 +981,7 @@ The labels from your FLUID contract automatically appear in BigQuery for cost tr
 
 ```bash
 # View table with labels
-bq show --format=prettyjson dust-labs-485011:crypto_data.bitcoin_prices | \
+bq show --format=prettyjson fluid-crypto-tracker:crypto_data.bitcoin_prices | \
   jq '.labels'
 
 # Expected output:
@@ -1004,7 +1004,7 @@ SELECT
   REGEXP_EXTRACT(option_value, r'cost-center:([^,}]+)') as cost_center,
   SUM(size_bytes) / POW(10,9) as size_gb,
   SUM(size_bytes) / POW(10,9) * 0.02 as monthly_storage_cost_usd
-FROM `dust-labs-485011.crypto_data.INFORMATION_SCHEMA.TABLE_OPTIONS`
+FROM `fluid-crypto-tracker.crypto_data.INFORMATION_SCHEMA.TABLE_OPTIONS`
 WHERE option_name = 'labels'
 GROUP BY table_schema, table_name, cost_center;
 
@@ -1036,8 +1036,8 @@ SELECT
   SUM(total_rows) as total_rows,
   SUM(size_bytes) / POW(10,9) as size_gb,
   SUM(size_bytes) * 0.02 / POW(10,9) as monthly_cost_usd
-FROM `dust-labs-485011.crypto_data.INFORMATION_SCHEMA.TABLES` t
-LEFT JOIN `dust-labs-485011.crypto_data.INFORMATION_SCHEMA.TABLE_OPTIONS` o
+FROM `fluid-crypto-tracker.crypto_data.INFORMATION_SCHEMA.TABLES` t
+LEFT JOIN `fluid-crypto-tracker.crypto_data.INFORMATION_SCHEMA.TABLE_OPTIONS` o
   ON t.table_name = o.table_name
 WHERE option_name = "labels"
 GROUP BY table_name, team, cost_center
@@ -1096,7 +1096,9 @@ SELECT
 FROM `INFORMATION_SCHEMA.TABLES`
 WHERE table_schema = 'crypto_data'
 ORDER BY storage_cost_usd DESC;
-``**Used tags & labels for governance + FinOps tracking**  
+```
+
+✅ **Used tags & labels for governance + FinOps tracking**  
 ✅ **Implemented field-level sensitivity classification**  
 ✅ **Configured privacy policies and encryption**  
 ✅ **Set up cost allocation by team/cost-center**  
@@ -1128,37 +1130,17 @@ Then visualize in Looker/Data Studio with cost trend charts!
 
 ## Step 12: Add More Analytics Views
 
-Update `contract.fluid.yaml` to add price trend analysis:
+Update `contract.fluid.yaml` to add price trend analysis. Add a `builds[]`
+entry for the view-definition SQL and an `exposes[]` entry it produces:
 
 ```yaml
-  # Add this to the exposes array
-  - exposeId: price_trends
-    kind: view
-    binding:
-      platform: gcp
-      resource:
-        type: bigquery_view
-        project: fluid-crypto-tracker
-        dataset: crypto_data
-        table: price_trends
-    
-    contract:
-      description: "7-day and 30-day Bitcoin price moving averages"
-      schema:
-        fields:
-          - name: price_timestamp
-            type: TIMESTAMP
-          - name: price_usd
-            type: FLOAT64
-          - name: ma_7day
-            type: FLOAT64
-          - name: ma_30day
-            type: FLOAT64
-          - name: deviation_from_7day_ma
-            type: FLOAT64
-      
-      query: |
-        SELECT 
+  # Add this to the builds array
+  - id: build_price_trends
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
           price_timestamp,
           price_usd,
           AVG(price_usd) OVER (
@@ -1175,6 +1157,33 @@ Update `contract.fluid.yaml` to add price trend analysis:
           ) as deviation_from_7day_ma
         FROM `fluid-crypto-tracker.crypto_data.bitcoin_prices`
         ORDER BY price_timestamp DESC
+    outputs:
+      - price_trends
+
+  # Add this to the exposes array
+  - exposeId: price_trends
+    kind: view
+    description: "7-day and 30-day Bitcoin price moving averages"
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: fluid-crypto-tracker
+        dataset: crypto_data
+        table: price_trends
+    
+    contract:
+      schema:
+        - name: price_timestamp
+          type: TIMESTAMP
+        - name: price_usd
+          type: FLOAT64
+        - name: ma_7day
+          type: FLOAT64
+        - name: ma_30day
+          type: FLOAT64
+        - name: deviation_from_7day_ma
+          type: FLOAT64
 ```
 
 Redeploy to add the new view:
@@ -1229,8 +1238,9 @@ exposes:
     kind: table
     binding:
       platform: gcp
-      resource:
-        type: bigquery_table
+      format: bigquery_table
+      location:
+        project: fluid-crypto-tracker
         dataset: crypto_data
         table: ethereum_prices
 ```

@@ -6,20 +6,20 @@
 <title>Skip the panic — Fluid Forge</title>
 <style>
   :root {
-    --bg-0: #07090f;
-    --bg-1: #0d1119;
-    --bg-2: #131826;
-    --bg-3: #1a2032;
-    --text: #e6e8ee;
-    --text-dim: #9ba3b4;
-    --text-faint: #5a6378;
-    --accent: #6cf5d8;
-    --accent-2: #b486ff;
+    --bg-0: #050813;
+    --bg-1: #0a1020;
+    --bg-2: #0c1226;
+    --bg-3: #131a33;
+    --text: #eef2ff;
+    --text-dim: #a8b3d4;
+    --text-faint: #7d87a8;
+    --accent: #3b82f6;
+    --accent-2: #8b5cf6;
     --warn: #f5c46c;
     --good: #7be0a3;
     --bad: #ff7b7b;
     --pink: #f08aa9;
-    --rule: #232a3d;
+    --rule: #1f2a4a;
     --shadow: 0 30px 80px -20px rgba(0,0,0,0.6), 0 12px 30px -10px rgba(0,0,0,0.5);
     --mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
@@ -28,8 +28,8 @@
   html, body {
     height: 100%;
     background:
-      radial-gradient(60% 50% at 80% 0%, rgba(108,245,216,0.06), transparent 60%),
-      radial-gradient(80% 60% at 10% 100%, rgba(180,134,255,0.06), transparent 60%),
+      radial-gradient(60% 50% at 80% 0%, rgba(59,130,246,0.06), transparent 60%),
+      radial-gradient(80% 60% at 10% 100%, rgba(139,92,246,0.06), transparent 60%),
       var(--bg-0);
     color: var(--text);
     font-family: var(--sans);
@@ -43,9 +43,14 @@
     min-height: 100vh;
     padding: 20px;
   }
+  .reel {
+    width: 1100px;
+    transform: scale(var(--reel-scale, 1));
+    transform-origin: center center;
+  }
   .stage {
-    width: min(1100px, 100vw - 40px);
-    height: min(720px, 100vh - 120px);
+    width: 1100px;
+    height: 720px;
     background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
     border: 1px solid var(--rule);
     border-radius: 16px;
@@ -117,8 +122,8 @@
     justify-content: center;
   }
   .badge {
-    background: rgba(108,245,216,0.08);
-    border: 1px solid rgba(108,245,216,0.25);
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.25);
     color: var(--accent);
     padding: 6px 12px;
     border-radius: 999px;
@@ -127,8 +132,8 @@
     letter-spacing: 0.05em;
   }
   .badge.alt {
-    background: rgba(180,134,255,0.08);
-    border-color: rgba(180,134,255,0.25);
+    background: rgba(139,92,246,0.08);
+    border-color: rgba(139,92,246,0.25);
     color: var(--accent-2);
   }
   .badge.good {
@@ -299,8 +304,8 @@
 
   /* Highlight callout */
   .callout {
-    background: linear-gradient(135deg, rgba(108,245,216,0.1), rgba(180,134,255,0.1));
-    border: 1px solid rgba(108,245,216,0.3);
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+    border: 1px solid rgba(59,130,246,0.3);
     border-radius: 10px;
     padding: 18px 22px;
     margin-top: 16px;
@@ -356,7 +361,7 @@
   /* HUD / progress / controls */
   .hud {
     margin-top: 14px;
-    width: min(1100px, 100vw - 40px);
+    width: 1100px;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -428,18 +433,21 @@
   .term-line .kw { color: #c69cf6; }
   .term-line .str { color: #ffd28e; }
   .term-line .num { color: #7be0a3; }
-  .term-line .key { color: #6cf5d8; }
-  .term-line .comment { color: #5a6378; font-style: italic; }
+  .term-line .key { color: #22d3ee; }
+  .term-line .comment { color: #7d87a8; font-style: italic; }
   .term-line .pkg { color: #f08aa9; }
 
-  @media (max-width: 880px) {
-    .hero h1 { font-size: 56px; }
-    .scene-headline { font-size: 28px; }
-    .closing h2 { font-size: 36px; }
-    .closing .stats { grid-template-columns: 1fr 1fr; }
-    .scene { padding: 28px 24px; }
-    .term-body { font-size: 12px; }
-    .split { grid-template-columns: 1fr; }
+  /* The reel scales as one unit to fit the viewport (see fitReel in the
+     script) — so it needs no viewport breakpoints, and never crops. */
+
+  /* Honor the OS "reduce motion" setting — no scene fades, no cursor
+     blink, no token-flow. The reel still works: content renders
+     instantly and the controls still step through scenes. */
+  @media (prefers-reduced-motion: reduce) {
+    .scene { transition: none; }
+    .term-cursor { animation: none; }
+    .tok { animation: none; opacity: 1; }
+    .progress-fill { transition: none; }
   }
 </style>
 </head>
@@ -464,13 +472,8 @@
 "use strict";
 
 // ─────────────────────────────────────────────────────────────────────────
-// Demo data — real LLM output captured from runs against actual API keys.
-//
-// Anthropic — claude-haiku-4-5-20251001  →  912 in / 6,152 out / $0.0317
-// OpenAI    — gpt-4o-mini                →  5,647 in / 1,150 out / $0.0015
-// Gemini    — gemini-2.5-flash           →  typed-error fallback path
-//
-// All three runs validated against fluid-schema-0.7.2 with score 10.
+// Demo data — hand-scripted to mirror a real `fluid` session. Figures are
+// representative of the v0.8 stack against the bundled examples/ fixtures.
 // ─────────────────────────────────────────────────────────────────────────
 
 const SCENES = [
@@ -484,12 +487,12 @@ const SCENES = [
     "duration": 7500,
     "title": "second 0 — what happened?",
     "headline": "fluid runs status",
-    "sub": "Last N runs in a glance. Freshness, error rate, partial rate — all up front.",
+    "sub": "Last N runs in a glance. Status, stage, freshness — all up front.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "fluid runs status bronze.crm_orders --last 5",
-        "typingSpeed": 28
+        "text": "fluid runs status gold.finance.customer_360_v1 --last 5",
+        "typingSpeed": 26
       },
       {
         "cls": "rule spaced",
@@ -497,23 +500,23 @@ const SCENES = [
       },
       {
         "cls": "dim",
-        "text": "  14:22    success    8 rows    2.4 s"
+        "text": "  run-id     ts       status   stage"
+      },
+      {
+        "cls": "error",
+        "text": "  r-2a4f8c3  03:01    FAIL     apply"
+      },
+      {
+        "cls": "error",
+        "text": "  r-2a4f8c2  02:01    FAIL     apply"
+      },
+      {
+        "cls": "error",
+        "text": "  r-2a4f8c1  01:01    FAIL     apply   ← first fail"
       },
       {
         "cls": "dim",
-        "text": "  10:22    success    8 rows    2.6 s"
-      },
-      {
-        "cls": "warn",
-        "text": "  06:22    PARTIAL    1 row     2.3 s   ← here"
-      },
-      {
-        "cls": "dim",
-        "text": "  02:22    success    7 rows    2.5 s"
-      },
-      {
-        "cls": "dim",
-        "text": "  Apr-29   success    7 rows    2.4 s"
+        "text": "  r-2a4f8c0  12:01    OK       —"
       },
       {
         "cls": "rule",
@@ -521,101 +524,113 @@ const SCENES = [
       },
       {
         "cls": "info",
-        "html": "Error rate (24h): <span class=\"num\">0.0%</span>  ·  Partial rate: <span class=\"num\">20%</span>"
+        "html": "Error rate (24h): <span class=\"num\">75%</span>  ·  <span class=\"num\">3</span> consecutive failures · stage <span class=\"num\">apply</span>"
       }
     ],
-    "callout": "<strong>2 seconds in.</strong> You know which run, you know it's partial, you know it's recent."
+    "callout": "<strong>2 seconds in.</strong> Three straight failures, all at the apply stage. You know which run broke first — and when."
   },
   {
     "kind": "term",
     "duration": 8500,
     "title": "second 30 — why?",
     "headline": "fluid runs logs --component dlq",
-    "sub": "Component-scoped logs. Grep at the CLI. The DLQ is a first-class component.",
+    "sub": "Component-scoped logs. Pin the run with --run-id. The DLQ is a first-class component.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "fluid runs logs bronze.crm_orders --component dlq --grep schema_drift",
+        "text": "fluid runs logs gold.finance.customer_360_v1 \\",
         "typingSpeed": 24
       },
       {
-        "cls": "warn spaced",
-        "text": "  06:22:11  schema_drift_detected"
+        "cls": "cmd",
+        "text": "  --component dlq --run-id r-2a4f8c1",
+        "delay": 60
+      },
+      {
+        "cls": "error spaced",
+        "text": "  build  ERROR  CHECK constraint failed:"
+      },
+      {
+        "cls": "error",
+        "text": "                arpu_30d_eur expected NOT NULL —"
+      },
+      {
+        "cls": "error",
+        "text": "                47 nulls in 12,408 rows"
       },
       {
         "cls": "warn",
-        "text": "                column 'loyalty_tier' added in source"
+        "text": "  build  ▸      batch quarantined → dlq (preserved)"
       },
       {
-        "cls": "warn",
-        "text": "                policy=strict — refusing additive change"
-      },
-      {
-        "cls": "warn",
-        "text": "                7 of 8 records routed to DLQ"
-      },
-      {
-        "cls": "dim spaced",
-        "text": "  --- 1 result ---"
+        "cls": "error",
+        "text": "  apply  FAIL   hard gate: dq.rule NOT_NULL violated"
       }
     ],
-    "callout": "<strong>30 seconds in.</strong> Source schema drifted. <code>policy=strict</code>, run protected your downstream."
+    "callout": "<strong>30 seconds in.</strong> The <code>NOT_NULL</code> gate on <code>arpu_30d_eur</code> caught 47 null rows — and stopped them reaching production."
   },
   {
     "kind": "term",
     "duration": 8500,
     "title": "second 60 — exactly what changed?",
     "headline": "fluid runs diff",
-    "sub": "Schema and row-count delta between any two runs. Pin them by ID.",
+    "sub": "What changed between the last OK run and the first failure. Pin both by run-id.",
     "lines": [
       {
         "cls": "prompt cmd",
-        "text": "fluid runs diff bronze.crm_orders --build ingest_orders \\",
-        "typingSpeed": 28
+        "text": "fluid runs diff gold.finance.customer_360_v1 --build customer_metrics \\",
+        "typingSpeed": 26
       },
       {
         "cls": "cmd",
-        "text": "  --run-a 02:22 --run-b 06:22",
+        "text": "  --run-a r-2a4f8c0 --run-b r-2a4f8c1",
         "delay": 60
       },
       {
         "cls": "info spaced",
-        "text": "Schema diff:"
+        "text": "sources:"
       },
       {
         "cls": "success",
-        "text": "  + loyalty_tier (string, nullable)"
+        "text": "  + eu_signups_q4      new region · added 12h before first fail"
       },
       {
         "cls": "info spaced",
-        "text": "Row-count delta:"
+        "text": "metrics:"
+      },
+      {
+        "cls": "warn",
+        "text": "  ~ arpu_30d_eur       now sees customers < 30 days old"
+      },
+      {
+        "cls": "rule spaced",
+        "text": "─────────────────────────────────────────────"
       },
       {
         "cls": "dim",
-        "html": "  rows_read:    <span class=\"num\">8</span> → <span class=\"num\">8</span>     (+0)"
-      },
-      {
-        "cls": "dim",
-        "html": "  rows_written: <span class=\"num\">8</span> → <span class=\"num\">1</span>     (-7)"
-      },
-      {
-        "cls": "dim",
-        "html": "  rows_to_dlq:  <span class=\"num\">0</span> → <span class=\"num\">7</span>     (+7)"
+        "html": "  <span class=\"num\">47</span> of <span class=\"num\">12,408</span> rows are partial-window — NULL by design"
       }
     ],
-    "callout": "<strong>60 seconds in.</strong> One column added upstream. 7 rows quarantined. Rest of stack untouched."
+    "callout": "<strong>60 seconds in.</strong> A new EU region widened the metric's scope. The <code>NOT_NULL</code> rule is correct — the data lifecycle changed."
   },
   {
     "kind": "term",
     "duration": 8500,
     "title": "second 90 — fix it. ship.",
-    "headline": "Update policy → re-apply.",
-    "sub": "Bump schemaEvolution.policy=evolve_safe — additive changes accepted. One commit.",
+    "headline": "One line. Re-ship.",
+    "sub": "Relax the rule to the data's lifecycle — partial-window rows are NULL by design. One commit.",
     "lines": [
       {
-        "cls": "prompt cmd",
-        "text": "sed -i 's/policy: strict/policy: evolve_safe/' contract.fluid.yaml",
-        "typingSpeed": 26
+        "cls": "faint",
+        "text": "# contract.fluid.yaml — in the dq rule:"
+      },
+      {
+        "cls": "error",
+        "text": "-   type: NOT_NULL"
+      },
+      {
+        "cls": "success spaced",
+        "text": "+   type: NOT_NULL_WHERE customer_age_days >= 30"
       },
       {
         "cls": "prompt cmd spaced",
@@ -628,19 +643,19 @@ const SCENES = [
       },
       {
         "cls": "prompt cmd spaced",
-        "text": "fluid ship --yes",
+        "text": "fluid ship contract.fluid.yaml --yes",
         "typingSpeed": 60
       },
       {
         "cls": "info spaced",
-        "text": "▸ validate → bundle → plan → apply"
+        "text": "▸ validate → bundle → plan → apply → verify"
       },
       {
         "cls": "success",
-        "text": "  ✓ 8 rows written, 0 to DLQ, 0 errors"
+        "text": "  ✓ recovered 12,361 rows · 47 still in dlq · SLA restored"
       }
     ],
-    "callout": "<strong>90 seconds.</strong> Diagnosed, fixed, re-shipped. No 3am Slack panic."
+    "callout": "<strong>90 seconds.</strong> One line — the rule now respects the data lifecycle. 12,361 rows recovered, SLA restored."
   },
   {
     "kind": "term",
@@ -694,7 +709,7 @@ const SCENES = [
   {
     "kind": "closing",
     "duration": 7000,
-    "body": "\n      <h2>Day-1 ships.<br/>Day-2 doesn't surprise.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        14 typed CLI errors with stable JSON shapes. Same exit-code contract.\n        DLQ is a first-class component. Schema drift never silently drops rows.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">90s</div><div class=\"lbl\">3am incident → ship</div></div>\n        <div class=\"stat\"><div class=\"num\">14</div><div class=\"lbl\">typed CLI errors</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">silently dropped rows</div></div>\n        <div class=\"stat\"><div class=\"num\">5</div><div class=\"lbl\">log components scoped</div></div>\n      </div>\n    "
+    "body": "\n      <h2>Day-1 ships.<br/>Day-2 doesn't surprise.</h2>\n      <div class=\"scene-sub\" style=\"font-size:18px;color:var(--text-dim);max-width:680px;text-align:center;\">\n        14 typed CLI errors with stable JSON shapes. Same exit-code contract.\n        The DLQ is a first-class component — a failing gate quarantines rows, never silently drops them.\n      </div>\n      <div class=\"stats\">\n        <div class=\"stat\"><div class=\"num\">90s</div><div class=\"lbl\">3am incident → ship</div></div>\n        <div class=\"stat\"><div class=\"num\">14</div><div class=\"lbl\">typed CLI errors</div></div>\n        <div class=\"stat\"><div class=\"num\">0</div><div class=\"lbl\">silently dropped rows</div></div>\n        <div class=\"stat\"><div class=\"num\">5</div><div class=\"lbl\">log components scoped</div></div>\n      </div>\n    "
   }
 ];;
 
@@ -711,11 +726,43 @@ const restartBtn = document.getElementById("restartBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 
 let currentIdx = 0;
+let activeScene = null;     // the scene object currently on screen — drives the advance guard
 let sceneStarted = 0;
 let progressTimer = null;
 let advanceTimer = null;
 let typingTimers = [];
 let paused = false;
+let streamDoneAt = 0;       // performance.now() when the active scene's lines finished (0 = still streaming, or a static scene)
+let pauseStartedAt = 0;     // performance.now() when the current pause began
+
+const LINE_BEAT = 440;      // ms pause before each streamed line lands — paces terminal output so it can be read
+const MIN_READ_HOLD = 3000; // ms a streamed scene stays on screen after its last line
+
+// Visitors whose OS asks to reduce motion get instant rendering — no
+// per-character typing, no inter-line beats (the CSS block drops the
+// fades and cursor blink). The reel still auto-advances and steps.
+const reduceMotion = typeof window !== "undefined" && !!window.matchMedia
+  && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Wrap the stage + HUD so the whole reel scales as one unit. The reel is a
+// fixed 1100x720 canvas: short viewports get a smaller reel, never a cropped
+// one — so terminal content can never clip.
+const reel = document.createElement("div");
+reel.className = "reel";
+document.body.insertBefore(reel, stage);
+reel.appendChild(stage);
+reel.appendChild(document.querySelector(".hud"));
+
+function fitReel() {
+  const margin = 24;
+  const scale = Math.min(
+    (window.innerWidth - margin) / reel.offsetWidth,
+    (window.innerHeight - margin) / reel.offsetHeight,
+    1
+  );
+  reel.style.setProperty("--reel-scale", scale.toFixed(4));
+}
+window.addEventListener("resize", fitReel);
 
 function buildHero(scene) {
   const div = document.createElement("div");
@@ -822,7 +869,7 @@ function typeLine(el, line) {
       return;
     }
     const text = line.text || "";
-    if (line.typingSpeed) {
+    if (line.typingSpeed && !reduceMotion) {
       let i = 0;
       const cursor = document.createElement("span");
       cursor.className = "term-cursor";
@@ -853,8 +900,12 @@ function typeLine(el, line) {
 }
 
 async function playLines(host, lines) {
-  for (const line of lines) {
-    if (line.delay) await sleep(line.delay);
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    // A beat before each line so terminal output streams at a readable pace
+    // instead of dumping in all at once. A line's own `delay` overrides it.
+    const beat = reduceMotion ? 0 : (line.delay != null ? line.delay : (i === 0 ? 240 : LINE_BEAT));
+    await sleep(beat);
     const el = appendLine(host, line);
     await typeLine(el, line);
     host.scrollTop = host.scrollHeight;
@@ -879,6 +930,8 @@ function showScene(idx) {
   if (advanceTimer) clearTimeout(advanceTimer);
   if (progressTimer) clearInterval(progressTimer);
   paused = false;
+  pauseBtn.textContent = "‖";
+  streamDoneAt = 0;
 
   const scenes = stage.querySelectorAll(".scene");
   scenes.forEach(s => s.classList.remove("active"));
@@ -886,6 +939,7 @@ function showScene(idx) {
   // Replace stage content with the next scene element.
   stage.innerHTML = "";
   const scene = SCENES[idx];
+  activeScene = scene;
   const el = buildScene(scene);
   stage.appendChild(el);
   // Force layout, then activate the fade.
@@ -895,29 +949,59 @@ function showScene(idx) {
   sceneIdEl.textContent = `scene ${idx + 1} / ${SCENES.length}`;
   sceneStarted = performance.now();
 
-  // Begin progress bar animation.
+  const isStreamed = scene.kind === "term" || scene.kind === "split";
+
+  // Progress bar. While a streamed scene is still rendering its lines the bar
+  // eases toward 92% only, then completes once the content has landed.
   const dur = scene.duration || 8000;
   progressFill.style.width = "0%";
   progressTimer = setInterval(() => {
     if (paused) return;
     const elapsed = performance.now() - sceneStarted;
-    const pct = Math.min(100, (elapsed / dur) * 100);
-    progressFill.style.width = pct + "%";
-  }, 100);
+    const cap = (isStreamed && !streamDoneAt) ? 92 : 100;
+    progressFill.style.width = Math.min(cap, (elapsed / dur) * 100) + "%";
+  }, 80);
 
-  // Auto-advance.
-  advanceTimer = setTimeout(() => next(), dur);
-
-  // Render lines (terminal / split scenes).
+  // Render lines (terminal / split scenes), then mark the stream complete.
   if (scene.kind === "term") {
     const body = el.querySelector('[data-role="term-body"]');
-    playLines(body, scene.lines);
+    playLines(body, scene.lines).then(onStreamDone);
   } else if (scene.kind === "split") {
     const left = el.querySelector('[data-role="left-body"]');
     const right = el.querySelector('[data-role="right-body"]');
-    playLines(left, scene.leftLines);
-    setTimeout(() => playLines(right, scene.rightLines), 600);
+    Promise.all([
+      playLines(left, scene.leftLines),
+      sleep(600).then(() => playLines(right, scene.rightLines)),
+    ]).then(onStreamDone);
   }
+
+  // Auto-advance — guarded so a scene is never cut off mid-stream.
+  scheduleAdvance();
+}
+
+// Marks the active scene's streaming as finished, then re-arms the advance so
+// the scene holds MIN_READ_HOLD past its last line.
+function onStreamDone() {
+  streamDoneAt = performance.now();
+  scheduleAdvance();
+}
+
+// Fires next() only once the authored duration has elapsed AND (for streamed
+// scenes) at least MIN_READ_HOLD has passed since the last line landed.
+// Self-reschedules every 400ms until both conditions hold.
+function scheduleAdvance() {
+  if (advanceTimer) clearTimeout(advanceTimer);
+  if (paused || !activeScene) return;
+  const scene = activeScene;
+  const isStreamed = scene.kind === "term" || scene.kind === "split";
+  const byDuration = sceneStarted + (scene.duration || 8000);
+  const byHold = isStreamed
+    ? (streamDoneAt ? streamDoneAt + MIN_READ_HOLD : Infinity)
+    : 0;
+  const target = Math.max(byDuration, byHold);
+  const wait = target - performance.now();
+  if (wait <= 0) { next(); return; }
+  advanceTimer = setTimeout(scheduleAdvance, Math.min(wait, 400));
 }
 
 function next() {
@@ -938,14 +1022,15 @@ function togglePause() {
   paused = !paused;
   pauseBtn.textContent = paused ? "▶" : "‖";
   if (paused) {
+    pauseStartedAt = performance.now();
     if (advanceTimer) clearTimeout(advanceTimer);
   } else {
-    // Resume from where we paused.
-    const scene = SCENES[currentIdx];
-    const dur = scene.duration || 8000;
-    const elapsed = performance.now() - sceneStarted;
-    const remaining = Math.max(0, dur - elapsed);
-    advanceTimer = setTimeout(next, remaining);
+    // Shift the scene timeline forward by the paused span so the duration and
+    // read-hold math stay correct, then re-arm the guarded advance.
+    const pausedFor = performance.now() - pauseStartedAt;
+    sceneStarted += pausedFor;
+    if (streamDoneAt) streamDoneAt += pausedFor;
+    scheduleAdvance();
   }
 }
 
@@ -961,6 +1046,7 @@ window.addEventListener("keydown", e => {
 });
 
 // Kick off.
+fitReel();
 showScene(0);
 </script>
 

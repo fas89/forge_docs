@@ -98,7 +98,7 @@ Cost summary
   total                           48,112 in  13,365 out  $0.3303
 
 ✓ Forged to:
-  biz_lab.fluid.yaml             — Fluid 0.7.2 contract
+  biz_lab.fluid.yaml             — Fluid 0.7.3 contract
   biz_lab.fluid.yaml.model.json  — Logical IR sidecar (DV2)
   biz_lab.semantics.osi.yaml     — OSI v0.1.1 standalone
 ```
@@ -137,13 +137,26 @@ agentPolicy:
     - column: payment_card_number
       classification: PCI
 
-dataQuality:
-  slas:
-    - column: order_date
-      freshness: 24h                  # from Dataplex/Unity if present
-      quality_rules:
-        - not_null
-        - unique
+exposes:
+  - exposeId: orders
+    kind: table
+    qos:
+      freshnessSLO: PT24H             # from Dataplex/Unity if present
+    contract:
+      schema:
+        - name: order_date
+          type: DATE
+          required: true
+      dq:
+        rules:
+          - id: order_date_completeness
+            type: completeness
+            selector: order_date
+            severity: error
+          - id: order_date_uniqueness
+            type: uniqueness
+            selector: order_date
+            severity: error
 ```
 
 ## Step 5 — Generate dbt transformations

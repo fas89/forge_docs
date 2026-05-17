@@ -13,7 +13,7 @@ You have a working contract but no enforcement against silent data issues — nu
 
 ## Solution
 
-Add a `dq.rules` block under the `expose.contract`. Each rule has 5 keys; the four below cover ~80 % of real-world cases.
+Add a `dq.rules` block under the `expose.contract`. Only `id`, `type`, and `severity` are required — most rules also add `selector` + `threshold` + `operator` (a freshness rule swaps those for a single `window`). The four below cover ~80 % of real-world cases.
 
 ## Add this to `exposes[].contract`
 
@@ -59,11 +59,11 @@ exposes:
             window: PT1H
             severity: warn
 
-          # 4. Block if total has any negative values
-          - id: total_positive
-            type: valid_values
+          # 4. Block if total has any negative values (every row must satisfy total >= 0)
+          - id: total_non_negative
+            type: accuracy
             selector: total
-            threshold: 1.0
+            threshold: 0.0
             operator: ">="
             severity: error
 ```

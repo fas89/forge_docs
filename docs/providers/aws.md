@@ -9,9 +9,9 @@ Deploy data products to Amazon Web Services — S3, Glue, Athena — using the s
 <CliCast
   src="/demos/aws-quickstart.svg"
   title="AWS quickstart — S3 + Glue + Athena in 30 seconds"
-  caption="Same contract as the local quickstart, with binding.platform swapped to aws. Glue catalog auto-created, Athena workgroup wired up, IAM resource policies applied — all from one fluid apply."
+  caption="Same Customer 360 contract as the local quickstart, with binding.platform swapped to aws. S3 bucket provisioned, Glue catalog auto-created, Athena made queryable — all from one fluid apply."
   width="920"
-  insight="One YAML. S3 + Glue + Athena. Zero console clicks. | IAM resource policies compiled from accessPolicy.grants and applied as part of fluid apply — every grant traceable to the contract line that produced it. | Same contract works on GCP and Snowflake — change one line of YAML, redeploy."
+  insight="One YAML. S3 + Glue + Athena. Zero console clicks. | The S3 bucket, Glue database, and Glue table are all provisioned by fluid apply — every resource traceable to the contract. | Same contract works on GCP and Snowflake — change one line of YAML, redeploy."
 />
 
 ::: warning Compatibility note
@@ -261,14 +261,14 @@ fluid policy-apply runtime/policy/bindings.json --mode check
 fluid policy-apply runtime/policy/bindings.json --mode enforce
 
 # Run the ingest script
-fluid execute contract.fluid.yaml
+fluid apply contract.fluid.yaml --mode amend-and-build
 
 # Generate Airflow DAG
-fluid generate-airflow contract.fluid.yaml --out airflow-dags/bitcoin_aws.py
+fluid generate-airflow contract.fluid.yaml --output airflow-dags/bitcoin_aws.py
 
 # Export standards
-fluid odps export contract.fluid.yaml --out standards/product.odps.json
-fluid odcs export contract.fluid.yaml --out standards/product.odcs.yaml
+fluid odps export contract.fluid.yaml --output standards/product.odps.json
+fluid odcs export contract.fluid.yaml --output standards/product.odcs.yaml
 ```
 
 ## IAM Policy Compilation
@@ -433,7 +433,7 @@ The AWS example uses the exact same Jenkinsfile as GCP and Snowflake — the [Un
 | Plan | `fluid plan` | Execution plan generated |
 | Apply | `fluid apply` | S3 bucket + Glue DB/table created |
 | Apply IAM | `fluid policy-apply` | IAM bindings enforced |
-| Execute | `fluid execute` | `ingest.py` runs, writes Parquet to S3 |
+| Execute | `fluid apply --mode amend-and-build` | `ingest.py` runs, writes Parquet to S3 |
 | Airflow DAG | `fluid generate-airflow` | Production DAG generated |
 
 ## See Also

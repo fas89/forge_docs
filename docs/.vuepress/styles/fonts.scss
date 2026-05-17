@@ -1,17 +1,18 @@
 // =====================================================================
 // Fluid Forge — self-hosted typography
 // =====================================================================
-// Using fontsource-variable so we ship a single variable font file per
-// family instead of 6+ static weight files. Smaller bundle, smoother
+// Geist + Geist Mono are the brand typefaces used on
+// agenticstransformation.com. fontsource-variable ships one variable
+// font file per family (weight 100–900) — smaller bundle, smoother
 // weight transitions, no Google Fonts CDN privacy concerns.
 //
 // Requires deps in package.json:
-//   "@fontsource-variable/inter": "^5"
-//   "@fontsource-variable/jetbrains-mono": "^5"
+//   "@fontsource-variable/geist": "^5"
+//   "@fontsource-variable/geist-mono": "^5"
 // =====================================================================
 
-// Body — Inter, optimized for legibility at small sizes
-@use "@fontsource-variable/inter";
+// Body + display — Geist
+@use "@fontsource-variable/geist";
 
-// Code — JetBrains Mono, optimized for source code (clear 0/O, l/1/I, etc.)
-@use "@fontsource-variable/jetbrains-mono";
+// Code — Geist Mono (clear 0/O, l/1/I, contextual ligatures)
+@use "@fontsource-variable/geist-mono";

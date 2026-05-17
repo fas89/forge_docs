@@ -1,6 +1,6 @@
 # `fluid diff`
 
-Stage 5 of the 11-stage pipeline. Detect configuration drift between the desired contract state and deployed resources.
+Stage 5 of the 11-stage pipeline. Detect configuration drift between the desired contract state and deployed resources — or, with `--baseline`, run a semantic [version diff](#contract-version-diff) between two revisions of a contract.
 
 ## Syntax
 
@@ -13,10 +13,12 @@ fluid diff CONTRACT
 | Option | Description |
 | --- | --- |
 | `--state` | Previous `apply_report.json`. Required for hard-fail drift gating (see below). |
-| `--env` | Apply an environment overlay. |
-| `--out` | Output file for the drift report (default `runtime/diff.json`). |
+| `--env` | Apply an environment overlay (drift mode only). |
+| `--out` | Output file for the diff report (default `runtime/diff.json`). |
 | `--exit-on-drift` | Exit with code `1` when drift is detected **and** a `--state` baseline was supplied. |
-| `--provider` | Override the provider. If unset and `FLUID_PROVIDER` isn't exported, `diff` auto-detects from `contract.binding.platform` (same as `apply` / `plan` / `verify`). |
+| `--baseline` | Compare against an older revision of the contract — switches `diff` into version-diff mode (see below). |
+| `--fail-on-breaking` | In version-diff mode, exit `1` when a breaking change is found. |
+| `--format` | Version-diff output format — `text` (default), `json`, or `markdown`. |
 
 ## Examples
 
@@ -55,15 +57,40 @@ The exit-on-drift gate has one important conditional: it only fires when a `--st
 
 If you want hard-fail drift gating in CI, wire the last apply's `apply_report.json` as `--state` to enable real drift comparison.
 
-## Provider auto-detection
+## Provider resolution
 
-`fluid diff` reads `contract.binding.platform` to infer the provider when neither `--provider` nor the `FLUID_PROVIDER` env var is set. Explicit flags still win:
+In drift mode `fluid diff` needs a provider to enumerate the desired resources. There is no `--provider` flag on `diff` — it resolves the provider in two steps:
 
-1. `--provider <name>` (highest priority)
-2. `FLUID_PROVIDER=<name>` env var
-3. `contract.binding.platform` (auto-detected fallback)
+1. `FLUID_PROVIDER=<name>` env var (when exported).
+2. `contract.binding.platform` — the auto-detected fallback, used when `FLUID_PROVIDER` is unset.
 
-The auto-detection is logged as `diff_provider_inferred platform=<name> source=contract.binding.platform`.
+The auto-detection is logged as `diff_provider_inferred platform=<name> source=contract.binding.platform`. To diff against a non-default provider, export `FLUID_PROVIDER` before the run:
+
+```bash
+FLUID_PROVIDER=snowflake fluid diff contract.fluid.yaml --state runtime/apply-report.json
+```
+
+Version-diff mode (`--baseline`) needs no provider at all — it is a pure structural comparison between two contract files.
+
+## Contract version diff
+
+Passing `--baseline` switches `fluid diff` from drift detection to a **semantic version diff** between two revisions of the same contract:
+
+```bash
+fluid diff v2/contract.fluid.yaml --baseline v1/contract.fluid.yaml
+fluid diff v2/contract.fluid.yaml --baseline v1/contract.fluid.yaml --fail-on-breaking
+fluid diff v2/contract.fluid.yaml --baseline v1/contract.fluid.yaml --format markdown
+```
+
+This is contract-aware comparison, not generic schema differencing. Each change is classified as breaking or non-breaking, and the diff understands:
+
+- **Type precision and scale** — `DECIMAL(p,s)` and `VARCHAR(n)` widening (safe) versus narrowing (breaking).
+- **Nested structures** — it recurses through `columns[].fields[]`.
+- **PII annotation drift** — a column gaining or losing a PII tag.
+- **Policy narrowing** — tighter `agentPolicy` or data-sovereignty rules.
+- **Quality severity escalation** — a quality rule promoted to a stricter severity.
+
+`--fail-on-breaking` makes the command exit `1` on any breaking change, so it drops into CI as a contract-compatibility gate. `--format json` or `markdown` produce a structured report for PR comments or release notes.
 
 ## Notes
 

@@ -94,7 +94,7 @@ The promoted orchestration path is `fluid generate schedule --scheduler airflow`
 
 | Command | What it is for |
 | --- | --- |
-| [`fluid odps`](./odps.md) | Export, validate, and inspect the official ODPS (Linux Foundation) format |
+| [`fluid odps`](./odps.md) | Export, validate, and inspect the official ODPS (Open Data Product Initiative) format |
 | [`fluid odps-bitol`](./odps-bitol.md) | Bitol.io's ODPS variant (Entropy Data marketplace) |
 | [`fluid odcs`](./odcs.md) | Bidirectional FLUID ↔ Open Data Contract Standard (ODCS v3.1.0) |
 | [`fluid export`](./export.md) | Export to executable orchestration code (Airflow, Dagster, Prefect) |

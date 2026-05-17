@@ -1,84 +1,92 @@
 # Blueprints
 
-Reusable, parameterized templates for common data product patterns. Blueprints let you scaffold a complete project — contract, sample data, transformations — in seconds.
+Reusable, parameterized templates for common data product patterns. Blueprints are Jinja2 templates that generate a complete FLUID contract — letting you scaffold a working data product in seconds instead of writing one from scratch.
+
+Blueprints live in the FLUID blueprint marketplace and are accessed through the `fluid market` command. The `--blueprints` flag switches `fluid market` from searching enterprise data catalogs to searching marketplace blueprint templates.
 
 ## Quick Start
 
 ```bash
 # List all available blueprints
-fluid blueprint list
+fluid market --blueprints
 
-# Filter by category or provider
-fluid blueprint list --category analytics --provider gcp
+# Search blueprints by keyword
+fluid market --blueprints --search analytics
 
-# Describe a specific blueprint
-fluid blueprint describe customer-360-gcp
+# Show details for a specific blueprint
+fluid market --blueprint-id customer-360-etl
 
-# Create a project from a blueprint
-fluid blueprint create customer-360-gcp --target-dir my-project
+# Generate a contract from a blueprint
+fluid market --blueprint-id customer-360-etl --instantiate
 ```
 
 ## CLI Reference
 
-### `fluid blueprint list`
+Blueprints are a mode of `fluid market`. Three flags control blueprint behavior:
 
 | Option | Description |
 |--------|-------------|
-| `--category` | Filter by category (e.g. `analytics`, `ml`, `ingestion`) |
-| `--complexity` | Filter by complexity level |
-| `--provider` | Filter by provider (`gcp`, `aws`, `snowflake`, `local`) |
-| `--verbose`, `-v` | Show detailed metadata |
+| `--blueprints` | Search the blueprint marketplace instead of data catalogs |
+| `--blueprint-id <id>` | Inspect a specific blueprint, or instantiate it |
+| `--instantiate` | Generate a FLUID contract from the blueprint (requires `--blueprint-id`) |
 
-### `fluid blueprint describe <name>`
-
-Show detailed information about a blueprint including its schema, required configuration, estimated setup time, and tags.
-
-### `fluid blueprint create <name>`
+These combine with the standard `fluid market` flags. The ones relevant to blueprints are:
 
 | Option | Description |
 |--------|-------------|
-| `--target-dir`, `-d` | Directory to create the project in |
-| `--provider`, `-p` | Override the default provider |
-| `--quickstart`, `-q` | Use smart defaults |
-| `--dry-run` | Preview what would be created |
+| `--search`, `-s` | Keyword text to search blueprint names and descriptions |
+| `--limit` | Maximum number of results (default: 50) |
+| `--format`, `-f` | Output format (`table`, `json`, `detailed`) |
 
-### `fluid blueprint search <query>`
+### Searching blueprints
 
-Search blueprints by keyword across names, descriptions, and tags.
+`fluid market --blueprints` lists marketplace blueprints. Add `--search` to filter by keyword:
 
-### `fluid blueprint validate [name]`
+```bash
+fluid market --blueprints --search "customer analytics"
+```
 
-Validate one or all blueprints for correctness.
+Results show each blueprint's ID, name, category, maturity, download count, and version.
 
-## Available Blueprints
+### Inspecting a blueprint
 
-| Blueprint | Category | Providers | Description |
-|-----------|----------|-----------|-------------|
-| `customer-360` | Analytics | local | Customer analytics data product |
-| `customer-360-gcp` | Analytics | gcp | Customer analytics on BigQuery |
-| `enterprise-snowflake` | Analytics | snowflake | Enterprise data warehouse |
-| `semantic-customer-model` | Analytics | local | Semantic layer with customer data |
+`fluid market --blueprint-id <id>` shows detailed information about a blueprint, including its description, maturity, author, license, and the full list of parameters it accepts — with each parameter's type and whether it is required.
+
+```bash
+fluid market --blueprint-id customer-360-etl
+```
+
+### Instantiating a blueprint
+
+`fluid market --blueprint-id <id> --instantiate` renders the blueprint's Jinja2 template into a FLUID contract. The blueprint's parameters are collected through an interactive wizard, and the generated contract is validated before being returned.
+
+```bash
+fluid market --blueprint-id customer-360-etl --instantiate
+```
+
+Note: `--instantiate` requires `--blueprint-id`. Running `--instantiate` on its own returns an error.
 
 ## Creating From a Blueprint
 
 ```bash
 # 1. Browse options
-fluid blueprint list --verbose
+fluid market --blueprints
 
-# 2. Pick one and scaffold
-fluid blueprint create customer-360-gcp -d my-analytics --quickstart
+# 2. Inspect one to see its parameters
+fluid market --blueprint-id customer-360-etl
 
-# 3. Enter the project
-cd my-analytics
+# 3. Generate a contract from it
+fluid market --blueprint-id customer-360-etl --instantiate
 
-# 4. Run the standard workflow
+# 4. Run the standard workflow on the generated contract
 fluid validate contract.fluid.yaml
 fluid apply contract.fluid.yaml --yes
 ```
 
 ## See Also
 
-- [init command](/forge_docs/cli/init) — create projects from scratch or blueprints
+- [market command](/forge_docs/cli/market) — full reference for `fluid market`
+- [init command](/forge_docs/cli/init) — create projects from scratch
 - [forge command](/forge_docs/cli/) — AI-powered project generation
 - [Getting Started](/forge_docs/getting-started/) — install and run your first project
 - [Custom LLM Agents](/forge_docs/advanced/custom-llm-agents) — AI-powered project generation with your own models

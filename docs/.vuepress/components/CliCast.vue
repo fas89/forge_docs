@@ -43,18 +43,36 @@
       </header>
 
       <div class="ff-cast__viewport">
-        <!-- The SVG itself — only loaded when in viewport -->
+        <!-- Static poster — frame 0 of the cast. Rendered once the frame
+             scrolls into view; it sets the viewport height and is what
+             the visitor sees before (and behind) playback. -->
         <img
           v-if="visible"
-          :key="reloadKey"
           :src="src"
           :alt="alt || title || 'CLI demo'"
+          :aria-hidden="playing ? 'true' : null"
           class="ff-cast__svg"
           @load="loaded = true"
           loading="lazy"
         />
 
-        <!-- Click-to-play overlay (covers the SVG until the visitor opts in) -->
+        <!-- Live animation. CSS @keyframes inside an SVG only run when the
+             SVG loads as its own document — an <img> silently freezes it
+             at frame 0 — so the cast is embedded via <object>. Mounted
+             only after the visitor clicks play; re-keyed by replay(). -->
+        <object
+          v-if="visible && playing"
+          :key="reloadKey"
+          :data="src"
+          type="image/svg+xml"
+          class="ff-cast__object"
+          :aria-label="`CLI demo: ${title || alt || 'demo'}`"
+          @load="onObjectLoad"
+        >
+          <span class="ff-cast__sr">{{ alt || title || 'CLI demo animation' }}</span>
+        </object>
+
+        <!-- Click-to-play overlay (covers the poster until the visitor opts in) -->
         <button
           v-if="!playing"
           type="button"
@@ -185,12 +203,34 @@ onBeforeUnmount(() => {
 })
 
 function play() {
+  // Mount the cast even if the IntersectionObserver hasn't fired yet.
+  visible.value = true
   playing.value = true
 }
 
 function replay() {
   // Force the SVG to reload so the animation restarts from frame 0.
   reloadKey.value++
+}
+
+function onObjectLoad(e: Event) {
+  // An <object>-embedded SVG renders at the SVG document's own intrinsic
+  // size — it is NOT scaled to the <object> box the way an <img> is.
+  // svg-term emits a fixed width="920" root with no viewBox, so on any
+  // card narrower than 920px the playing animation overflows and clips.
+  // Normalise the root <svg> to be responsive (viewBox + 100%) so the
+  // live cast scales to the frame exactly like the static poster.
+  const doc = (e.target as HTMLObjectElement).contentDocument
+  const svg = doc?.documentElement as unknown as SVGSVGElement | undefined
+  if (!svg || svg.tagName?.toLowerCase() !== 'svg') return
+  if (!svg.getAttribute('viewBox')) {
+    const w = parseFloat(svg.getAttribute('width') || '0')
+    const h = parseFloat(svg.getAttribute('height') || '0')
+    if (w > 0 && h > 0) svg.setAttribute('viewBox', `0 0 ${w} ${h}`)
+  }
+  svg.setAttribute('width', '100%')
+  svg.setAttribute('height', '100%')
+  svg.setAttribute('preserveAspectRatio', 'xMinYMin meet')
 }
 </script>
 
@@ -247,6 +287,29 @@ function replay() {
     height: auto;
   }
 
+  // Live animated cast — overlays the poster, identical box.
+  &__object {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+    z-index: 1;
+  }
+
+  &__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   &__play {
     position: absolute;
     inset: 0;
@@ -287,12 +350,12 @@ function replay() {
     align-items: flex-start;
     gap: 14px;
     padding: 16px 20px;
-    // Solid surface (no transparency) so theme background can't bleed
+    // Solid surface (mode-aware) so the page background can't bleed
     // through and dilute the text contrast.
-    background: #f0fdf4; // very light mint
-    border: 1px solid #86efac;
-    border-left: 4px solid #16a34a;
-    border-radius: 8px;
+    background: var(--vp-c-bg-elv-up);
+    border: 1px solid var(--vp-c-border);
+    border-left: 4px solid var(--vp-c-accent);
+    border-radius: 10px;
     animation: ff-cast-takeaway-in 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
@@ -312,7 +375,7 @@ function replay() {
       margin: 0 !important;
       font-size: 15px !important;
       line-height: 1.6 !important;
-      color: #14532d !important; // deep forest green — readable on mint bg
+      color: var(--vp-c-text-mute) !important;
       opacity: 1 !important;
     }
 
@@ -324,7 +387,7 @@ function replay() {
   &__takeaway-headline {
     font-size: 16.5px !important;
     font-weight: 700 !important;
-    color: #15803d !important; // brand green — distinct from body
+    color: var(--vp-c-text) !important;
     line-height: 1.45 !important;
     margin-bottom: 4px !important;
     letter-spacing: -0.005em;
@@ -373,26 +436,10 @@ function replay() {
     transform: translateY(0);
   }
 }
-</style>
 
-<!-- Dark-theme overrides for the takeaway banner.
-     Lives outside scoped CSS so html.dark stays unhashed and reaches the
-     paragraph elements (which DO carry the data-v-* attribute, so we use
-     :where() to keep specificity manageable). High-contrast colors that
-     survive any inherited paragraph color from the VuePress theme. -->
-<style lang="scss">
-html.dark .ff-cast__takeaway {
-  background: #0f2e1c !important;     // dark forest surface
-  border-color: #15803d !important;
-  border-left-color: #4ade80 !important;
-}
-
-html.dark .ff-cast__takeaway-body p {
-  color: #f0fdf4 !important;          // mint-white — readable on forest bg
-  opacity: 1 !important;
-}
-
-html.dark .ff-cast__takeaway-headline {
-  color: #6ee7b7 !important;          // bright mint headline
+@media (prefers-reduced-motion: reduce) {
+  .ff-cast__takeaway {
+    animation: none;
+  }
 }
 </style>

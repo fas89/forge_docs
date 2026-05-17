@@ -5,7 +5,7 @@ Unified artifact generation from FLUID contracts.
 ## Syntax
 
 ```bash
-fluid generate <transformation|speed-transformation|dbt|schedule|ci|standard|artifacts>
+fluid generate <transformation|speed-transformation|dbt|dbt-tests|schedule|ci|standard|artifacts>
 ```
 
 ## Subcommands
@@ -63,6 +63,31 @@ A normal dbt output directory includes:
 - non-empty SQL models under `models/`
 
 `fluid generate speed-transformation` and `fluid generate dbt` remain aliases for this path.
+
+### `fluid generate dbt-tests`
+
+Read the contract's `exposes[].contract.dq.rules[]` and emit a dbt `schema.yml` so your data-quality rules run as native dbt tests.
+
+```bash
+fluid generate dbt-tests
+fluid generate dbt-tests contract.fluid.yaml -o dbt/models/schema.yml
+fluid generate dbt-tests --env prod
+```
+
+Key options:
+
+| Option | Description |
+| --- | --- |
+| `contract` | Contract path. Defaults to `contract.fluid.yaml` in the current directory. |
+| `--out`, `-o` | Output path for the dbt `schema.yml` (default `./schema.yml`). Drop it into your dbt project's `models/<schema>/` directory. |
+| `--env` | Environment overlay (`dev` / `test` / `prod`). |
+
+- **Column-level rules** map to dbt's built-in tests — `not_null`, `unique`, `accepted_values` — with `dbt-utils` placeholders emitted for rules that have no native dbt equivalent.
+- **Model-level rules** map to `dbt-utils`: `anomaly_detection` / `drift_detection` rules become `dbt-utils` expressions, and a `freshness` rule becomes `dbt_utils.recency`.
+- The generated `dbt-utils`-based tests require the `dbt-utils` package to be installed in your dbt project.
+- A managed-by sentinel marks the generated file, so re-running the command never clobbers a `schema.yml` you have hand-edited.
+
+After generating, run `dbt test` in your dbt project to execute the rules.
 
 ### `fluid generate schedule`
 

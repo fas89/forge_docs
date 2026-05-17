@@ -5,7 +5,7 @@
 <CliCast
   src="/demos/local-quickstart.svg"
   title="The same flow, in 30 seconds — install through deploy"
-  caption="Install with the [local] extra, scaffold a Bitcoin tracker contract from the quickstart template, validate, preview the plan, and apply against the local DuckDB provider. The walkthrough below covers the same flow with hands-on contract editing in the middle."
+  caption="Install with the [local] extra, scaffold the Customer 360 Analytics contract from the quickstart template, validate, preview the plan, and apply against the local DuckDB provider. The walkthrough below covers the same validate → plan → apply flow, hand-building a different example with contract editing in the middle."
   width="920"
   insight="30 seconds. No cloud account. No credit card. | The contract.fluid.yaml you wrote is the contract that ran. | Local DuckDB + Parquet artifact — exactly what production produces, but offline."
 />
@@ -49,7 +49,7 @@ pip install data-product-forge
 fluid version
 
 # Should show:
-# Fluid Forge CLI v0.7.7
+# Fluid Forge CLI v0.8.0
 # Providers: local (production), gcp (production)
 ```
 

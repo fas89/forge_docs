@@ -8,13 +8,13 @@ description: The difference between a binding.platform value and the provider pl
 Two related but distinct ideas:
 
 - **Platform** — a value in your contract (`binding.platform: gcp`) describing *where* the data lands.
-- **Provider** — a Python plugin that knows *how* to make it land there. Each provider implements `plan()`, `apply()`, `verify()` and `policy-compile()` against a specific cloud.
+- **Provider** — a Python plugin that knows *how* to make it land there. Each provider implements two required methods, `plan()` and `apply()`, against a specific cloud.
 
 `fluid providers` lists everything installed in your environment.
 
 ## Cloud providers shipping in `data-product-forge` 0.8.0
 
-These are the cloud-platform providers that implement `plan`/`apply`/`verify`/`policy-compile` against a target cloud:
+These are the cloud-platform providers that implement `plan`/`apply` against a target cloud:
 
 | Provider | Status | Install extra |
 |----------|--------|---------------|
@@ -37,17 +37,24 @@ The schema enum also includes engines and runtime targets that aren't cloud prov
 
 ## The provider plugin contract
 
-Building a custom provider for an unsupported platform is supported — see [Custom Providers](/forge_docs/providers/custom-providers). The plugin must implement four methods:
+Building a custom provider for an unsupported platform is supported — see [Custom Providers](/forge_docs/providers/custom-providers). `BaseProvider` declares exactly **two abstract methods** the plugin must implement:
 
 ```python
 class MyProvider(BaseProvider):
     name = "my-cloud"
 
-    def plan(self, contract): ...
-    def apply(self, actions): ...
-    def verify(self, contract): ...
-    def policy_compile(self, contract): ...
+    def plan(self, contract): ...      # required (@abstractmethod)
+    def apply(self, actions): ...      # required (@abstractmethod)
 ```
+
+Two more methods are **optional** — `BaseProvider` ships working defaults you only override when you need them:
+
+```python
+    def capabilities(self): ...        # optional — defaults to ProviderCapabilities()
+    def render(self, src, *, out=None, fmt=None): ...  # optional — default raises ProviderError
+```
+
+`capabilities()` advertises which features the provider supports (`planning`, `apply`, `render`, `graph`, `auth`); `render()` exports a contract to an external format and is unsupported unless overridden.
 
 Register via Python entry points in your `pyproject.toml`:
 
@@ -60,16 +67,16 @@ After `pip install my-fluid-provider`, `fluid providers` will list it automatica
 
 ## The provider lifecycle
 
-Each of the four methods is called at a specific point in the canonical 11-stage pipeline:
+The two required methods are each called at a specific point in the canonical 11-stage pipeline:
 
 | Method | Called by | Pipeline stage | What it must do |
 |---|---|---|---|
 | `plan(contract)` | `fluid plan` | Stage 6 — *Plan* | Return a list of `Action` objects describing what would change. **Must be deterministic** — the same contract + same deployed state always emit the same actions. The CLI's plan binding (stage 6 ↔ stage 7) refuses to apply if the plan was tampered with. |
 | `apply(actions)` | `fluid apply` | Stage 7 — *Apply* | Execute the actions against the target cloud. Idempotent. Returns success/failure per action. |
-| `verify(contract)` | `fluid verify` | Stage 9 — *Verify* | Read the deployed state back, compare against the contract, fail on drift. Examples: schema drift, missing dq.rules, expected IAM bindings absent. |
-| `policy_compile(contract)` | `fluid policy-apply` | Stage 8 — *Policy-apply* | Translate `accessPolicy.grants` and `agentPolicy` into the cloud's native IAM/RBAC format and return a list of bindings to apply. |
 
-Each method must be **side-effect-free** when called with `--mode dry-run` — that's how the canonical pipeline does pre-flight checks without touching production.
+`plan()` makes no network calls and has no side effects — it's pure contract-in, action-list-out. That's how the canonical pipeline runs pre-flight checks without touching production.
+
+Verification and policy compilation are **engine-level pipeline stages**, not provider abstract methods — the CLI drives them around the provider's `plan`/`apply` rather than calling extra methods on `BaseProvider`.
 
 ## Action semantics
 
@@ -103,7 +110,7 @@ Each provider declares the contract schema versions it can handle:
 ```python
 class MyProvider(BaseProvider):
     name = "my-cloud"
-    supported_schemas = ["0.5.7", "0.7.1", "0.7.2"]
+    supported_schemas = ["0.7.1", "0.7.2", "0.7.3"]
 ```
 
 `fluid validate` cross-checks the contract's `fluidVersion` against every installed provider's `supported_schemas`. Mismatch is a hard failure at validate time — the CLI refuses to load a contract that no installed provider can plan.

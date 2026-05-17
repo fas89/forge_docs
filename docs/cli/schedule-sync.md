@@ -34,7 +34,9 @@ fluid schedule-sync --scheduler NAME --dags-dir PATH [--destination URL] [option
 | --- | --- |
 | `--env` | Environment overlay (`dev` / `staging` / `prod`). |
 | `--dry-run` | Log the planned subprocess argv without executing — safe to run in any env. |
-| `--verify-signature` | Refuse to push DAGs if the source tgz bundle is unsigned or mutated. See [`fluid verify-signature`](./verify-signature.md). |
+| `--bundle PATH` | Path to the signed source tgz bundle the DAGs were generated from. Required whenever `--verify-signature` is set; ignored otherwise. |
+| `--verify-signature` | Refuse to push DAGs unless the bundle's cosign signature verifies. **Requires `--bundle PATH`** — passing `--verify-signature` alone aborts with `schedule_sync_verify_signature_missing_bundle`. See [`fluid verify-signature`](./verify-signature.md). |
+| `--verify-key PATH` | Keyed-mode verification public key (path or KMS URI), matching bundles signed with `bundle --sign --sign-key`. Selects keyed verification over the default keyless mode. Ignored unless `--verify-signature` is set. |
 | `--timeout SECONDS` | Per-subprocess timeout. Default 600, hard cap 3600. |
 | `--report PATH` | JSON result summary. |
 
@@ -129,12 +131,14 @@ fluid schedule-sync \
 ### Signature-gated push (supply chain)
 
 ```bash
-# Pair with `fluid bundle --sign --attest` in stage 1
+# Pair with `fluid bundle --sign --attest` in stage 1.
+# --verify-signature requires --bundle pointing at the signed tgz.
 fluid schedule-sync \
   --scheduler airflow \
   --dags-dir dist/artifacts/schedule/ \
   --destination s3://my-airflow-dags/team-x/ \
-  --verify-signature
+  --verify-signature \
+  --bundle dist/bundle.tgz
 # Refuses to push if the source tgz bundle's cosign signature doesn't verify
 ```
 

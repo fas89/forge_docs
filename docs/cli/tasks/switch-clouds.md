@@ -11,16 +11,14 @@ Time: ~5 minutes assuming the target cloud is already credentialed.
 
 ## What you start with
 
-A working contract on the original cloud. For this walkthrough we'll start with the local quickstart:
+A working contract on the original cloud — for this task, a Bitcoin price tracker already running locally on DuckDB. (The [GCP walkthrough](/forge_docs/walkthrough/gcp) builds this contract from scratch; here we start from the finished `contract.fluid.yaml`.)
 
 ```bash
-fluid init btc-tracker --quickstart
-cd btc-tracker
 fluid apply contract.fluid.yaml --yes
-# ✓ Pipeline complete · runtime/out/bitcoin_prices.parquet (24 rows)
+# ✓ Pipeline complete · runtime/out/bitcoin_prices.parquet
 ```
 
-This produced a Parquet artifact via the `local` provider on DuckDB. Now we want the same product on BigQuery.
+That produced a Parquet artifact via the `local` provider on DuckDB. Now we want the same product on BigQuery.
 
 ## Step 1 — install the target provider
 

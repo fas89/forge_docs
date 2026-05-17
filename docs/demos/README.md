@@ -18,7 +18,7 @@ Start here. No cloud account, no credit card, ~30 seconds end-to-end.
 <CliCast
   src="/demos/local-quickstart.svg"
   title="fluid init my-project --quickstart  →  validate  →  plan  →  apply"
-  caption="Install the CLI, scaffold a Bitcoin tracker contract from the quickstart template, validate it against the 0.7.2 schema, preview the plan, and apply it against the local DuckDB provider. The data product lands at runtime/out/bitcoin_prices.parquet."
+  caption="Install the CLI, scaffold the Customer 360 Analytics contract from the quickstart template, validate it against the 0.7.2 schema, preview the plan, and apply it against the local DuckDB provider. Two exposes — a master table and a high-value-customer view — land as Parquet under output/."
   width="920"
   insight="30 seconds. No cloud account. No credit card. | The contract.fluid.yaml you wrote is the contract that ran. | Local DuckDB + Parquet artifact — exactly what production produces, but offline."
 />
@@ -27,16 +27,16 @@ Start here. No cloud account, no credit card, ~30 seconds end-to-end.
 
 ## Same contract, different cloud
 
-Swap `binding.platform` and re-deploy. The contract, schema, IAM grants, and AI policy all stay byte-identical — only the cloud-specific fields change.
+Swap `binding.platform` and re-deploy. The contract, schema, dq.rules, and the multi-stage build all stay byte-identical — only the cloud-specific binding fields change.
 
 ### GCP / BigQuery
 
 <CliCast
   src="/demos/gcp-quickstart.svg"
   title="GCP quickstart — install, swap one line, deploy"
-  caption="From the local contract to a fully-deployed BigQuery table with IAM bindings, in 30 seconds. Note the `git diff` showing only the four lines that change — schema, dq.rules, accessPolicy.grants, agentPolicy all stay identical."
+  caption="From the local Customer 360 contract to a fully-deployed BigQuery dataset, in seconds. The `git diff` shows only the binding block changing — schema, dq.rules, and the 5-stage build all stay byte-identical."
   width="920"
-  insight="Same contract. One line changed (platform: local → platform: gcp). | BigQuery dataset, table, IAM grants — all created from the YAML you already had. | Schema, dq.rules, agentPolicy, sovereignty — byte-identical to the local run."
+  insight="Same contract. One line changed (platform: local → platform: gcp). | BigQuery dataset, table, and view — all created from the YAML you already had. | Schema, dq.rules, the 5-stage build — byte-identical to the local run."
 />
 
 ### AWS / Athena
@@ -44,9 +44,9 @@ Swap `binding.platform` and re-deploy. The contract, schema, IAM grants, and AI 
 <CliCast
   src="/demos/aws-quickstart.svg"
   title="AWS quickstart — S3 + Glue + Athena"
-  caption="Same contract, AWS provider extra installed, binding swapped to s3_file with a bucket + prefix. Glue catalog auto-created, Athena workgroup wired up, IAM resource policies applied."
+  caption="Same Customer 360 contract, AWS provider extra installed, binding swapped to the AWS platform. S3 bucket provisioned, Glue catalog auto-created, Athena made queryable — all from fluid apply."
   width="920"
-  insight="One YAML. S3 + Glue + Athena. Zero console clicks. | IAM resource policies compiled from accessPolicy.grants and applied as part of fluid apply — every grant traceable to the contract line that produced it. | Same contract works on GCP and Snowflake — change one line of YAML, redeploy."
+  insight="One YAML. S3 + Glue + Athena. Zero console clicks. | The S3 bucket, Glue database, and Glue table are all provisioned by fluid apply — every resource traceable to the contract. | Same contract works on GCP and Snowflake — change one line of YAML, redeploy."
 />
 
 ### Snowflake
@@ -56,7 +56,7 @@ Swap `binding.platform` and re-deploy. The contract, schema, IAM grants, and AI 
   title="Snowflake quickstart — dry-run flow"
   caption="The dry version: env-file credentials, contract validation, plan preview, and apply --mode dry-run rendering DDL without firing it. For the live-auth version see snowflake-real below."
   width="920"
-  insight="Snowflake-ready in 4 commands. Live auth, real DDL, zero side effects. | Use --mode dry-run for pre-flight on every PR; drop it for production. | RBAC grants from accessPolicy.grants compile to native GRANT statements."
+  insight="Snowflake-ready in 4 commands — dry-run, zero side effects, nothing fired. | Use --mode dry-run for pre-flight on every PR; drop it for production. | CREATE DATABASE / SCHEMA / TABLE / VIEW DDL is rendered for review before a single statement fires."
 />
 
 ---
@@ -96,9 +96,9 @@ The `snowflake-biz-lab` flow at full fidelity: env credentials sourced, real `va
 <CliCast
   src="/demos/forge-blank.svg"
   title="fluid forge --blank --domain finance"
-  caption="The blank skeleton with finance-domain defaults pre-seeded: SOX/GDPR regulatory framework, 'training' and 'fine-tuning' denied use cases, Gold layer assignment. Fill in the expose blocks yourself — no LLM call."
+  caption="The blank skeleton with finance-domain defaults pre-seeded: SOX/GDPR regulatory framework, 'training' and 'fine_tuning' denied use cases, Gold layer assignment. Fill in the expose blocks yourself — no LLM call."
   width="920"
-  insight="Skeleton in 2 seconds — same governance defaults as AI mode. | SOX + GDPR, 'training' / 'fine-tuning' denied, Gold layer — pre-seeded for finance. | You fill the expose blocks; everything else is already opinionated."
+  insight="Skeleton in 2 seconds — same governance defaults as AI mode. | SOX + GDPR, 'training' / 'fine_tuning' denied, Gold layer — pre-seeded for finance. | You fill the expose blocks; everything else is already opinionated."
 />
 
 ---
@@ -180,7 +180,7 @@ The 5 casts below pair with the [See it run](/see-it-run.html) page — each tel
 <CliCast
   src="/demos/agent-compaction.svg"
   title="Agent-loop compaction — three strategies, real before/after costs"
-  caption="20-turn baseline: $0.503/run, super-linear context bloat (5K → 67K → 298K tokens). Three strategies side-by-side: truncate (5.8× cheaper), summarize (9.3× cheaper), hybrid (10.5× cheaper). One env var: FORGE_AGENT_COMPACTION=hybrid."
+  caption="20-turn baseline: $0.503/run, super-linear context bloat (5K → 67K → 298K tokens). Three strategies side-by-side: truncate (5.8× cheaper), summarize (9.3× cheaper), hybrid (10.5× cheaper). One env var: FLUID_COMPACTION_STRATEGY=hybrid."
   width="920"
   insight="$0.503 → $0.048 per 20-turn agent run. 10.5× cheaper, no code change. | truncate (free), summarize (high-recall), hybrid (recommended for production). | Works with every --llm-provider. Same contract. Same agent. Just smarter context window management."
 />
@@ -216,8 +216,8 @@ The `.cast.raw` working files live in `/tmp/casts/` (gitignored) and are deleted
 To regenerate everything:
 
 ```bash
-scripts/generate-demos.sh                 # all 8
-scripts/generate-demos.sh --safe-only     # the 6 scripted (no creds)
+scripts/generate-demos.sh                 # regenerate every cast
+scripts/generate-demos.sh --safe-only     # only the credential-free casts
 scripts/generate-demos.sh forge-gemini    # one specific cast
 ```
 

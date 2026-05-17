@@ -153,4 +153,4 @@ A test in `tests/copilot/test_capability_catalog.py` and `tests/copilot/test_tok
 
 - [LLM Providers → Run-start capability warnings](llm-providers.md#run-start-capability-warnings) — where this fits in the provider config flow
 - [Typed Errors](typed-errors.md) — when a degraded run fails, you'll see one of the seven typed errors
-- [Agentic primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-preflight-and-compaction) — how the token-budget catalog (paired with this one) prevents context-overflow failures
+- [Agentic primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-pre-flight-compaction) — how the token-budget catalog (paired with this one) prevents context-overflow failures

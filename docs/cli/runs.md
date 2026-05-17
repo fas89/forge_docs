@@ -60,7 +60,7 @@ fluid runs logs bronze.crm_orders --run-id 2026-04-30T12-34-56 --json
 | `--run-id <id>` | Specific run. Otherwise the most recent run for the build. |
 | `--grep <pattern>` | Regex filter applied to log lines. |
 | `--limit <n>` | Maximum lines returned. Default `1000`. |
-| `--json` | Emit each log line as a JSON record (timestamp, severity, message, component). |
+| `--json` | Emit each log line as a JSON record (`timestamp`, `level`, `component`, `message`). |
 
 ### `fluid runs diff`
 
@@ -83,33 +83,38 @@ fluid runs diff bronze.crm_orders \
 
 ## Output shape (JSON)
 
-`fluid runs status --json` returns:
+`fluid runs status --json` returns the `StatusReport` shape (keys are `snake_case`; the emitter sorts keys alphabetically):
 
 ```json
 {
-  "product": "bronze.crm_orders",
-  "build": "ingest_orders",
+  "product_id": "bronze.crm_orders",
+  "build_id": "ingest_orders",
   "runs": [
     {
-      "runId": "2026-04-30T12-34-56",
-      "startedAt": "2026-04-30T12:34:56Z",
-      "completedAt": "2026-04-30T12:34:58Z",
-      "state": "success",
-      "exitCode": 0,
-      "rowsRead": 8,
-      "rowsWritten": 8,
-      "rowsToDlq": 0,
-      "durationSeconds": 2.3,
-      "engine": "duckdb"
+      "run_id": "2026-04-30T12-34-56",
+      "state": "succeeded",
+      "started_at": "2026-04-30T12:34:56Z",
+      "finished_at": "2026-04-30T12:34:58Z",
+      "records_total": 8,
+      "duration_seconds": 2.3,
+      "error": null,
+      "streams": []
     }
   ],
-  "summary": {
-    "errorRate24h": 0.0,
-    "freshnessSeconds": 145,
-    "lastState": "success"
-  }
+  "freshness_seconds": 145.0,
+  "error_rate_24h": 0.0,
+  "last_state": "succeeded",
+  "facets": { "total_runs_seen": 1 }
 }
 ```
+
+Field notes:
+
+- `runs[]` — each entry has `run_id`, `state`, `started_at`, `finished_at`, `records_total`, `duration_seconds`, `error` (`null` on success), and `streams` (per-stream record counts on that run).
+- `state` — one of `succeeded`, `failed`, `partial`, or `running`.
+- `freshness_seconds` — age of the most recent succeeded run; `null` if none succeeded.
+- `error_rate_24h` — fraction (`0`–`1`) of runs in the last 24h that failed or were partial.
+- `last_state` — `state` of the newest run record.
 
 ## Exit codes
 

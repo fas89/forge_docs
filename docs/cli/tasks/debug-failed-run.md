@@ -12,9 +12,9 @@ This is what `fluid runs` is built for. Three commands, one fix, one `ship`.
 ## The 90-second flow
 
 ```bash
-fluid runs status --product gold.finance.customer_360_v1
-fluid runs logs <run-id> --component dlq --tail
-fluid runs diff <last-ok-run> <first-fail-run>
+fluid runs status gold.finance.customer_360_v1
+fluid runs logs gold.finance.customer_360_v1 --component dlq --run-id <first-fail-run>
+fluid runs diff gold.finance.customer_360_v1 --build customer_metrics --run-a <last-ok-run> --run-b <first-fail-run>
 # ...edit one line in contract.fluid.yaml...
 fluid ship contract.fluid.yaml --strict --env prod --yes
 ```
@@ -24,10 +24,10 @@ A frame-perfect cast of this exact flow is in the [day2-ops demo](/see-it-run.ht
 ## Step 1 — `runs status` (where)
 
 ```bash
-fluid runs status --product gold.finance.customer_360_v1
+fluid runs status gold.finance.customer_360_v1
 ```
 
-Shows the last 10 runs of this product:
+Shows recent runs of this product:
 
 ```
 run-id      ts          duration  status   stage
@@ -46,15 +46,15 @@ What you learned in 5 seconds:
 - First failure was at 01:01 AM (so the change came in around then)
 - Stage is `apply` — the build inside apply is what's failing, not the IAM or schema layer
 
-Add `--limit 50` if you need more history. Add `--since "2 days ago"` to time-bound.
+`runs status` shows the 5 most recent runs by default — pass `--last 50` if you need more history, or `--build <id>` to scope to one build.
 
 ## Step 2 — `runs logs --component dlq` (why)
 
 ```bash
-fluid runs logs r-2a4f8c1 --component dlq --tail
+fluid runs logs gold.finance.customer_360_v1 --component dlq --run-id r-2a4f8c1
 ```
 
-The `dlq` component holds quarantined batches — rows that failed quality gates. `--tail` shows the most recent log lines:
+The `dlq` component holds quarantined batches — rows that failed quality gates. `--run-id` pins the fetch to a specific run; omit it and `runs logs` reads the most recent run for the build:
 
 ```
 01:01:23  build  ERROR  CHECK constraint failed:
@@ -70,12 +70,12 @@ Now you know:
 - 47 of 12,408 rows are violating
 - The data is preserved in S3 DLQ for re-processing
 
-Other components you can ask about: `--component build`, `--component apply`, `--component verify`, `--component policy`. Default is all components, which is noisier.
+Other components you can ask about: `--component build`, `--component infra`, `--component server`, `--component worker`. Default is `--component build`. Add `--grep <pattern>` to filter log lines, or `--limit <n>` to cap how many are returned (default 1000).
 
 ## Step 3 — `runs diff` (what)
 
 ```bash
-fluid runs diff r-2a4f8c0 r-2a4f8c1
+fluid runs diff gold.finance.customer_360_v1 --build customer_metrics --run-a r-2a4f8c0 --run-b r-2a4f8c1
 ```
 
 Compares the last successful run to the first failed one — what *changed* between the two:
@@ -145,7 +145,7 @@ exposes:
 
 ```bash
 fluid validate contract.fluid.yaml --strict
-# ✓ Schema 0.7.2 — passed
+# ✓ Schema 0.7.3 — passed
 # ✓ dq.rules — 8 rules, 1 changed, no breaking moves
 # ✓ Contract validation passed (strict)
 ```
@@ -186,7 +186,7 @@ Those rows had `customer_age_days >= 30` AND null `arpu_30d_eur_raw` — a real 
 Run:
 
 ```bash
-fluid runs logs r-<ship-run-id> --component dlq
+fluid runs logs gold.finance.customer_360_v1 --component dlq --run-id r-<ship-run-id>
 ```
 
 …to see them, then either fix upstream or accept them as a known quality miss.
@@ -202,9 +202,9 @@ fluid runs logs r-<ship-run-id> --component dlq
 
 ## Common patterns this enables
 
-- **Pre-merge CI**: `fluid runs status --product X --since "1 hour ago"` in CI catches a flaky build before it merges
-- **Weekly health audit**: `fluid runs diff <last-week> <today>` for every product surfaces drift early
-- **Post-incident review**: `fluid runs logs <run-id> --component all > incident.log` is the audit artifact
+- **Pre-merge CI**: `fluid runs status <product-id> --last 1 --json` in CI catches a flaky build before it merges
+- **Weekly health audit**: `fluid runs diff <product-id> --build <id> --run-a <last-week-run> --run-b <today-run>` for every product surfaces drift early
+- **Post-incident review**: `fluid runs logs <product-id> --run-id <run-id> --component build > incident.log` is the audit artifact
 
 ## See also
 

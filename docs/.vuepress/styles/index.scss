@@ -1,32 +1,34 @@
 // =====================================================================
 // Fluid Forge — global stylesheet
 // =====================================================================
-// Picked up automatically by VuePress 2 from .vuepress/styles/index.scss.
-// This file imports the brand palette + self-hosted fonts and adds a
-// few small UX flourishes (hero gradient, callout polish, code block
-// affordances). Keep it small — anything component-specific belongs in
-// the component's own SFC.
+// Loaded automatically by VuePress 2 from .vuepress/styles/index.scss.
+// Imports the brand palette + Geist fonts, then applies the visual
+// language borrowed from agenticstransformation.com: deep-navy surface,
+// glassmorphism, glow, animated gradient hero.
+//
+// This file only restyles existing default-theme markup — no theme
+// fork, no custom components. Selectors are the real rc.128 class names
+// (the previous revision targeted stale VuePress 1 classes that no
+// longer exist, e.g. .theme-default-content / .custom-container).
 // =====================================================================
 
 @use "fonts";
 @use "palette";
 
 // ---------------------------------------------------------------------
-// Typography — opt-in stack, falls back gracefully if @fontsource isn't
-// installed yet (e.g., during a fresh clone before `npm install`).
+// Typography — Geist (sans + display) and Geist Mono (code).
 // ---------------------------------------------------------------------
 :root {
-  --ff-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
-  --ff-font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
+  --ff-font-sans: "Geist Variable", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ff-font-mono: "Geist Mono Variable", "SF Mono", ui-monospace, Menlo,
     Consolas, "Liberation Mono", monospace;
 }
 
 html,
 body {
   font-family: var(--ff-font-sans);
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11"; // Inter stylistic alts
-  font-variation-settings: "opsz" 16;
+  font-feature-settings: "ss01", "cv11"; // Geist stylistic alternates
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -35,134 +37,313 @@ body {
 code,
 kbd,
 pre,
-samp,
-.code-block-content {
+samp {
   font-family: var(--ff-font-mono);
-  font-variant-ligatures: contextual;
+  // CLI docs render commands literally — disable ligatures and the
+  // sans-serif stylistic sets inherited from <body>. With Geist Mono
+  // those collapse the space before a `--flag`, so `yaml --env` looked
+  // like `yaml--env`. Commands must stay unambiguous and copy-faithful.
+  font-variant-ligatures: none;
+  font-feature-settings: normal;
 }
 
 // ---------------------------------------------------------------------
-// Hero (home page) — apply the brand gradient as a subtle background.
-// Default theme uses .vp-hero / .home-hero depending on version; we
-// target both so this ages well across rc.x bumps.
+// Page surface — deep-navy background with the reference's blue/violet
+// glow wash (low alpha keeps it subtle, and readable in light mode).
 // ---------------------------------------------------------------------
-.vp-hero,
-.home .hero,
-.home-hero {
-  background: var(--ff-hero-gradient-soft);
-  border-radius: 16px;
-  padding: 64px 32px;
-  margin-bottom: 48px;
+body {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -12%, rgba(59, 130, 246, .12), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 88% 4%, rgba(139, 92, 246, .08), transparent 55%),
+    var(--vp-c-bg);
+}
 
-  h1,
-  .hero h1,
-  .description {
-    color: var(--vp-c-text);
+::selection {
+  background: var(--vp-c-accent);
+  color: var(--vp-c-accent-text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--vp-c-accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+// ---------------------------------------------------------------------
+// Homepage hero (.vp-hero) — eyebrow pill, animated gradient headline,
+// pill CTAs, faint engineering-grid texture. Built-in `home: true`
+// markup; styled entirely here, no custom components.
+// ---------------------------------------------------------------------
+.vp-hero {
+  position: relative;
+  isolation: isolate;
+  padding-top: 1rem;
+
+  // Faint grid behind the hero, masked so it fades at the edges.
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -3rem -8vw 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--ff-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ff-grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(ellipse 58% 70% at 50% 32%, #000 8%, transparent 72%);
+    mask-image: radial-gradient(ellipse 58% 70% at 50% 32%, #000 8%, transparent 72%);
+    pointer-events: none;
   }
 
-  .actions .action-button.primary,
-  .actions .vp-button.primary {
-    background: var(--ff-hero-gradient);
-    border: 0;
-    color: #ffffff;
-    box-shadow: 0 6px 20px -8px rgba(37, 99, 235, 0.5);
-    transition: transform 120ms ease, box-shadow 120ms ease;
+  // Eyebrow pill above the logo.
+  &::before {
+    content: "Open-source · contract-first · multi-cloud";
+    display: block;
+    width: fit-content;
+    margin: 0 auto 1.5rem;
+    padding: 0.5rem 1.05rem;
+    border-radius: 999px;
+    border: 1px solid var(--vp-c-border);
+    background: var(--ff-glass-bg);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: var(--vp-c-text-mute);
+    font-family: var(--ff-font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+}
+
+.vp-hero-image {
+  max-height: 88px;
+  margin: 0 auto 1.5rem;
+  filter: drop-shadow(0 8px 26px rgba(59, 130, 246, .35));
+}
+
+#main-title {
+  margin: 0 auto 1.4rem;
+  font-size: clamp(2.7rem, 6.4vw, 5.25rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+
+  // Animated gradient wordmark (background-clip: text).
+  background: var(--ff-text-gradient);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: ff-grad-flow 9s linear infinite;
+}
+
+.vp-hero-description {
+  max-width: 40rem;
+  margin: 0 auto;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--vp-c-text-mute);
+}
+
+.vp-hero-actions {
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.vp-hero-action-button {
+  border-radius: 999px;
+  padding: 0.82rem 1.7rem;
+  border: 1px solid var(--vp-c-border);
+  font-size: 0.98rem;
+  font-weight: 600;
+  transition: transform .18s ease, box-shadow .18s ease,
+    background-color .18s ease, border-color .18s ease, color .18s ease;
+
+  &.primary {
+    background: var(--vp-c-accent);
+    color: var(--vp-c-accent-text);
+    border-color: transparent;
+    box-shadow: var(--ff-glow-blue);
 
     &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 28px -8px rgba(37, 99, 235, 0.6);
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+  }
+
+  &.secondary {
+    background: var(--ff-glass-bg);
+    color: var(--vp-c-text);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: var(--vp-c-accent);
+      color: var(--vp-c-accent);
     }
   }
 }
 
 // ---------------------------------------------------------------------
-// Callouts — restyle the four built-in ::: containers to use the brand
-// palette and a more confident left border treatment.
+// Homepage feature cards (.vp-features) — glassmorphism, hover lift.
 // ---------------------------------------------------------------------
-.custom-container {
-  border-radius: 8px;
-  padding: 12px 16px 12px 20px;
-  border-left-width: 4px;
-  border-left-style: solid;
-  margin: 16px 0;
+// CSS Grid (not flex) so column math accounts for the gap automatically —
+// a flex `calc(% - gap)` basis leaves sub-pixel slack that wraps early.
+.vp-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.15rem;
+  border-top: 0;
+  margin-top: 3rem;
+  padding: 0;
 
-  .custom-container-title {
+  @media (max-width: 959px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 719px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vp-feature {
+  max-width: none; // override the theme's flex-oriented max-width: 30%
+  margin: 0;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 16px;
+  background: var(--ff-glass-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: var(--vp-c-accent);
+    box-shadow: var(--ff-glow-blue);
+  }
+
+  h2 {
+    margin-top: 0;
+    border-bottom: 0;
+    font-size: 1.18rem;
     font-weight: 600;
-    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--vp-c-text-mute);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Navbar — glassmorphism (translucent + blur), per the reference's
+// .glass treatment.
+// ---------------------------------------------------------------------
+.vp-navbar {
+  background: var(--ff-glass-bg);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border-bottom: 1px solid var(--ff-glass-border);
+}
+
+// ---------------------------------------------------------------------
+// Sidebar — accent the active page, keep the rest quiet.
+// ---------------------------------------------------------------------
+.vp-sidebar {
+  background: transparent;
+
+  .sidebar-item.active {
+    color: var(--vp-c-accent);
+    font-weight: 600;
+  }
+}
+
+// ---------------------------------------------------------------------
+// Callouts (.hint-container) — brand left border + soft radius. Colours
+// are driven explicitly so they hold regardless of theme internals.
+// ---------------------------------------------------------------------
+.hint-container {
+  border-radius: 10px;
+  border-left: 4px solid;
+
+  .hint-container-title {
+    font-weight: 600;
   }
 
   &.tip {
-    background-color: var(--vp-c-tip-bg);
+    background: var(--vp-c-tip-bg);
     border-left-color: var(--vp-c-tip-border);
-    color: var(--vp-c-text);
-    .custom-container-title { color: var(--vp-c-tip-text); }
+    .hint-container-title { color: var(--vp-c-tip-text); }
   }
 
   &.warning {
-    background-color: var(--vp-c-warning-bg);
+    background: var(--vp-c-warning-bg);
     border-left-color: var(--vp-c-warning-border);
-    color: var(--vp-c-text);
-    .custom-container-title { color: var(--vp-c-warning-text); }
+    .hint-container-title { color: var(--vp-c-warning-text); }
   }
 
-  &.danger {
-    background-color: var(--vp-c-danger-bg);
+  &.danger,
+  &.caution {
+    background: var(--vp-c-danger-bg);
     border-left-color: var(--vp-c-danger-border);
-    color: var(--vp-c-text);
-    .custom-container-title { color: var(--vp-c-danger-text); }
+    .hint-container-title { color: var(--vp-c-danger-text); }
   }
 
-  &.info {
-    background-color: var(--vp-c-bg-alt);
-    border-left-color: var(--vp-c-border-hard);
-    color: var(--vp-c-text);
-    .custom-container-title { color: var(--vp-c-text); }
+  &.info,
+  &.note,
+  &.important {
+    background: var(--ff-c-info-bg);
+    border-left-color: var(--ff-c-info-border);
+    .hint-container-title { color: var(--ff-c-info-text); }
   }
 }
 
 // ---------------------------------------------------------------------
-// Code blocks — better contrast, slightly larger line-height, and a
-// quiet left border so multi-block sequences feel grouped.
+// Code blocks — rounded, bordered.
 // ---------------------------------------------------------------------
-div[class*="language-"],
-pre[class*="language-"] {
-  border-radius: 8px;
+div[class*="language-"] {
+  border-radius: 12px;
   border: 1px solid var(--vp-c-border);
-  line-height: 1.55;
 }
 
 // ---------------------------------------------------------------------
-// Tables — a touch more whitespace, alternating row tint, matching the
-// cocoindex-style README polish.
+// Tables — full width, alternating rows. [vp-content] is the rc.128
+// content wrapper (the old `.theme-default-content` no longer exists).
 // ---------------------------------------------------------------------
-.theme-default-content table {
+[vp-content] table {
   display: table;
   width: 100%;
   border-collapse: collapse;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
 
   th {
-    background-color: var(--vp-c-bg-alt);
+    background: var(--vp-c-bg-alt);
     font-weight: 600;
   }
 
-  th, td {
+  th,
+  td {
     padding: 10px 14px;
     border-color: var(--vp-c-border);
   }
 
   tr:nth-child(2n) td {
-    background-color: var(--vp-c-bg-alt);
+    background: var(--vp-c-bg-alt);
   }
 }
 
 // ---------------------------------------------------------------------
-// Edit-this-page link — make it less visually noisy, more inviting.
+// Page meta (edit link + last updated) — quiet, accent on hover.
 // ---------------------------------------------------------------------
-.edit-link a {
+.vp-page-meta a {
   color: var(--vp-c-accent);
-  font-weight: 500;
   text-decoration: none;
 
   &:hover {
@@ -171,27 +352,26 @@ pre[class*="language-"] {
 }
 
 // ---------------------------------------------------------------------
-// Last-updated timestamp — show it but quietly.
+// Animations — gated behind prefers-reduced-motion.
 // ---------------------------------------------------------------------
-.page-meta {
-  color: var(--vp-c-text-subtle);
-  font-size: 0.875rem;
-  margin-top: 32px;
-  padding-top: 16px;
-  border-top: 1px solid var(--vp-c-border);
+@keyframes ff-grad-flow {
+  0%,
+  100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
-// ---------------------------------------------------------------------
-// Sidebar / navbar — tightened spacing, brand color on active item.
-// ---------------------------------------------------------------------
-.sidebar a.sidebar-link.active,
-.sidebar a.router-link-active {
-  color: var(--vp-c-accent);
-  font-weight: 600;
-  border-left-color: var(--vp-c-accent);
-}
+@media (prefers-reduced-motion: reduce) {
+  #main-title {
+    animation: none;
+  }
 
-.navbar .nav-links a:hover,
-.navbar .nav-links a.router-link-active {
-  color: var(--vp-c-accent);
+  .vp-hero-action-button,
+  .vp-feature {
+    transition: none;
+  }
+
+  .vp-hero-action-button:hover,
+  .vp-feature:hover {
+    transform: none;
+  }
 }

@@ -1,6 +1,6 @@
 # MCP Server
 
-`fluid mcp serve` exposes the staged forge pipeline as a stdio MCP server for clients such as Claude Code, Cursor, Continue, and VS Code MCP integrations. It is a foreground process: no daemon, no HTTP port, and no background service.
+`fluid mcp serve` exposes the staged forge pipeline as a stdio MCP server for clients such as Claude Code, Cursor, Continue, and VS Code MCP integrations. It is a foreground process: no daemon, no HTTP port, and no background service. The server is built on the official MCP Python SDK (`FastMCP`) and speaks MCP protocol version `2025-06-18`.
 
 ## Start the server
 
@@ -55,8 +55,15 @@ The default readable and writable path is the current working directory. The def
 | `list_source_lineage` | read | Read lineage from a configured source catalog |
 | `list_source_glossary` | read | Read glossary terms from a configured source catalog |
 | `forge_from_source` | write | Forge a contract and `.model.json` sidecar from a configured source catalog |
+| `forge_run` | write | Run a full `fluid forge` in-process — `mode` is `blank`, `diag`, or `ai` |
 
 Every advertised tool includes an MCP `inputSchema`, so clients can provide typed autocomplete and validate arguments before dispatch.
+
+## LLM sampling
+
+The `forge_run` tool's `diag` and `ai` modes need a language model. Rather than configuring a second API key for the server, Forge uses **MCP sampling**: the server sends the model request back through the MCP connection to the client (Claude Code, Cursor, …), and the client fulfils it with the LLM the user already pays for.
+
+So an agentic IDE can run an AI-assisted forge end-to-end on its own subscription — there is no separate `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` for the MCP server. Pair this with [`fluid scaffold-ide`](../cli/scaffold-ide.md), which writes the MCP server entry straight into the editor's config.
 
 ## Claude Code example
 

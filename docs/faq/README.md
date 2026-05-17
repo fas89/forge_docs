@@ -35,9 +35,9 @@ Or for an isolated CLI install: `pipx install "data-product-forge[local]"`.
 
 ## Where do I report a bug or ask a question?
 
-- **Bug?** [open an issue](https://github.com/Agentics-Rising/forge-cli/issues/new) with `fluid version` + `fluid doctor` output.
-- **Question?** [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions).
-- **Security report?** See [SECURITY.md](https://github.com/Agentics-Rising/forge-cli/blob/main/SECURITY.md).
+- **Bug?** [open an issue](https://github.com/Agenticstiger/forge-cli/issues/new) with `fluid version` + `fluid doctor` output.
+- **Question?** [GitHub Discussions](https://github.com/Agenticstiger/forge-cli/discussions).
+- **Security report?** See [SECURITY.md](https://github.com/Agenticstiger/forge-cli/blob/main/SECURITY.md).
 
 ## How do I upgrade?
 
@@ -55,5 +55,5 @@ Schema migrations are backward-compatible by default — the latest CLI reads ol
 ---
 
 ::: warning This FAQ is a starter set
-Each Q&A above is the canonical answer for now. As more questions come in via [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions), they'll be added here. Submitting a Q&A you'd like to see is a great first contribution.
+Each Q&A above is the canonical answer for now. As more questions come in via [GitHub Discussions](https://github.com/Agenticstiger/forge-cli/discussions), they'll be added here. Submitting a Q&A you'd like to see is a great first contribution.
 :::

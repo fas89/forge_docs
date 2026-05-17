@@ -12,10 +12,10 @@ description: Watch every Fluid Forge moment that matters. Real captures, real nu
 | Your pain | Watch this | Time | Punchline |
 |---|---|---|---|
 | Writing 200 lines of Python per data source | [`$0.03` per data product](#_0-03-per-data-product) | ~50 s | Three providers. Same contract. Free on Ollama. |
-| Six months to set up Airbyte for one Postgres | [Six months → sixty seconds](#six-months-sixty-seconds) | ~40 s | Six engines. One contract. Zero clusters. |
-| Most CLIs ask 27 questions before they help | [23 questions, skipped](#_23-questions-skipped) | ~50 s | 47 ms scan. 4 of 5 questions auto-resolved. |
+| Six months to set up Airbyte for one Postgres | [Six months → sixty seconds](#six-months-→-sixty-seconds) | ~40 s | Six engines. One contract. Zero clusters. |
+| Most CLIs ask 27 questions before they help | [23 questions, skipped](#_23-questions-skipped) | ~50 s | 47 ms scan. 23 of 27 questions auto-resolved. |
 | 3am Slack ping: pipeline broke, who knows why | [Skip the panic](#skip-the-panic) | ~75 s | 3am incident → ship in 90 seconds. |
-| Your agent loop quietly spent `$0.50` on tool history | [`$0.50` → `$0.05`](#_0-50-0-05) | ~40 s | One env var. 10× cheaper agent loops. |
+| Your agent loop quietly spent `$0.50` on tool history | [`$0.50` → `$0.05`](#_0-50-→-0-05) | ~40 s | One env var. 10× cheaper agent loops. |
 
 ---
 
@@ -90,9 +90,9 @@ Long agent loops accumulate tool results — every turn rides on top of the last
 <CliCast
   src="/demos/agent-compaction.svg"
   title="Agent-loop compaction — three strategies, real before/after costs"
-  caption="20-turn baseline: $0.503/run, super-linear context bloat (5K → 67K → 298K tokens). Three strategies side-by-side: truncate (5.8× cheaper), summarize (9.3× cheaper), hybrid (10.5× cheaper). One env var: FORGE_AGENT_COMPACTION=hybrid. No code changes."
+  caption="20-turn baseline: $0.503/run, super-linear context bloat (5K → 67K → 298K tokens). Three strategies side-by-side: truncate (5.8× cheaper), summarize (9.3× cheaper), hybrid (10.5× cheaper). One env var: FLUID_COMPACTION_STRATEGY=hybrid. No code changes."
   width="920"
-  insight="$0.503 → $0.048 per 20-turn agent run. 10.5× cheaper, no code change. | truncate (free), summarize (high-recall), hybrid (recommended for production) — pick one, set FORGE_AGENT_COMPACTION. | Works with every --llm-provider. Same contract. Same agent. Just smarter context window management."
+  insight="$0.503 → $0.048 per 20-turn agent run. 10.5× cheaper, no code change. | truncate (free), summarize (high-recall), hybrid (recommended for production) — pick one, set FLUID_COMPACTION_STRATEGY. | Works with every --llm-provider. Same contract. Same agent. Just smarter context window management."
 />
 
 Pairs with [Agentic primitives → Token-budget pre-flight & compaction](/forge_docs/advanced/agentic-primitives.html#token-budget-preflight-and-compaction). Long-form animated reel preserved at [`/reels/compaction-and-warnings.html`](/reels/compaction-and-warnings.html).
@@ -101,7 +101,7 @@ Pairs with [Agentic primitives → Token-budget pre-flight & compaction](/forge_
 
 ## More demos in 30 seconds each
 
-The full library — 9 frame-perfect SVG casts covering AWS, Snowflake live-auth dry-run, agent-policy enforcement, blank scaffolds, policy compilation, and the canonical local quickstart:
+The full library — 14 frame-perfect SVG casts in all — covers AWS, Snowflake live-auth dry-run, agent-policy enforcement, blank scaffolds, policy compilation, and the canonical local quickstart:
 
 → **[Browse all demos](/demos/)**
 

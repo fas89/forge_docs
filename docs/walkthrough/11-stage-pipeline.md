@@ -189,7 +189,7 @@ fluid generate ci contract.fluid.yaml \
 
 Those switches set `VERIFY_STRICT=false`, turn Stage 10 publish on by default, omit the Stage 10 `--env` flag, and bake a shell fallback of `${PUBLISH_TARGETS:-datamesh-manager}` into the publish loop. They are Jenkins-only generation controls; other CI systems ignore them.
 
-Supported systems: `jenkins`, `github`, `gitlab`, `azure`, `bitbucket`, `circle`, `tekton`.
+Supported systems: `jenkins`, `github`, `gitlab`, `azure`, `bitbucket`, `circleci`, `tekton`.
 
 Each template exposes the full surface as build parameters:
 

@@ -1,6 +1,5 @@
 ---
 home: true
-heroImage: /logo.png
 heroText: Fluid Forge
 tagline: Contract-first data products, from local DuckDB to multi-cloud delivery.
 actions:
@@ -20,9 +19,9 @@ features:
   - title: Contract-Driven
     details: Use one FLUID contract to describe the data product, then plan, test, verify, and publish from the same source of truth.
   - title: Promoted CLI Surface
-    details: These docs track the current `fluid --help` experience so new users are not sent down stale or deprecated command paths.
+    details: These docs track the current "fluid --help" experience so new users are not sent down stale or deprecated command paths.
   - title: AI-Optional
-    details: Start with `fluid init` for a quickstart or use `fluid forge` when you want AI-assisted scaffolding and discovery.
+    details: Start with "fluid init" for a quickstart or use "fluid forge" when you want AI-assisted scaffolding and discovery.
   - title: Multi-Target Delivery
     details: Build locally with DuckDB, then target GCP, AWS, Snowflake, or standards/export flows when you are ready.
   - title: Compatibility Aware
@@ -50,15 +49,15 @@ Fluid Forge replaces the four-tool stack most data teams currently maintain. Wit
 
 ## See it run
 
-A 60-second walkthrough of `fluid forge data-model from-intent` against four LLM providers (Anthropic Haiku 4.5, OpenAI gpt-4.1-mini, Gemini 2.5-flash, local Ollama gemma4) — every token count is from a real production call.
+A 60-second walkthrough of the core move: write one `contract.fluid.yaml`, build and test it locally on DuckDB, then ship the **same file** to BigQuery and Snowflake — the only line that changes is `binding.platform`.
 
 <iframe
-  src="/reels/forge-in-action.html"
+  src="/reels/one-contract-every-cloud.html"
   width="100%"
-  height="540"
-  style="border: 1px solid #232a3d; border-radius: 12px; max-width: 1100px;"
+  height="680"
+  style="border: 1px solid var(--vp-c-border); border-radius: 12px; max-width: 1100px;"
   loading="lazy"
-  title="Fluid Forge in action — agentic data-product flow">
+  title="Fluid Forge — one contract, every cloud">
 </iframe>
 
 Use ←/→ to step scenes, space to pause, r to restart. **[See all reels →](/see-it-run.html)** — quickstart, source-aligned Bronze, guided forge UX, day-2 ops, and more.
@@ -108,7 +107,7 @@ For every AI and data-model journey, including hosted provider strict mode, Olla
 | Group | Commands |
 | --- | --- |
 | Core Workflow | `init`, `forge`, `forge data-model`, `validate`, `plan`, `apply`, `ship` |
-| Generate | `generate transformation`, `generate schedule`, `generate ci`, `generate standard` |
+| Generate | `generate transformation`, `generate dbt-tests`, `generate schedule`, `generate ci`, `generate standard` |
 | Integrations | `publish`, `market`, `import` |
 | Quality & Governance | `policy-check`, `diff`, `test`, `verify`, `contract` |
 | Day-2 Ops | `runs`, `retention`, `secrets`, `stats` |

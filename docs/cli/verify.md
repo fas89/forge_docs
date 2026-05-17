@@ -14,7 +14,7 @@ fluid verify CONTRACT
 | --- | --- |
 | `--expose`, `--expose-id` | Verify only a specific expose |
 | `--strict` | Exit non-zero when mismatches are found |
-| `--out` | Write a JSON verification report (default: `runtime/verify-report.json`) |
+| `--out` | Write the JSON verification report to this path. No default — omit it and no report file is written. |
 | `--show-diffs` | Show field-by-field differences |
 | `--env` | Apply an environment overlay |
 

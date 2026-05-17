@@ -73,4 +73,4 @@ The generated contract preserves Meltano's tap selections and the `state`/`incre
 - Mode 1 (`fluid import` with no engine arg) is the existing migration path for dbt / Terraform / SQL projects.
 - Mode 2 (`fluid import <engine> <source>`) is the new ingestion-tool importer, available in the next release.
 - If you want a clean greenfield start instead, use [`fluid init`](./init.md) or [`fluid forge`](./forge.md).
-- For source-aligned ingestion from scratch (no existing tool project), [`fluid init --discover`](./init.md#discover) is the one-shot path.
+- For source-aligned ingestion from scratch (no existing tool project), [`fluid init --discover`](./init.md#discover-—-introspect-a-source-into-a-bronze-contract) is the one-shot path.

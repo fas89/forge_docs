@@ -21,6 +21,8 @@ fluid forge [OPTIONS]
 | `--dry-run` | Preview without creating files |
 | `--non-interactive` | Use defaults without prompting |
 | `--context VALUE` | Additional JSON context or a path to a context file |
+| `--agent` | Headless preset for agentic IDEs — non-interactive, with JSON-Lines progress events on stdout. |
+| `--emit-plan` | With `--agent`, emit a deterministic `forge.plan` checklist event instead of authoring the contract. |
 
 ### AI config
 
@@ -162,6 +164,21 @@ Loads the contract, asks "what to change?", feeds the contract verbatim to the L
 Before any file is written, Forge renders a panel showing files, cost, and run-id so users see exactly what they're about to commit to. `--yes` skips the confirmation prompt but the panel still renders. Suppress with `FLUID_FORGE_NO_PREVIEW=1`.
 
 For the full picture see [Guided `fluid forge` UX](/forge_docs/advanced/guided-forge-ux.html).
+
+## Headless agent mode
+
+`fluid forge --agent` is a preset for agentic IDEs (Kiro, Cursor, Claude Code, Cline) and other automation that drives Forge without a human at the prompt:
+
+```bash
+fluid forge --agent
+fluid forge --agent --emit-plan
+```
+
+- It bundles `--yes` and `FLUID_FORGE_NO_*=1`, and emits **JSON-Lines progress events** on stdout so the calling agent can stream status.
+- It defaults to `--blank`, so it can never drop into the interactive mode picker.
+- `--emit-plan` makes the run emit a single deterministic `forge.plan` event — the per-product-type (SDP / ADP / CDP) field checklist for the agent to fill in — instead of authoring the contract itself.
+
+This is the CLI half of the agentic-IDE flow. Set the editor side up with [`fluid scaffold-ide`](./scaffold-ide.md), and the in-editor tools come from the [MCP server](./mcp.md).
 
 ## Notes
 

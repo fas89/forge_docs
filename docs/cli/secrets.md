@@ -18,22 +18,23 @@ The `secretRef` is a dotted path that the contract refers to via `${SECRETREF}` 
 
 ### `fluid secrets login`
 
-Store a secret. Reads the value from `--secret`, from stdin, or from an interactive prompt.
+Store a secret. The value is read from stdin (when piped) or an interactive hidden prompt — never from a command-line flag, so it can't leak via `ps` or shell history.
 
 ```bash
 fluid secrets login postgres.prod.password
 # (prompts for value; input is hidden)
 
-fluid secrets login airbyte.token --secret abc123
-fluid secrets login snowflake.keypair_path --secret /etc/keys/sf.p8 --expires-at 2027-01-01T00:00:00Z
+# Pipe the value from stdin (CI / scripted)
+printf '%s' "$AIRBYTE_TOKEN" | fluid secrets login airbyte.token
+
+cat /etc/keys/sf.p8 | fluid secrets login snowflake.keypair_path --expires-at 2027-01-01T00:00:00Z
 ```
 
 | Option | Description |
 |---|---|
 | `<secretRef>` | Required. The reference name. |
-| `--secret <value>` | The secret value. If omitted, reads from stdin / interactive prompt. |
 | `--expires-at <iso8601>` | Optional. When the secret expires (informational; the rotator uses this hint). |
-| `--json` | Emit `{ "stored": true, "ref": "..." }` on success. |
+| `--json` | Emit a JSON result object instead of the human line. |
 
 ### `fluid secrets verify`
 
@@ -47,25 +48,44 @@ fluid secrets verify postgres.prod.password --json
 | Option | Description |
 |---|---|
 | `<secretRef>` | Required. The reference name. |
-| `--json` | Emit `{ "exists": true\|false, "ref": "..." }`. |
+| `--json` | Emit a JSON result object instead of the human line. |
 
 ### `fluid secrets rotate`
 
-Update a stored secret. **Probes before rotating** — verifies the old secret exists in the backend before accepting the new value, so a typo in the ref doesn't create an orphan record.
+Replace a stored secret with a new value. The new value is read from stdin or an interactive hidden prompt — never from a flag. The result object's `detail` field reports `rotated` when a prior secret existed, or `stored (no prior secret)` when there wasn't one.
 
 ```bash
 fluid secrets rotate postgres.prod.password
 # (prompts for new value)
 
-fluid secrets rotate airbyte.token --new-secret newval --expires-at 2027-04-01T00:00:00Z
+# Pipe the new value from stdin
+printf '%s' "$NEW_TOKEN" | fluid secrets rotate airbyte.token --expires-at 2027-04-01T00:00:00Z
 ```
 
 | Option | Description |
 |---|---|
 | `<secretRef>` | Required. The reference name. |
-| `--new-secret <value>` | New value. If omitted, reads from stdin / prompt. |
 | `--expires-at <iso8601>` | Optional new expiry. |
-| `--json` | Emit `{ "rotated": true, "ref": "..." }`. |
+| `--json` | Emit a JSON result object instead of the human line. |
+
+## `--json` output
+
+All three subcommands share one result shape under `--json`:
+
+```json
+{
+  "success": true,
+  "ref": "postgres.prod.password",
+  "backend": "keychain",
+  "detail": "present",
+  "expires_at": null
+}
+```
+
+- `success` — `true` when the operation completed; the process exit code mirrors this.
+- `backend` — `keychain` (default) or `memory` (when `FLUID_SECRETS_INMEMORY=1`).
+- `detail` — short human note (`present` / `not found in backend` / `rotated` / `stored (no prior secret)` etc.).
+- `expires_at` — echoes `--expires-at` when one was passed; otherwise `null`.
 
 ## Backends
 
@@ -88,7 +108,7 @@ properties:
       password: "{{ env.PGPASSWORD }}"
 ```
 
-`fluid secrets login pg.password --secret <val>` doesn't change that — it stores into the backend so the next `fluid apply` can resolve `${SECRET:pg.password}` references when the contract uses that pattern. The two reference styles coexist:
+`fluid secrets login pg.password` doesn't change that — it stores into the backend so the next `fluid apply` can resolve `${SECRET:pg.password}` references when the contract uses that pattern. The two reference styles coexist:
 
 - `{{ env.X }}` — read environment variable `X` at apply time
 - `${SECRET:pg.password}` — read from the secrets backend at apply time

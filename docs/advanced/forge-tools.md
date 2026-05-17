@@ -40,7 +40,7 @@ That's the whole pattern. The decorator handles registration, JSON Schema genera
 
 ### Optional arguments
 
-- **`name`** — the tool name as exposed to the LLM. Defaults to the function's `__name__`. Use snake_case. Must be unique across the merged `TOOL_REGISTRY` + `FORGE_TOOL_REGISTRY` surface; on collision the legacy registry wins (see [Migration](#migrating-from-the-legacy-_register-pattern)).
+- **`name`** — the tool name as exposed to the LLM. Defaults to the function's `__name__`. Use snake_case. Must be unique across the merged `TOOL_REGISTRY` + `FORGE_TOOL_REGISTRY` surface; on collision the legacy registry wins (see [Migration](#migrating-from-the-legacy-register-pattern)).
 - **`description`** — the tool description shown to the LLM. Defaults to the first line of the function's docstring.
 - **`workspace_root_aware`** — `True` if the tool reads from / writes to the user's workspace. The dispatcher will plumb a resolved `workspace_root: Path` kwarg into your function. The args-schema does **not** include `workspace_root` — the LLM cannot supply it, by construction. See [Security: workspace confinement](#security-workspace-confinement) below.
 - **`tags`** — optional taxonomy labels. Reserved for future use by the capability matrix to scope tool subsets per provider.

@@ -7,7 +7,7 @@ One Jenkinsfile. Every provider. Zero if/then logic.
 **Provider-specific logic:** None
 
 ::: warning Compatibility note
-This walkthrough includes some older `0.7.1` contract-era examples. The primary docs baseline now tracks CLI `0.8.0`, current scaffolded contracts use `fluidVersion: 0.7.2`, and orchestration docs prefer `fluid generate schedule --scheduler airflow`.
+This walkthrough includes some older `0.7.1` contract-era examples. The primary docs baseline now tracks CLI `0.8.0`, current scaffolded contracts use `fluidVersion: 0.7.3`, and orchestration docs prefer `fluid generate schedule --scheduler airflow`.
 :::
 
 ---
@@ -205,9 +205,9 @@ pipeline {
                 sh '''
                     mkdir -p standards
                     fluid odps export ${CONTRACT_FILE} \
-                      --out standards/product.odps.json || true
+                      --output standards/product.odps.json || true
                     fluid odcs export ${CONTRACT_FILE} \
-                      --out standards/product.odcs.yaml || true
+                      --output standards/product.odcs.yaml || true
                 '''
             }
         }
@@ -288,7 +288,7 @@ pipeline {
                 sh '''
                     set -a; . .fluid-env; set +a
                     [ -f requirements.txt ] && pip3 install --quiet -r requirements.txt
-                    fluid execute ${CONTRACT_FILE}
+                    fluid apply ${CONTRACT_FILE} --mode amend-and-build
                 '''
             }
         }
@@ -300,7 +300,7 @@ pipeline {
                     CONTRACT_ID=$(grep -m1 "^id:" ${CONTRACT_FILE} \
                       | cut -d" " -f2 | tr -d "\"" | tr "." "_")
                     fluid generate-airflow ${CONTRACT_FILE} \
-                        --out airflow-dags/data_product_${ENV}.py \
+                        --output airflow-dags/data_product_${ENV}.py \
                         --dag-id "${CONTRACT_ID}_${ENV}" || true
                     [ -f airflow-dags/data_product_${ENV}.py ] \
                       && python3 -m py_compile airflow-dags/data_product_${ENV}.py \
@@ -391,7 +391,7 @@ This means **adding a new provider** requires zero Jenkinsfile changes:
 | 6 | Tests | `fluid contract-tests` | Run contract validation tests |
 | 7 | Apply Infra | `fluid apply` | Deploy cloud resources |
 | 8 | Apply IAM | `fluid policy-apply` | Enforce IAM/RBAC bindings |
-| 9 | Execute | `fluid execute` | Run build scripts (ingest, transform) |
+| 9 | Execute | `fluid apply --mode amend-and-build` | Run build scripts (ingest, transform) |
 | 10 | Airflow DAG | `fluid generate-airflow` | Generate production orchestration |
 | 11 | Summary | — | Print artifacts and results |
 

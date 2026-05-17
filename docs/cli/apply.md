@@ -26,14 +26,15 @@ fluid apply CONTRACT
 | `replace` | Auto-snapshot the target, then `CREATE OR REPLACE TABLE` (Snowflake / BigQuery) or `DROP+CREATE` in a transaction (Redshift). **Destructive**: requires `--allow-data-loss` in non-dev environments or when the target has rows. |
 | `replace-and-build` | Same as `replace`, plus a full `dbt run --full-refresh` to rebuild everything from sources. **Destructive**. |
 
-The `--build <id>` flag is retained as a deprecation-warned alias for `--mode amend-and-build` for one release window.
+The build-augmented modes (`amend-and-build`, `replace-and-build`) run the configured build runner. Pass `--build-id <id>` to filter execution to a single build job from the contract's `builds[]`; when unset, every build runs.
 
 ## Safety gates
 
 | Option | Description |
 | --- | --- |
 | `--allow-data-loss` | Required to run `replace` / `replace-and-build` when `FLUID_ENV != dev` **or** the target already has rows. Two independent risk surfaces (env + population) → two-factor opt-in. Never default. |
-| `--no-verify-digest` | **Emergency escape hatch.** Skip the `bundleDigest` / `planDigest` verification that stage 7 normally enforces on a saved plan. Logs `WARNING: plan-binding verification was SKIPPED` so audit trails catch it. Use only during documented DR procedures. |
+| `--no-verify-plan-binding` | **Emergency escape hatch.** Skip the `bundleDigest` / `planDigest` verification that stage 7 normally enforces on a saved plan. Logged at `WARNING` so audit trails catch it. Use only during documented DR procedures. |
+| `--no-verify-federation` | **Emergency escape hatch.** Skip the federated-`consumes[]` upstream-digest gate (drift between a pinned `upstreamDigest` and the live upstream). Logged at `WARNING` for audit. A distinct trust domain from plan binding — each gate has its own narrowly-scoped waiver. |
 
 ## Plan binding
 
@@ -84,7 +85,7 @@ This is the Terraform-style "apply consumes exact plan" guarantee, enforced cryp
 
 | Option | Description |
 | --- | --- |
-| `--build`, `--build-id` | Deprecated alias for `--mode amend-and-build`. Kept for one release. |
+| `--build-id BUILD_ID` | Filter build execution to a specific build job by ID from the contract's `builds[]`. Combine with `--mode amend-and-build` or `--mode replace-and-build`. When unset and the mode requires builds, every build runs. |
 | `--delay DELAY` | Seconds between build iterations |
 | `--fail-fast` | Stop on first failure |
 | `--no-output` | Suppress build script output |
@@ -145,7 +146,10 @@ fluid apply runtime/plan.json --mode amend-and-build --env dev --yes
 
 ```bash
 # Only in documented DR procedures. Emits WARNING to the audit log.
-fluid apply runtime/plan.json --mode amend --no-verify-digest --yes
+fluid apply runtime/plan.json --mode amend --no-verify-plan-binding --yes
+
+# Skip only the federated-consumes upstream-digest gate
+fluid apply runtime/plan.json --mode amend --no-verify-federation --yes
 ```
 
 ## Notes

@@ -12,12 +12,17 @@
 // Every other doc page stays lean. ClientOnly avoids SSR-time errors
 // (Monaco assumes `window`/`document` exist).
 //
+// Also overrides the default theme's `NotFound` layout with the branded
+// 404 in layouts/. Layout names from this site-level client config win
+// over the theme's because it is merged last.
+//
 // Picked up at runtime via the `clientConfigFile` setting in config.ts.
 // =====================================================================
 
 import { defineClientConfig } from 'vuepress/client'
 import { defineAsyncComponent } from 'vue'
 import CliCast from './components/CliCast.vue'
+import NotFound from './layouts/NotFound.vue'
 
 const Playground = defineAsyncComponent(
   () => import('./components/Playground.vue'),
@@ -27,5 +32,8 @@ export default defineClientConfig({
   enhance({ app }) {
     app.component('CliCast', CliCast)
     app.component('Playground', Playground)
+  },
+  layouts: {
+    NotFound,
   },
 })

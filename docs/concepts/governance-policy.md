@@ -120,7 +120,7 @@ accessPolicy:
 
 agentPolicy:                         # ← separate, complementary
   allowedModels: ["gpt-4", "claude-3-opus"]
-  deniedUseCases: ["training", "fine-tuning"]
+  deniedUseCases: ["training", "fine_tuning"]
   canStore: false
   auditRequired: true
 ```

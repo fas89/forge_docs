@@ -228,5 +228,5 @@ The contract stays portable across all six engines — see [Source-Aligned Acqui
 
 - [Product Types — SDP, ADP, CDP](/data-products/product-type.html) — the vocabulary used in this contract
 - [Source-Aligned Acquisition](/forge_docs/advanced/source-aligned-acquisition.html) — the framework reference
-- [`fluid init --discover`](/forge_docs/cli/init.html#discover) — auto-generate this contract by introspecting the source
+- [`fluid init --discover`](/forge_docs/cli/init.html#discover-—-introspect-a-source-into-a-bronze-contract) — auto-generate this contract by introspecting the source
 - [`fluid runs`](/forge_docs/cli/runs.html), [`fluid retention`](/forge_docs/cli/retention.html), [`fluid secrets`](/forge_docs/cli/secrets.html) — day-2 ops

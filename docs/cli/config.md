@@ -1,7 +1,6 @@
 # `fluid config`
 
 Get or set workspace defaults such as provider, project, and region.
-The `fluid context` alias is preserved for backwards compatibility.
 
 ## Syntax
 
@@ -11,7 +10,7 @@ fluid config <list|set|get>
 ```
 
 ::: tip Bare invocation is friendly
-Running `fluid config` (or the legacy `fluid context` alias) with no verb
+Running `fluid config` with no verb
 renders a Rich panel listing `list`, `get`, and `set` with example
 invocations.  When `.fluid/context.json` already exists in the cwd the
 guide highlights `list`; otherwise it points the operator at `set` as

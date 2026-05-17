@@ -5,23 +5,29 @@ Stage 6 of the 11-stage pipeline. Generate an execution plan without applying ch
 ## Syntax
 
 ```bash
-fluid plan CONTRACT
+fluid plan CONTRACT [--env ENV] [--mode MODE] [--out PATH]
+                    [--provider NAME] [--project PROJECT] [--region REGION]
+                    [--validate-actions] [--estimate-cost] [--check-sovereignty]
+                    [--html [PATH]] [--verbose]
 ```
+
+`CONTRACT` is optional — when omitted, `plan` auto-finds `contract.fluid.yaml` in the current directory.
 
 ## Key options
 
 | Option | Description |
 | --- | --- |
-| `--env` | Apply an environment overlay |
-| `--out`, `--output` | Write the plan JSON, default `runtime/plan.json` |
+| `--env` | Apply an environment overlay (dev, staging, prod) |
+| `--mode` | Apply mode the plan is generated FOR. Stamped into `plan.json` so a later `fluid apply --mode X` can detect a mismatch and refuse. Choices: `amend` (default) \| `amend-and-build` \| `replace` \| `replace-and-build` \| `dry-run` \| `create-only`. When unset, the plan is generated mode-less. |
+| `--out`, `--output` | Write the plan JSON, default `plan.json` in the current directory |
 | `--verbose`, `-v` | Show detailed action information |
-| `--validate-actions` | Validate generated provider actions |
+| `--validate-actions` | Validate generated provider actions against the ProviderAction SDK schema |
 | `--estimate-cost` | Ask the provider to estimate cost |
 | `--check-sovereignty` | Ask the provider to validate sovereignty constraints |
 | `--provider` | Override the provider from the contract |
-| `--html` | Generate an HTML visualization with a mermaid-rendered action DAG (colour-coded by mode: blue=amend, red=replace, grey=skipped). |
-| `--graph` | Emit a Graphviz DOT / Mermaid graph of the action dependency tree (alternative to `--html`). |
-| `--graph-format` | `dot` (default when `--graph` is set) or `mermaid`. |
+| `--project` | Override the project / account from the contract |
+| `--region` | Override the region / location from the contract |
+| `--html` | Generate an HTML visualization with a mermaid-rendered action DAG (colour-coded by mode: blue=amend, red=replace, grey=skipped). Optional path argument; defaults to `plan.html` in the current directory. |
 
 ## Plan binding
 
@@ -37,7 +43,7 @@ fluid plan CONTRACT
 - `verify_plan_binding(plan_path, bundle_path)` — re-computes and compares; raises `PlanBindingError` on mismatch
 - `PlanBindingError.kind` is a stable string (`"bundle-mismatch"` or `"plan-tamper"`) — CI log parsers can key off it.
 
-The `--no-verify-digest` flag on `apply` is the DR escape hatch for bypassing this check; see [`fluid apply`](./apply.md#safety-gates).
+The `--no-verify-plan-binding` flag on `apply` is the DR escape hatch for bypassing this check; see [`fluid apply`](./apply.md#safety-gates).
 
 ## Examples
 
@@ -53,7 +59,7 @@ fluid plan contract.fluid.yaml --env prod --out runtime/prod-plan.json
 
 ```bash
 fluid plan contract.fluid.yaml --html
-# writes runtime/plan.json + runtime/plan.html
+# writes plan.json + plan.html in the current directory
 ```
 
 The HTML report contains:
@@ -64,12 +70,7 @@ The HTML report contains:
 
 Opening `plan.html` in a browser loads mermaid from `cdn.jsdelivr.net` (required online on first view). `securityLevel: 'strict'` is set in the mermaid init call; action ID / op strings flow through `html.escape(quote=True)` before rendering, so malicious contract values cannot smuggle `<script>` into a label.
 
-### With DOT / Mermaid graph export
-
-```bash
-fluid plan contract.fluid.yaml --out runtime/plan.json --graph runtime/plan.dot
-fluid plan contract.fluid.yaml --out runtime/plan.json --graph runtime/plan.mmd --graph-format mermaid
-```
+For a richer DOT / Mermaid action-graph export, use [`fluid viz-graph`](#visualizing-the-plan-fluid-viz-graph) below — `plan` itself only emits the JSON plan and the optional `--html` summary.
 
 ### Hand-off to apply
 
