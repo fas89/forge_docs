@@ -28,6 +28,8 @@ docs_only_ok:
                     # stable docs pin; remove once promoted to the pinned CLI.
   - roadmap         # staged forge-cli branch command documented ahead of the
                     # stable docs pin; remove once promoted to the pinned CLI.
+  - scaffold-ide    # staged forge-cli command (fluid_build/cli/scaffold_ide.py),
+                    # documented ahead of the released CLI; remove once it ships.
   # source-aligned-acquisition branch — staged ahead of the pinned 0.8.0 CLI.
   # Remove these entries once the branch lands and ships on PyPI.
   - runs            # day-2 ops: status / logs / diff
