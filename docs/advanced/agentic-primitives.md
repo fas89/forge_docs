@@ -18,7 +18,7 @@ This page is the operator + contributor reference for each one.
 | [`RunCostTracker`](#runcosttracker) | `fluid_build.copilot.cost` | Token / cost / per-agent attribution |
 | [`CriticAgent`](#criticagent) | `fluid_build.copilot.agents.critic_agent` | Heuristic reviewer between staged outputs |
 | [`ConformanceAgent`](#conformanceagent) | `fluid_build.copilot.agents.conformance_agent` | Pre-emit lint against Fluid + OSI + ODCS / DCS readiness |
-| [`retrieve_similar_models`](#retrieval) | `fluid_build.copilot.retrieval` | RAG helper against `memory/semantic` |
+| [`retrieve_similar_models`](#retrieve-similar-models-rag-helper) | `fluid_build.copilot.retrieval` | RAG helper against `memory/semantic` |
 
 ## StageSession
 

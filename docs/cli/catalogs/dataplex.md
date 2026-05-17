@@ -105,7 +105,7 @@ fluid forge data-model from-source \
 |---|---|
 | Entry `displayName` | `OSIDataset.fields[].expression.description` |
 | Entry description | `OSIDataset.fields[].expression.description` |
-| Entry `aspect_types[].record` (DQ scores, freshness SLA) | `dataQuality.slas[]` (Fluid contract) |
+| Entry `aspect_types[].record` (DQ scores, freshness SLA) | `exposes[].qos` (Fluid contract) |
 | Glossary terms | `OSI.ai_context.synonyms` + `examples` |
 | Lineage links | `metadata.lineage.upstream[]` + DV2 link inference |
 | Aspect type `governance.classification` | `agentPolicy.sensitiveData[]` |

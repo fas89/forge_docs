@@ -47,7 +47,7 @@ Each `ProviderError` subclass carries `provider`, `status_code`, and (when relev
 - Switch to a model with a larger window — `claude-opus-4-7` (1M), `gemini-2.5-pro` (2M), `gpt-4.1` (1M).
 - Override the assumed window per-session via `capability_matrix["context_window"]` (useful for custom-deployed Azure/Ollama models with extended context).
 - Trigger the multi-turn agent loop's compaction earlier with `FLUID_AGENT_COMPACT_AFTER=4` (default 6).
-- For the multi-turn loop specifically, set `FLUID_COMPACTION_STRATEGY=summarize` or `hybrid` — see [Agentic primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-preflight-and-compaction).
+- For the multi-turn loop specifically, set `FLUID_COMPACTION_STRATEGY=summarize` or `hybrid` — see [Agentic primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-pre-flight-compaction).
 
 **Common cause:** running on a tight-context Ollama model (`gemma2` 8K, `phi-3` 4K) with a verbose intent file or a long agent loop that accumulated tool results.
 
@@ -138,7 +138,7 @@ OpenAI's strict `response_format = json_schema` mode requires every object node 
 
 ## See also
 
-- [Agentic Primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-preflight-and-compaction) — what `ContextOverflowError` is preventing
+- [Agentic Primitives → Token-budget pre-flight & compaction](agentic-primitives.md#token-budget-pre-flight-compaction) — what `ContextOverflowError` is preventing
 - [Capability Warnings](capability-warnings.md) — the run-start banner that catches degraded combos before they fail
 - [LLM Providers → Environment variables](llm-providers.md#environment-variables) — `FLUID_OPENAI_STRICT_SCHEMA`, `FLUID_AGENT_COMPACT_AFTER`, etc.
 - [Custom Providers → Error Handling](/forge_docs/providers/custom-providers#error-handling) — how infrastructure-provider errors (`ProviderError`, `ProviderInternalError`) relate to (and are distinct from) these copilot-layer errors

@@ -28,7 +28,7 @@ This is the promoted migration path for existing dbt, Terraform, or SQL projects
 ## Mode 2 — foreign ingestion tool importer
 
 ::: tip Coming in the next release
-Importers for Meltano, Airbyte, dlt, and Singer ship on the `feat/source-aligned-acquisition` branch as part of the source-aligned acquisition stack. The pinned 0.8.0 baseline only supports the directory scan above.
+Importers for Meltano, Airbyte, dlt, and Singer ship with the source-aligned acquisition stack (schema 0.7.3). The pinned 0.8.0 baseline only supports the directory scan above.
 :::
 
 Convert an existing ingestion-tool project into FLUID acquisition contracts (one per discovered tap / connector / source):
@@ -73,4 +73,4 @@ The generated contract preserves Meltano's tap selections and the `state`/`incre
 - Mode 1 (`fluid import` with no engine arg) is the existing migration path for dbt / Terraform / SQL projects.
 - Mode 2 (`fluid import <engine> <source>`) is the new ingestion-tool importer, available in the next release.
 - If you want a clean greenfield start instead, use [`fluid init`](./init.md) or [`fluid forge`](./forge.md).
-- For source-aligned ingestion from scratch (no existing tool project), [`fluid init --discover`](./init.md#discover) is the one-shot path.
+- For source-aligned ingestion from scratch (no existing tool project), [`fluid init --discover`](./init.md#discover-—-introspect-a-source-into-a-bronze-contract) is the one-shot path.

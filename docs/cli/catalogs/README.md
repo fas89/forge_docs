@@ -139,4 +139,4 @@ The next-action is in the message — not buried in the docs.
 
 - [Forge data-model overview](../../forge-data-model.md)
 - [MCP server walkthrough](../../advanced/mcp.md)
-- [Add your own catalog adapter](../../contributing.md#adding-a-catalog-adapter)
+- [Add your own catalog adapter](../../contributing.md#add-a-catalog-adapter)

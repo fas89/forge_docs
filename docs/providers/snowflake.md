@@ -296,7 +296,7 @@ fluid policy-apply runtime/policy/bindings.json --mode check
 fluid policy-apply runtime/policy/bindings.json --mode enforce
 
 # Generate Airflow DAG
-fluid generate-airflow contract.fluid.yaml --out airflow-dags/bitcoin_snowflake.py
+fluid generate-airflow contract.fluid.yaml --output airflow-dags/bitcoin_snowflake.py
 ```
 
 Recommended deployment gate for enterprise teams:
@@ -539,7 +539,7 @@ The Snowflake example uses the exact same Jenkinsfile as GCP and AWS — the [Un
 | Plan | `fluid plan` | Execution plan generated |
 | Apply | `fluid apply` | Database + schema + table created |
 | Apply RBAC | `fluid policy-apply` | RBAC grants enforced |
-| Execute | `fluid execute` | `ingest.py` runs, inserts rows to Snowflake |
+| Execute | `fluid apply --mode amend-and-build` | `ingest.py` runs, inserts rows to Snowflake |
 | Airflow DAG | `fluid generate-airflow` | Production DAG generated |
 
 ## Snowflake Table Properties

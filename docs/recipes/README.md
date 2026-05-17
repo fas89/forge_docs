@@ -30,4 +30,4 @@ These slots are reserved; pick one, write it up, open a PR. Each should be ~50 l
 - Hook in custom dbt macros via `hybrid-reference`
 - Add a Slack alert when DQ fails
 
-Tracked in [docs-content #recipes](https://github.com/Agentics-Rising/forge_docs/issues?q=is%3Aopen+label%3Adocs-content).
+Tracked in [docs-content #recipes](https://github.com/Agenticstiger/forge_docs/issues?q=is%3Aopen+label%3Adocs-content).

@@ -1,7 +1,7 @@
 # Local Provider
 
 **Status:** ✅ Production Ready  
-**Version:** 1.0.0  
+**Docs Baseline:** CLI `0.8.0`<br>
 **Database:** DuckDB, SQLite
 
 ---
@@ -28,27 +28,47 @@ pip install data-product-forge duckdb
 ### Minimal Contract
 
 ```yaml
+fluidVersion: "0.7.3"
+kind: DataProduct
+id: example.local_analytics_v1
+name: Local Analytics
+domain: example
+
 metadata:
-  name: local-analytics
-  version: 1.0.0
+  layer: Bronze
+  owner:
+    team: data-analytics
+    email: team@example.com
 
-platform:
-  provider: local
-  database_path: ./analytics.duckdb
-  schema: main
+builds:
+  - id: build_customers
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT * FROM read_csv_auto('./data/customers.csv')
+    outputs:
+      - customers
 
-assets:
-  - type: table
-    name: customers
-    
-    query: |
-      SELECT * FROM read_csv_auto('./data/customers.csv')
+exposes:
+  - exposeId: customers
+    kind: table
+    binding:
+      platform: local
+      format: parquet
+      location:
+        path: ./runtime/out/customers.parquet
+    contract:
+      schema:
+        - name: customer_id
+          type: STRING
+          required: true
 ```
 
 **Execute:**
 
 ```bash
-fluid apply contract.yaml --provider local
+fluid apply contract.fluid.yaml --provider local
 ```
 
 ---
@@ -78,21 +98,28 @@ fluid apply contract.yaml --provider local
 
 ## Configuration
 
+The local provider needs no contract-level configuration block. It is selected at
+the command line with `--provider local`, and DuckDB itself is managed for you (an
+in-memory database during a run, or a session-scoped file so tables created by one
+build are visible to the next).
+
+What you *do* configure per output is the `binding` on each expose — the format and
+the path the local provider writes to:
+
 ```yaml
-platform:
-  provider: local
-  
-  # Database file path
-  database_path: ./my_database.duckdb
-  
-  # Optional schema name
-  schema: analytics  # Default: main
-  
-  # DuckDB settings
-  settings:
-    memory_limit: 4GB
-    threads: 4
-    temp_directory: /tmp/duckdb
+exposes:
+  - exposeId: customers
+    kind: table
+    binding:
+      platform: local
+      format: parquet            # or csv
+      location:
+        path: ./runtime/out/customers.parquet
+    contract:
+      schema:
+        - name: customer_id
+          type: STRING
+          required: true
 ```
 
 ---
@@ -113,23 +140,38 @@ fluid apply contract.yaml --provider gcp --project my-project
 
 ### 2. Data Analysis
 
-Analyze local CSV/Parquet files:
+Analyze local CSV/Parquet files. Source files are read directly inside the build
+SQL with DuckDB's `read_csv_auto` / `read_parquet` functions:
 
 ```yaml
-sources:
-  - name: sales_data
-    type: csv
-    path: ./data/sales_*.csv
+builds:
+  - id: build_monthly_revenue
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          DATE_TRUNC('month', sale_date) as month,
+          SUM(amount) as revenue
+        FROM read_csv_auto('./data/sales_*.csv')
+        GROUP BY month
+    outputs:
+      - monthly_revenue
 
-assets:
-  - type: view
-    name: monthly_revenue
-    query: |
-      SELECT 
-        DATE_TRUNC('month', sale_date) as month,
-        SUM(amount) as revenue
-      FROM read_csv_auto('${sources.sales_data.path}')
-      GROUP BY month
+exposes:
+  - exposeId: monthly_revenue
+    kind: view
+    binding:
+      platform: local
+      format: parquet
+      location:
+        path: ./runtime/out/monthly_revenue.parquet
+    contract:
+      schema:
+        - name: month
+          type: TIMESTAMP
+        - name: revenue
+          type: NUMERIC
 ```
 
 ### 3. CI/CD Testing
@@ -150,33 +192,35 @@ Test contracts in GitHub Actions:
 
 ### 1. Use Parquet Instead of CSV
 
-```yaml
-sources:
-  - name: large_dataset
-    type: parquet  # 10x faster than CSV
-    path: ./data/events.parquet
-```
-
-### 2. Create Indexes
+Read Parquet rather than CSV in your build SQL — it is typically ~10x faster and
+carries its own schema:
 
 ```yaml
-tables:
-  - name: customers
-    indexes:
-      - columns: [customer_id]
-        unique: true
-      - columns: [country, signup_date]
+builds:
+  - id: build_events
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT * FROM read_parquet('./data/events.parquet')
+    outputs:
+      - events
 ```
+
+Pick `format: parquet` on the expose `binding` too, so outputs are written in the
+faster format.
+
+### 2. Push Work Into SQL
+
+DuckDB is a columnar engine — filter and aggregate inside the build SQL rather than
+post-processing. Project only the columns you need and let `WHERE` / `GROUP BY` run
+in the engine.
 
 ### 3. Optimize Memory
 
-```yaml
-platform:
-  provider: local
-  settings:
-    memory_limit: 8GB  # Increase for large datasets
-    max_memory: 80%    # Use up to 80% of available RAM
-```
+DuckDB memory and thread settings are managed by the local provider, not declared
+in the contract. For large datasets, prefer Parquet inputs and narrow projections so
+less data is held in memory at once.
 
 ---
 
@@ -185,64 +229,108 @@ platform:
 ### Load and Transform CSVs
 
 ```yaml
+fluidVersion: "0.7.3"
+kind: DataProduct
+id: example.csv_pipeline_v1
+name: CSV Pipeline
+domain: example
+
 metadata:
-  name: csv-pipeline
-  version: 1.0.0
+  layer: Silver
+  owner:
+    team: data-analytics
+    email: team@example.com
 
-platform:
-  provider: local
-  database_path: ./analytics.duckdb
+builds:
+  - id: build_customer_orders
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          c.customer_id,
+          c.name,
+          c.email,
+          COUNT(o.order_id) as total_orders,
+          SUM(o.amount) as total_spent
+        FROM read_csv_auto('./raw/customers.csv') c
+        LEFT JOIN read_csv_auto('./raw/orders.csv') o
+          ON c.customer_id = o.customer_id
+        GROUP BY c.customer_id, c.name, c.email
+    outputs:
+      - customer_orders
 
-sources:
-  - name: customers
-    type: csv
-    path: ./raw/customers.csv
-  
-  - name: orders
-    type: csv
-    path: ./raw/orders.csv
-
-assets:
-  - type: table
-    name: customer_orders
-    materialized: true
-    
-    query: |
-      SELECT 
-        c.customer_id,
-        c.name,
-        c.email,
-        COUNT(o.order_id) as total_orders,
-        SUM(o.amount) as total_spent
-      FROM read_csv_auto('${sources.customers.path}') c
-      LEFT JOIN read_csv_auto('${sources.orders.path}') o
-        ON c.customer_id = o.customer_id
-      GROUP BY c.customer_id, c.name, c.email
+exposes:
+  - exposeId: customer_orders
+    kind: table
+    binding:
+      platform: local
+      format: parquet
+      location:
+        path: ./runtime/out/customer_orders.parquet
+    contract:
+      schema:
+        - name: customer_id
+          type: STRING
+          required: true
+        - name: name
+          type: STRING
+        - name: email
+          type: STRING
+          sensitivity: pii
+        - name: total_orders
+          type: INTEGER
+        - name: total_spent
+          type: NUMERIC
 ```
 
 ### Parquet Data Lake
 
 ```yaml
-platform:
-  provider: local
-  database_path: ./data_lake.duckdb
+fluidVersion: "0.7.3"
+kind: DataProduct
+id: example.data_lake_v1
+name: Data Lake Events
+domain: example
 
-sources:
-  - name: events
-    type: parquet
-    path: ./lake/events/**/*.parquet  # Wildcard glob
+metadata:
+  layer: Silver
+  owner:
+    team: data-analytics
+    email: team@example.com
 
-assets:
-  - type: view
-    name: daily_events
-    query: |
-      SELECT 
-        DATE(event_time) as date,
-        event_type,
-        COUNT(*) as event_count
-      FROM read_parquet('${sources.events.path}')
-      WHERE event_time >= CURRENT_DATE - INTERVAL '7 days'
-      GROUP BY date, event_type
+builds:
+  - id: build_daily_events
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          DATE(event_time) as date,
+          event_type,
+          COUNT(*) as event_count
+        FROM read_parquet('./lake/events/**/*.parquet')   -- wildcard glob
+        WHERE event_time >= CURRENT_DATE - INTERVAL '7 days'
+        GROUP BY date, event_type
+    outputs:
+      - daily_events
+
+exposes:
+  - exposeId: daily_events
+    kind: view
+    binding:
+      platform: local
+      format: parquet
+      location:
+        path: ./runtime/out/daily_events.parquet
+    contract:
+      schema:
+        - name: date
+          type: DATE
+        - name: event_type
+          type: STRING
+        - name: event_count
+          type: INTEGER
 ```
 
 ---
@@ -288,26 +376,26 @@ COPY main.customer_summary TO 'export.parquet';
 
 When ready to move to production:
 
-**1. Update contract:**
+**1. Update the expose binding:**
 
 ```yaml
-# Change provider from 'local' to 'gcp'
-platform:
-  provider: gcp  # Changed!
-  project: my-project-id
-  region: us-central1
-
-# Rest stays the same!
-assets:
-  - type: dataset
-    name: analytics
-    # ... same tables and views
+exposes:
+  - exposeId: customer_orders
+    kind: table
+    binding:
+      platform: gcp                 # Changed from 'local'
+      format: bigquery_table        # Changed from 'parquet'
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: customer_orders
+    # contract.schema, builds, governance — all unchanged
 ```
 
 **2. Deploy:**
 
 ```bash
-fluid apply contract.yaml --provider gcp
+fluid apply contract.fluid.yaml --provider gcp
 ```
 
 **That's it!** Your local development becomes cloud production.

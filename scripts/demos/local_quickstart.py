@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
-"""Local DuckDB quickstart — install → init → validate → plan → apply."""
+"""Local DuckDB quickstart — install → init → validate → plan → apply.
+
+Depicts the real ``fluid init --quickstart`` path: it is rewritten
+internally to ``--template customer-360`` and scaffolds the Customer 360
+Analytics template (contract.fluid.yaml + data/*.csv sample data).
+"""
 
 import sys, pathlib
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
-from cast_builder import Cast, A, ok, working, info, header, success  # type: ignore
+from cast_builder import Cast, A, ok, working, info  # type: ignore
 
 
 def build() -> Cast:
@@ -21,23 +26,23 @@ def build() -> Cast:
         output_post=0.18,
     )
 
-    # 2. Init
+    # 2. Init — --quickstart scaffolds the customer-360 template
     cast.run(
-        "fluid init btc-tracker --quickstart",
-        f"  {A.color(A.PURPLE_AI, '✨')} Creating new FLUID project: {A.color(A.BOLD, 'btc-tracker')}",
-        ok(f"Generated {A.color(A.BLUE_ACCENT, 'contract.fluid.yaml')} (Bitcoin tracker template)"),
-        ok(f"Generated sample data {A.color(A.DIM, '→')} {A.color(A.BLUE_ACCENT, 'data/btc.csv')}"),
-        ok("Initialized DuckDB workspace"),
+        "fluid init my-project --quickstart",
+        f"  {A.color(A.PURPLE_AI, '📦')} Creating from template: {A.color(A.BOLD, 'customer-360')}",
+        ok(f"Generated {A.color(A.BLUE_ACCENT, 'contract.fluid.yaml')} — Customer 360 Analytics"),
+        ok(f"Sample data {A.color(A.DIM, '→')} {A.color(A.BLUE_ACCENT, 'data/customers.csv · orders.csv · interactions.csv')}"),
+        ok("Created project from customer-360 template"),
         output_post=0.18,
     )
 
     # 3. cd + validate
     cast.run(
-        "cd btc-tracker && fluid validate contract.fluid.yaml",
+        "cd my-project && fluid validate contract.fluid.yaml",
         ok(f"Schema {A.color(A.AMBER, '0.7.2')} — passed"),
         ok("Required fields complete (fluidVersion, kind, id, name, metadata, exposes)"),
         ok(f"binding.platform={A.color(A.BLUE_ACCENT, 'local')} — supported by installed providers"),
-        ok("dq.rules valid (3 rules: completeness, freshness, valid_values)"),
+        ok("dq.rules valid (5 rules: uniqueness, valid_values ×2, accuracy ×2)"),
         f"  {A.color(A.BRIGHT_GREEN, '✓ Contract validation passed')}",
         output_post=0.16,
     )
@@ -45,12 +50,14 @@ def build() -> Cast:
     # 4. Plan
     cast.run(
         "fluid plan contract.fluid.yaml",
-        info("Reading contract → resolving 1 expose, 1 build"),
+        info("Reading contract → resolving 2 exposes, 1 build"),
         info("Provider: local (DuckDB)"),
         f"  {A.color(A.BOLD, 'Plan summary:')}",
-        f"    {A.color(A.GREEN_OK, '+')} create  table  bitcoin_prices",
-        f"    {A.color(A.GREEN_OK, '+')} run     build  bitcoin_price_ingestion (sql)",
-        f"    {A.color(A.GREEN_OK, '+')} write   parquet runtime/out/bitcoin_prices.parquet",
+        f"    {A.color(A.GREEN_OK, '+')} create  table    customer_360_master",
+        f"    {A.color(A.GREEN_OK, '+')} create  view     high_value_customers",
+        f"    {A.color(A.GREEN_OK, '+')} run     build    customer_360_pipeline (sql · 5 stages)",
+        f"    {A.color(A.GREEN_OK, '+')} write   parquet  output/customer_360.parquet",
+        f"    {A.color(A.GREEN_OK, '+')} write   parquet  output/high_value_customers.parquet",
         f"  {A.color(A.DIM, '(no destructive actions; dry-run safe)')}",
         output_post=0.15,
     )
@@ -58,22 +65,22 @@ def build() -> Cast:
     # 5. Apply
     cast.run(
         "fluid apply contract.fluid.yaml --yes",
-        working("Reading sources..."),
+        working("Reading sources: customers.csv, orders.csv, interactions.csv..."),
         output_post=0.32,
     )
     cast.lines(
-        working(f"Running transformation: {A.color(A.BLUE_ACCENT, 'bitcoin_price_ingestion')}"),
+        working(f"Running {A.color(A.BLUE_ACCENT, 'customer_360_pipeline')} — 5-stage SQL build"),
         post=0.36,
     )
     cast.lines(
-        working(f"Writing {A.color(A.BLUE_ACCENT, 'runtime/out/bitcoin_prices.parquet')}"),
+        working(f"Writing {A.color(A.BLUE_ACCENT, 'output/customer_360.parquet')}"),
         post=0.45,
     )
     cast.output(f"  {A.color(A.BRIGHT_GREEN, '✓ Pipeline complete in 1.42 s')}", post=0.4)
     cast.output("", post=0.0)
 
-    cast.output(f"  {A.color(A.BOLD, '📦 Data product live:')} gold.crypto.bitcoin_tracker_v1", post=0.18)
-    cast.output(f"  {A.color(A.DIM, '📍 runtime/out/bitcoin_prices.parquet (24 rows · 3 cols)')}", post=0.4)
+    cast.output(f"  {A.color(A.BOLD, '📦 Data product live:')} gold.customer.analytics_360_v1", post=0.18)
+    cast.output(f"  {A.color(A.DIM, '📍 output/customer_360.parquet (10 rows · 14 cols)')}", post=0.4)
 
     cast.section_break(0.6)
     cast.prompt()

@@ -5,11 +5,14 @@ Fluid Forge uses one contract format across local and provider-backed execution 
 ## Docs baseline
 
 - CLI release covered by the primary docs: `0.8.0`
-- Current scaffolded contract examples: `fluidVersion: 0.7.2`
+- Default scaffold (`fluid init --quickstart`) emits `fluidVersion: 0.7.2`
+- Discovery-based scaffolds (`fluid init --discover`, `fluid forge`, `fluid product-new`) emit `fluidVersion: 0.7.3` — the latest bundled schema
 
 Some deep-dive provider pages still preserve older `0.7.1` snippets for backward-compatibility context. Those examples should not be read as “current version” guidance.
 
 ## Provider overview
+
+Fluid Forge registers five built-in providers. Four are apply-capable execution targets; `odps` is a standards-export provider (see [Standards and catalogs](#standards-and-catalogs) below).
 
 | Provider | Plan / Apply | Scheduling docs stance | Status |
 | --- | --- | --- | --- |
@@ -17,6 +20,7 @@ Some deep-dive provider pages still preserve older `0.7.1` snippets for backward
 | [AWS](./aws.md) | Yes | Prefer `fluid generate schedule` | Production |
 | [Snowflake](./snowflake.md) | Yes | Prefer `fluid generate schedule` | Production |
 | [Local](./local.md) | Yes | Local-first onboarding | Production |
+| ODPS | Export only (`render`) | n/a — export, not deployment | Production |
 
 Compatibility note:
 `fluid generate-airflow` still exists, but the primary docs path is `fluid generate schedule --scheduler airflow`.
@@ -56,7 +60,7 @@ fluid apply contract.fluid.yaml --yes
 
 ## Standards and catalogs
 
-Beyond the apply-capable providers above, Fluid Forge can **export** contracts to public data-product standards and **publish** them to catalogs. Both surfaces live inside existing CLI commands rather than as separate provider pages.
+Beyond the four apply-capable providers, Fluid Forge can **export** contracts to public data-product standards and **publish** them to catalogs. Standards export is handled by the built-in `odps` provider, which validates contracts against and renders the ODPS standards format; publishing lives inside existing CLI commands.
 
 ### Export formats — `fluid generate standard`
 

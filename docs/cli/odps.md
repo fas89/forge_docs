@@ -1,6 +1,6 @@
 # `fluid odps`
 
-Export FLUID contracts to, validate, and inspect the official ODPS (Open Data Product Specification) format from the Linux Foundation / Open Data Product Initiative.
+Export FLUID contracts to, validate, and inspect the official ODPS (Open Data Product Specification) format from the Open Data Product Initiative.
 
 ## Syntax
 

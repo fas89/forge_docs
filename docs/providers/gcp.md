@@ -46,27 +46,35 @@ gcloud services enable storage.googleapis.com
 ### Minimal Contract
 
 ```yaml
-fluidVersion: "0.7"
+fluidVersion: "0.7.3"
 kind: DataProduct
-exposeId: my-data-product
+id: analytics.customers_v1
+name: Customer Analytics
+domain: analytics
 
-binding:
-  provider: gcp
-  project: my-project-id
-  region: us-central1
+metadata:
+  layer: Bronze
+  owner:
+    team: data-engineering
+    email: data-engineering@company.com
 
 exposes:
-  - type: dataset
-    name: analytics
-    
-    tables:
-      - name: customers
-        schema:
-          - name: id
-            type: INTEGER
-            required: true
-          - name: name
-            type: STRING
+  - exposeId: customers
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: customers
+    contract:
+      schema:
+        - name: id
+          type: INTEGER
+          required: true
+        - name: name
+          type: STRING
 ```
 
 **Deploy:**
@@ -116,7 +124,7 @@ fluid export contract.yaml --engine prefect -o flows/
 | Signed URLs | ✅ Full | Temporary access |
 | Notifications | ✅ Full | Pub/Sub integration |
 
-### ✅ Airflow DAG Generation (v0.7.1)
+### ✅ Airflow DAG Generation
 
 | Feature | Support | Notes |
 |---------|---------|-------|
@@ -159,37 +167,38 @@ fluid export contract.yaml --engine prefect -o flows/
 
 ### Provider Settings
 
+The GCP provider needs no contract-level provider block. It is selected from
+each expose's `binding.platform`, so `--provider gcp` is optional for `plan`,
+`apply`, and `verify`. What you configure per output is the `binding` — the
+`format` and the BigQuery `location` coordinates:
+
 ```yaml
-platform:
-  provider: gcp
-  
-  # Required
-  project: my-project-id
-  region: us-central1
-  
-  # Optional
-  location: US  # BigQuery multi-region (US, EU)
-  zone: us-central1-a  # Specific zone for compute
-  
-  # Cost controls
-  cost_controls:
-    enable_bi_engine: true  # Query acceleration
-    bi_engine_gb: 10  # BI Engine cache size
-    default_table_expiration_days: 365
-    max_bytes_billed: 10000000000  # 10 GB query limit
-  
-  # Networking
-  network:
-    vpc: default
-    subnet: default
-    private_google_access: true
-  
-  # Labels (applied to all resources)
-  labels:
-    environment: production
-    team: data-engineering
-    cost-center: analytics
+exposes:
+  - exposeId: events
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: events
+        region: US        # BigQuery multi-region (US, EU)
+    contract:
+      schema:
+        - name: id
+          type: INTEGER
+          required: true
 ```
+
+Project, region, BI Engine sizing, default table expiration, and networking
+are environment-level GCP settings rather than contract fields. Apply them with
+`gcloud`, project-level IAM, or your environment configuration. Resource labels
+can be attached per expose with `binding.labels`.
+
+> Note: cost-control knobs such as `enable_bi_engine`, `max_bytes_billed`, and
+> VPC networking have no current contract-schema equivalent — manage them
+> outside the contract.
 
 ---
 
@@ -197,16 +206,32 @@ platform:
 
 ### Partitioning
 
-Partition tables by date for performance and cost savings:
+Partition tables by date for performance and cost savings. BigQuery-specific
+table options live under `binding.properties`, which accepts provider-specific
+keys:
 
 ```yaml
-tables:
-  - name: events
-    partitioning:
-      field: event_timestamp
-      type: DAY  # or HOUR, MONTH, YEAR
-      require_partition_filter: true  # Enforce partitioned queries
-      expiration_days: 90  # Auto-delete old partitions
+exposes:
+  - exposeId: events
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: events
+        table: events
+      properties:
+        partitioning:
+          field: event_timestamp
+          type: DAY  # or HOUR, MONTH, YEAR
+          require_partition_filter: true  # Enforce partitioned queries
+          expiration_days: 90  # Auto-delete old partitions
+    contract:
+      schema:
+        - name: event_timestamp
+          type: TIMESTAMP
+          required: true
 ```
 
 **Cost savings:** Up to 90% reduction for time-based queries
@@ -216,36 +241,74 @@ tables:
 Cluster columns for better query performance:
 
 ```yaml
-tables:
-  - name: events
-    clustering:
-      fields: [user_id, event_type, country]  # Max 4 fields
+exposes:
+  - exposeId: events
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: events
+        table: events
+      properties:
+        clustering:
+          fields: [user_id, event_type, country]  # Max 4 fields
+    contract:
+      schema:
+        - name: user_id
+          type: STRING
+          required: true
 ```
 
 **Performance:** Up to 10x faster queries on clustered columns
 
 ### Materialized Views
 
-Pre-compute aggregations:
+Pre-compute aggregations. Expose the result as a `view` and produce it with a
+`builds[]` entry holding the SQL:
 
 ```yaml
-tables:
-  - name: daily_metrics
-    materialized: true
-    
-    query: |
-      SELECT 
-        DATE(event_timestamp) as date,
-        user_id,
-        COUNT(*) as event_count,
-        SUM(revenue) as total_revenue
-      FROM `${project}.events.raw_events`
-      GROUP BY date, user_id
-    
-    # Refresh settings
-    refresh:
-      enabled: true
-      interval_minutes: 60  # Refresh hourly
+builds:
+  - id: build_daily_metrics
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          DATE(event_timestamp) as date,
+          user_id,
+          COUNT(*) as event_count,
+          SUM(revenue) as total_revenue
+        FROM `${project}.events.raw_events`
+        GROUP BY date, user_id
+    outputs:
+      - daily_metrics
+
+exposes:
+  - exposeId: daily_metrics
+    kind: view
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: events
+        table: daily_metrics
+      properties:
+        materialized: true
+        refresh_interval_minutes: 60  # Refresh hourly
+    contract:
+      schema:
+        - name: date
+          type: DATE
+          required: true
+        - name: user_id
+          type: STRING
+        - name: event_count
+          type: INTEGER
+        - name: total_revenue
+          type: NUMERIC
 ```
 
 **Benefit:** Sub-second queries on complex aggregations
@@ -256,31 +319,44 @@ tables:
 
 ### Column-Level Security
 
-Protect sensitive data with policy tags:
+Protect sensitive data per expose. Classification, reader/writer roles, and
+column restrictions live under the expose's `policy` block; column sensitivity
+is declared on each schema field:
 
 ```yaml
-governance:
-  policy_tags:
-    - taxonomy: data_classification
-      tags:
-        - name: PII
-          description: Personally Identifiable Information
-          columns: [email, phone, ssn]
-        
-        - name: Financial
-          description: Financial data
-          columns: [salary, credit_card]
-
-tables:
-  - name: customers
-    schema:
-      - name: email
-        type: STRING
-        policy_tag: PII  # Restricted access
-      
-      - name: name
-        type: STRING  # No policy tag = public
+exposes:
+  - exposeId: customers
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: customers
+    policy:
+      classification: Confidential
+      authn: iam
+      authz:
+        readers:
+          - group:data-analysts@company.com
+        columnRestrictions:
+          - principal: "group:interns@company.com"
+            columns: [email, phone, ssn]
+            access: deny
+    contract:
+      schema:
+        - name: email
+          type: STRING
+          sensitivity: pii        # Restricted access
+        - name: name
+          type: STRING            # No sensitivity flag = public
 ```
+
+> Note: BigQuery policy-tag taxonomies are not a contract-schema construct.
+> Express column sensitivity with `schema[].sensitivity` and restrict access
+> with `policy.authz.columnRestrictions`; manage the underlying Data Catalog
+> taxonomy with `gcloud`.
 
 **IAM Integration:**
 ```bash
@@ -293,47 +369,63 @@ gcloud data-catalog taxonomies add-iam-policy-binding \
 
 ### Data Masking
 
-Automatically mask sensitive data:
+Automatically mask sensitive data with `policy.privacy.masking` on the expose:
 
 ```yaml
-governance:
-  data_masking:
-    - column: email
-      masking_type: DEFAULT  # user@example.com → u***@e***.com
-      policy_tag: PII
-    
-    - column: credit_card
-      masking_type: SHA256  # One-way hash
-      policy_tag: Financial
+exposes:
+  - exposeId: customers
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: customers
+    policy:
+      classification: Confidential
+      authn: iam
+      privacy:
+        masking:
+          - column: email
+            strategy: partial      # user@example.com → u***@e***.com
+          - column: credit_card
+            strategy: hash         # One-way hash
+            params:
+              algorithm: SHA256
+    contract:
+      schema:
+        - name: email
+          type: STRING
+          sensitivity: pii
+        - name: credit_card
+          type: STRING
+          sensitivity: pii
 ```
 
 ### Access Control
 
-Define granular permissions:
+Define granular permissions with the root-level `accessPolicy` block. Forge
+compiles `accessPolicy.grants` into IAM bindings:
 
 ```yaml
-access:
-  dataset_access:
-    - role: READER
-      members:
-        - user:analyst@company.com
-        - group:data-analysts@company.com
-        - domain:company.com  # Everyone in domain
-    
-    - role: WRITER
-      members:
-        - serviceAccount:etl@project.iam.gserviceaccount.com
-    
-    - role: OWNER
-      members:
-        - user:data-admin@company.com
-  
-  table_access:
-    - table: customers
-      role: READER
-      members:
-        - user:marketing@company.com
+accessPolicy:
+  grants:
+    - principal: "group:data-analysts@company.com"
+      permissions: [read, select]
+    - principal: "user:analyst@company.com"
+      permissions: [read, select]
+    - principal: "serviceAccount:etl@project.iam.gserviceaccount.com"
+      permissions: [write, insert, update]
+      resources:
+        - customers
+    - principal: "user:data-admin@company.com"
+      permissions: [read, write, create]
 ```
+
+> Note: dataset/table-level OWNER roles and domain-wide grants map to GCP IAM
+> roles applied outside the contract. Use `resources` on a grant to scope a
+> principal to a specific expose.
 
 ---
 
@@ -341,16 +433,35 @@ access:
 
 ### From Cloud Storage
 
+Load from GCS with a `builds[]` entry that produces the table:
+
 ```yaml
-tables:
-  - name: sales
-    load_from_gcs:
-      uri: gs://my-bucket/data/*.csv
-      format: CSV
-      schema_auto_detect: true
+builds:
+  - id: build_sales
+    pattern: acquisition
+    engine: sql
+    properties:
+      source_uri: gs://my-bucket/data/*.csv
+      source_format: CSV
       skip_leading_rows: 1
-      allow_jagged_rows: false
-      encoding: UTF-8
+    outputs:
+      - sales
+
+exposes:
+  - exposeId: sales
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: sales
+    contract:
+      schema:
+        - name: order_id
+          type: STRING
+          required: true
 ```
 
 ### From Local Files
@@ -401,18 +512,33 @@ WHERE event_time >= '2026-01-20'
 
 ### Storage Classes
 
+Expose a GCS dataset as a `file` binding. Bucket-specific options such as
+storage class and lifecycle rules are provider-specific keys under
+`binding.properties`:
+
 ```yaml
-buckets:
-  - name: analytics-archive
-    storage_class: NEARLINE  # For infrequent access
-    
-    lifecycle:
-      - action: SetStorageClass
-        storage_class: COLDLINE
-        age_days: 90  # Move to coldline after 90 days
-      
-      - action: Delete
-        age_days: 365  # Delete after 1 year
+exposes:
+  - exposeId: analytics_archive
+    kind: file
+    binding:
+      platform: gcp
+      format: gcs_file
+      location:
+        bucket: analytics-archive
+        path: archive/
+      properties:
+        storage_class: NEARLINE   # For infrequent access
+        lifecycle:
+          - action: SetStorageClass
+            storage_class: COLDLINE
+            age_days: 90          # Move to coldline after 90 days
+          - action: Delete
+            age_days: 365         # Delete after 1 year
+    contract:
+      schema:
+        - name: record_id
+          type: STRING
+          required: true
 ```
 
 ### Cost Monitoring
@@ -433,44 +559,85 @@ bq query --use_legacy_sql=false \
 
 ### BigQuery ML
 
-Train models directly in BigQuery:
+Train models directly in BigQuery. The training SQL lives in a `builds[]`
+entry; expose the trained model with `kind: model`:
 
 ```yaml
-routines:
-  - name: churn_prediction_model
-    type: ML_MODEL
-    
-    training_query: |
-      CREATE OR REPLACE MODEL `${project}.${dataset}.churn_model`
-      OPTIONS(
-        model_type='LOGISTIC_REG',
-        input_label_cols=['churned']
-      ) AS
-      SELECT 
-        * EXCEPT(customer_id)
-      FROM `${project}.${dataset}.customer_features`
+builds:
+  - id: build_churn_model
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        CREATE OR REPLACE MODEL `${project}.${dataset}.churn_model`
+        OPTIONS(
+          model_type='LOGISTIC_REG',
+          input_label_cols=['churned']
+        ) AS
+        SELECT
+          * EXCEPT(customer_id)
+        FROM `${project}.${dataset}.customer_features`
+    outputs:
+      - churn_prediction_model
+
+exposes:
+  - exposeId: churn_prediction_model
+    kind: model
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: ml
+        table: churn_model
+    contract:
+      schema:
+        - name: predicted_churned
+          type: BOOLEAN
 ```
 
 ### Authorized Views
 
-Share data without granting direct access:
+Share data without granting direct access. Expose the view with `kind: view`
+and produce it with a `builds[]` query:
 
 ```yaml
-views:
-  - name: public_customer_summary
-    authorized: true  # Can access source tables user can't see
-    
-    authorized_datasets:
-      - project: partner-project
-        dataset: shared_data
-    
-    query: |
-      SELECT 
-        customer_id,
-        total_purchases,
-        avg_order_value
-        -- Excludes PII like email, name
-      FROM `${project}.${dataset}.customers`
+builds:
+  - id: build_public_customer_summary
+    pattern: embedded-logic
+    engine: sql
+    properties:
+      sql: |
+        SELECT
+          customer_id,
+          total_purchases,
+          avg_order_value
+          -- Excludes PII like email, name
+        FROM `${project}.${dataset}.customers`
+    outputs:
+      - public_customer_summary
+
+exposes:
+  - exposeId: public_customer_summary
+    kind: view
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: public_customer_summary
+      properties:
+        authorized: true   # Can access source tables the caller can't see
+    contract:
+      schema:
+        - name: customer_id
+          type: STRING
+          required: true
+        - name: total_purchases
+          type: INTEGER
+        - name: avg_order_value
+          type: NUMERIC
 ```
 
 ---
@@ -479,26 +646,39 @@ views:
 
 ### Built-in Metrics
 
-Fluid Forge automatically exports metrics:
+Declare metrics and alert channels per expose with the `observability` block:
 
 ```yaml
-monitoring:
-  enabled: true
-  
-  metrics:
-    - name: query_performance
-      query: |
-        SELECT 
-          AVG(total_slot_ms) as avg_slot_ms,
-          MAX(total_bytes_processed) as max_bytes
-        FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
-        WHERE DATE(creation_time) = CURRENT_DATE()
-    
-  alerts:
-    - name: high_query_cost
-      condition: max_bytes > 10000000000  # 10 GB
-      notification: slack://data-team
+exposes:
+  - exposeId: events
+    kind: table
+    binding:
+      platform: gcp
+      format: bigquery_table
+      location:
+        project: my-project-id
+        dataset: analytics
+        table: events
+    observability:
+      metrics:
+        - name: query_performance
+          source: bigquery
+          sli: latency
+      alert:
+        channels:
+          - slack://data-team
+    contract:
+      schema:
+        - name: event_id
+          type: STRING
+          required: true
 ```
+
+> Note: the contract `observability` block declares named metrics and alert
+> channels, not arbitrary SQL. Custom cost queries against
+> `INFORMATION_SCHEMA.JOBS_BY_PROJECT` and numeric breach thresholds have no
+> contract-schema equivalent — run them as scheduled BigQuery jobs outside the
+> contract.
 
 ---
 

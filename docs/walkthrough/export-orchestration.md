@@ -475,7 +475,7 @@ if __name__ == '__main__':
 :::
 
 | Feature | Airflow | Dagster | Prefect |
-|---------|---------|---------|---------||
+|---------|---------|---------|---------|
 | **CLI Availability** | ✅ Available | ✅ Available | ✅ Available |
 | **Ease of Use** | ⭐⭐⭐ | ⭐⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **Type Safety** | ❌ | ✅ | ✅ |

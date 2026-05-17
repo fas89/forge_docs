@@ -1,6 +1,6 @@
 # Guided `fluid forge` UX
 
-The `feat/source-aligned-acquisition` branch overhauls `fluid forge` end-to-end. The new flow is detect-first, mode-aware, slash-command-friendly, and never writes a file before showing you what it's about to write.
+The source-aligned acquisition release (schema 0.7.3) overhauls `fluid forge` end-to-end — a preview surface, not in the 0.8.0 baseline yet. The new flow is detect-first, mode-aware, slash-command-friendly, and never writes a file before showing you what it's about to write.
 
 <iframe
   src="/forge_docs/reels/guided-forge-ux.html"

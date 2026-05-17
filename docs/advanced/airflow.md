@@ -127,5 +127,4 @@ Access UI at http://localhost:8080 (admin/admin)
 
 - **[Declarative Airflow Walkthrough](/forge_docs/walkthrough/airflow-declarative)** - Comprehensive guide
 - **[CLI Reference](/forge_docs/cli/)** - All commands
-- **[GCP Walkthrough](/forge_docs/walkthrough/gcp)** - Cloud Composer examples
-- **[Bitcoin Tracker Example](https://github.com/Agenticstiger/forge_docs/tree/main/examples/bitcoin-tracker)** - Working code
+- **[GCP Walkthrough](/forge_docs/walkthrough/gcp)** - Cloud Composer examples, end-to-end Bitcoin Tracker build

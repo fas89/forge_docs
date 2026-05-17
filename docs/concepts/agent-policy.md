@@ -28,7 +28,7 @@ Verified field list from `fluid-schema-0.7.2.json` — `agentPolicy` is a top-le
 | `allowedModels` | `string[]` | Whitelist of AI models permitted (e.g. `gpt-4`, `claude-3-opus`). Empty array = no AI access. |
 | `deniedModels` | `string[]` | Explicit denylist. Takes precedence over `allowedModels`. |
 | `allowedUseCases` | `string[]` | Permitted purposes (e.g. `analysis`, `summarization`, `qa`). |
-| `deniedUseCases` | `string[]` | Prohibited purposes (e.g. `training`, `fine-tuning`). |
+| `deniedUseCases` | `string[]` | Prohibited purposes (e.g. `training`, `fine_tuning`). |
 | `maxTokensPerRequest` | `integer` | Cap on tokens per AI request. Prevents excessive data exposure per call. |
 | `maxTokensPerDay` | `integer` | Daily token budget. Enforces quota. |
 | `canReason` | `boolean` | Whether agents can use this data for multi-step reasoning. |
@@ -52,7 +52,7 @@ agentPolicy:
     - qa
   deniedUseCases:
     - training
-    - fine-tuning
+    - fine_tuning
   maxTokensPerRequest: 4000
   canStore: false
   auditRequired: true
@@ -152,7 +152,7 @@ See the [agent-policy demo](/forge_docs/see-it-run.html) for a frame-perfect cas
 
 ```yaml
 agentPolicy:
-  deniedUseCases: ["training", "fine-tuning", "embedding-export"]
+  deniedUseCases: ["training", "fine_tuning", "embedding"]
   canStore: false
   auditRequired: true
   purposeLimitation: "Read-only inference for analysis. Data may not leave the runtime context."
@@ -164,7 +164,7 @@ agentPolicy:
 agentPolicy:
   allowedModels: ["gpt-4", "claude-3-opus"]   # only the company's vetted models
   allowedUseCases: ["analysis", "summarization", "qa"]
-  deniedUseCases: ["training", "fine-tuning"]
+  deniedUseCases: ["training", "fine_tuning"]
   maxTokensPerRequest: 4000
   maxTokensPerDay: 1000000
   canStore: false

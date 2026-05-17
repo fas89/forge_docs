@@ -88,7 +88,7 @@ fluid apply contract.fluid.yaml --yes
 ```
 
 ::: tip 🎉 You just shipped a data product
-That output at `runtime/out/bitcoin_prices.parquet` is real. It has a schema, a contract, a validated SQL transformation, declared owners, and a deployment record. **You shipped a versioned data product on your laptop in under a minute.**
+That output at `output/customer_360.parquet` is real. It has a schema, a contract, a validated SQL transformation, declared owners, and a deployment record. **You shipped a versioned data product on your laptop in under a minute.**
 
 **Three things you can do right now:**
 

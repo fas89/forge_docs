@@ -54,5 +54,5 @@ fluid odcs validate contract.odcs.yaml
 
 - ODCS is bidirectional: `export` goes FLUID -> ODCS, `import` goes ODCS -> FLUID.
 - Validation uses the bundled ODCS v3.1.0 JSON Schema from Bitol.io.
-- For Bitol.io's data-product variant (ODPS-Bitol), use [`fluid odps-bitol`](./odps-bitol.md). For the Linux Foundation ODPS, use [`fluid odps`](./odps.md).
+- For Bitol.io's data-product variant (ODPS-Bitol), use [`fluid odps-bitol`](./odps-bitol.md). For the official ODPS (Open Data Product Initiative), use [`fluid odps`](./odps.md).
 - To publish ODCS contracts to Entropy Data alongside a data product, see [`fluid datamesh-manager publish --with-contract`](./datamesh-manager.md).

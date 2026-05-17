@@ -1,6 +1,6 @@
 # FLUID Forge Contract GPT Packet
 
-> **Building a custom GPT or plugin around Fluid Forge?** This section collects the artifacts you need to spin one up: the FLUID 0.7.2 schema knowledge file, validation reference, plan reference, conversation starters, and the upload manifest. **End users running `fluid forge` from the CLI can safely skip this section** — those workflows live under [`fluid forge`](/forge_docs/cli/forge.html) and the [Forge Copilot guides](/forge_docs/advanced/forge-copilot-discovery).
+> **Building a custom GPT or plugin around Fluid Forge?** This section collects the artifacts you need to spin one up: the FLUID 0.7.3 schema knowledge file, validation reference, plan reference, conversation starters, and the upload manifest. **End users running `fluid forge` from the CLI can safely skip this section** — those workflows live under [`fluid forge`](/forge_docs/cli/forge.html) and the [Forge Copilot guides](/forge_docs/advanced/forge-copilot-discovery).
 
 ---
 
@@ -8,7 +8,7 @@ This folder is a self-contained builder packet for a ChatGPT custom GPT (or othe
 
 It is designed around these rules:
 
-- Default to FLUID `0.7.2`
+- Default to FLUID `0.7.3`
 - Ask for provider before drafting
 - Output `contract.fluid.yaml` first
 - Add `Assumptions`, `Open questions`, and `Validation next steps`
@@ -34,7 +34,7 @@ Upload these as GPT knowledge:
 
 This packet is documented in `forge_docs`, but it was grounded in source-of-truth assets from the sibling `forge-cli` repository:
 
-- `forge-cli/fluid_build/schemas/fluid-schema-0.7.2.json`
+- `forge-cli/fluid_build/schemas/fluid-schema-0.7.3.json`
 - `forge-cli/README.md`
 - `forge-cli/examples/01-hello-world/contract.fluid.yaml`
 - `forge-cli/examples/05-data-quality-validation/contract.fluid.yaml`

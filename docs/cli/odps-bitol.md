@@ -43,6 +43,6 @@ fluid odps-bitol info
 ## Notes
 
 - Despite the source file being named `odps_standard.py`, the canonical command name registered in `fluid --help` is `odps-bitol`. This avoids confusion with the official ODPS variant.
-- For the official ODPS v4.1 (Linux Foundation / Open Data Product Initiative), use [`fluid odps`](./odps.md) instead.
+- For the official ODPS v4.1 (Open Data Product Initiative), use [`fluid odps`](./odps.md) instead.
 - For the Open Data Contract Standard (ODCS), use [`fluid odcs`](./odcs.md).
 - Validation checks `apiVersion` (`v1.0.0` expected), requires `kind: DataProduct`, and verifies output ports have a `name` field.

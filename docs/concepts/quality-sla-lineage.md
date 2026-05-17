@@ -34,10 +34,10 @@ exposes:
             severity: warn
 ```
 
-Allowed `type` values (v0.7.2 schema):
+Allowed `type` values (v0.7.3 schema):
 `freshness` · `completeness` · `uniqueness` · `valid_values` · `accuracy` · `schema` · `anomaly_detection` · `drift_detection`
 
-Severity enum (verified against `fluid-schema-0.7.2.json`): `info` · `warn` · `error` · `critical`.
+Severity enum (verified against `fluid-schema-0.7.3.json`): `info` · `warn` · `error` · `critical`.
 
 Conventional behavior (confirm specifics with `fluid apply -h` / `fluid test -h` for your CLI version):
 - **`error` / `critical`** — block the deploy. Used for hard guarantees.
@@ -53,7 +53,7 @@ exposes:
   - exposeId: bitcoin_prices
     qos:
       availability: "99.5%"
-      maxLatency: PT5S
+      latencyP95: PT5S
 ```
 
 Currently used for catalog publish (ODCS) + Data Mesh Manager. Active monitoring against these thresholds is on the roadmap.
@@ -70,7 +70,7 @@ The exact output paths and viewer formats depend on the CLI version + provider. 
 
 ## Common rule patterns
 
-These are the rule shapes most production data products end up with. Copy them as a starting point. **Each example uses only fields defined in `fluid-schema-0.7.2.json`.**
+These are the rule shapes most production data products end up with. Copy them as a starting point. **Each example uses only fields defined in `fluid-schema-0.7.3.json`.**
 
 ### Conditional completeness via the build, not the rule
 

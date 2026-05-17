@@ -9,7 +9,7 @@ A growing collection of common questions. Each answer either resolves the questi
 
 ## How is Fluid Forge different from dbt / Terraform / Airflow / OPA?
 
-Short answer: it unifies the four contracts (schema + infra + orchestration + policy) into one YAML so they can't drift. Long answer: see [Concepts → vs alternatives](/forge_docs/concepts/vs-alternatives.md) — there's a side-by-side ownership table.
+Short answer: it unifies the four contracts (schema + infra + orchestration + policy) into one YAML so they can't drift. Long answer: see [Concepts → vs alternatives](/forge_docs/concepts/vs-alternatives.html) — there's a side-by-side ownership table.
 
 ## Why do I see `pip install fluid-forge` in some old docs and `pip install data-product-forge` in new docs?
 
@@ -17,7 +17,7 @@ The PyPI package was renamed. Canonical name as of v0.8.0: **`data-product-forge
 
 ## What's the difference between `fluidVersion` and the CLI version?
 
-`fluidVersion` is the **contract schema version** declared inside each YAML file (current: `"0.7.2"`). The CLI version is the version of the `data-product-forge` package itself (current: `0.8.0`). The CLI accepts contracts with `fluidVersion` `0.4.0`, `0.5.7`, `0.7.1`, or `0.7.2`. Run `fluid version` for the authoritative compatibility list.
+`fluidVersion` is the **contract schema version** declared inside each YAML file (current: `"0.7.3"`). The CLI version is the version of the `data-product-forge` package itself (current: `0.8.0`). The CLI accepts contracts with `fluidVersion` `0.7.1`, `0.7.2`, or `0.7.3`. Run `fluid version` for the authoritative compatibility list.
 
 ## I get `No module named 'duckdb'` running the local quickstart.
 
@@ -31,9 +31,9 @@ Or for an isolated CLI install: `pipx install "data-product-forge[local]"`.
 
 ## Where do I report a bug or ask a question?
 
-- **Bug?** [open an issue](https://github.com/Agentics-Rising/forge-cli/issues/new) with `fluid version` + `fluid doctor` output.
-- **Question?** [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions).
-- **Security report?** See [SECURITY.md](https://github.com/Agentics-Rising/forge-cli/blob/main/SECURITY.md).
+- **Bug?** [open an issue](https://github.com/Agenticstiger/forge-cli/issues/new) with `fluid version` + `fluid doctor` output.
+- **Question?** [GitHub Discussions](https://github.com/Agenticstiger/forge-cli/discussions).
+- **Security report?** See [SECURITY.md](https://github.com/Agenticstiger/forge-cli/blob/main/SECURITY.md).
 
 ## How do I upgrade?
 
@@ -51,5 +51,5 @@ Schema migrations are backward-compatible by default — the latest CLI reads ol
 ---
 
 ::: warning This FAQ is a starter set
-Each Q&A above is the canonical answer for now. As more questions come in via [GitHub Discussions](https://github.com/Agentics-Rising/forge-cli/discussions), they'll be added here. Submitting a Q&A you'd like to see is a great first contribution.
+Each Q&A above is the canonical answer for now. As more questions come in via [GitHub Discussions](https://github.com/Agenticstiger/forge-cli/discussions), they'll be added here. Submitting a Q&A you'd like to see is a great first contribution.
 :::

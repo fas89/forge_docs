@@ -17,7 +17,8 @@ export default defineUserConfig({
 
   base: '/forge_docs/',
 
-  // Loads client.ts so <CliCast> is registered globally for markdown pages.
+  // Loads client.ts so <CliCast> is registered globally for markdown pages
+  // and the branded NotFound layout overrides the theme's default 404.
   clientConfigFile: resolve(__dirname, './client.ts'),
 
   bundler: viteBundler({
@@ -37,7 +38,7 @@ export default defineUserConfig({
 
   head: [
     ['link', { rel: 'icon', href: '/forge_docs/logo.png' }],
-    ['meta', { name: 'theme-color', content: '#2563eb' }], // brand blue (Phase 2A foundation)
+    ['meta', { name: 'theme-color', content: '#050813' }], // brand deep-navy
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
 
@@ -61,10 +62,17 @@ export default defineUserConfig({
   ],
 
   theme: defaultTheme({
-    logo: '/logo.png',
+    // Dark is the brand default (matches agenticstransformation.com).
+    // The navbar toggle still switches to the refined light theme.
+    colorMode: 'dark',
+    colorModeSwitch: true,
 
+    // No `logo`: the current logo.png has a baked-in white background
+    // that reads as a bright box on the dark theme. The navbar shows the
+    // "Fluid Forge" wordmark instead (and still links home, so a "Home"
+    // navbar item is redundant). Add a transparent `logo` / `logoDark`
+    // asset later to bring the mark back.
     navbar: [
-      { text: 'Home', link: '/' },
       { text: 'Get Started', link: '/getting-started/' },
       { text: 'See it run', link: '/see-it-run' },
       {
@@ -78,7 +86,9 @@ export default defineUserConfig({
           { text: 'Declarative Airflow', link: '/walkthrough/airflow-declarative' },
           { text: 'Orchestration Export', link: '/walkthrough/export-orchestration' },
           { text: 'Jenkins CI/CD', link: '/walkthrough/jenkins-cicd' },
-          { text: 'Universal Pipeline', link: '/walkthrough/universal-pipeline' }
+          { text: 'Universal Pipeline', link: '/walkthrough/universal-pipeline' },
+          { text: '11-Stage Production Pipeline', link: '/walkthrough/11-stage-pipeline' },
+          { text: 'Catalog Forge End-to-End', link: '/walkthrough/catalog-forge-end-to-end' }
         ]
       },
       { text: 'CLI Reference', link: '/cli/' },
@@ -107,12 +117,27 @@ export default defineUserConfig({
         {
           text: 'Introduction',
           children: [
-            '/README.md',
+            { text: 'Home', link: '/' },
             '/getting-started/',
             '/getting-started/snowflake.md',
             '/see-it-run.md',
             '/forge-data-model.md',
-            '/vision.md'
+            '/vision.md',
+            '/playground/',
+            '/faq/'
+          ]
+        },
+        {
+          text: 'Concepts',
+          children: [
+            '/concepts/README.md',
+            '/concepts/builds-exposes-bindings.md',
+            '/concepts/contract.md',
+            '/concepts/quality-sla-lineage.md',
+            '/concepts/governance-policy.md',
+            '/concepts/agent-policy.md',
+            '/concepts/providers-vs-platforms.md',
+            '/concepts/vs-alternatives.md'
           ]
         },
         {
@@ -132,7 +157,9 @@ export default defineUserConfig({
             '/walkthrough/airflow-declarative.md',
             '/walkthrough/export-orchestration.md',
             '/walkthrough/jenkins-cicd.md',
-            '/walkthrough/universal-pipeline.md'
+            '/walkthrough/universal-pipeline.md',
+            '/walkthrough/11-stage-pipeline.md',
+            '/walkthrough/catalog-forge-end-to-end.md'
           ]
         },
         {
@@ -150,6 +177,9 @@ export default defineUserConfig({
             '/cli/apply.md',
             // Generate & visualize
             '/cli/generate.md',
+            '/cli/generate-artifacts.md',
+            '/cli/validate-artifacts.md',
+            '/cli/verify-signature.md',
             '/cli/generate-airflow.md',
             '/cli/generate-pipeline.md',
             '/cli/viz-graph.md',
@@ -165,6 +195,7 @@ export default defineUserConfig({
             '/cli/market.md',
             '/cli/import.md',
             // Quality & governance
+            '/cli/policy.md',
             '/cli/policy-check.md',
             '/cli/policy-compile.md',
             '/cli/policy-apply.md',
@@ -184,6 +215,7 @@ export default defineUserConfig({
             // CI & scaffolding
             '/cli/scaffold-ci.md',
             '/cli/scaffold-composer.md',
+            '/cli/scaffold-ide.md',
             '/cli/docs.md',
             // Utilities
             '/cli/config.md',
@@ -201,7 +233,43 @@ export default defineUserConfig({
             '/cli/secrets.md',
             '/cli/stats.md',
             '/cli/contract.md',
-            '/cli/ship.md'
+            '/cli/ship.md',
+            '/cli/rollback.md',
+            '/cli/schedule-sync.md',
+            {
+              text: 'Catalog adapters',
+              collapsible: true,
+              children: [
+                '/cli/catalogs/README.md',
+                '/cli/catalogs/bigquery.md',
+                '/cli/catalogs/snowflake.md',
+                '/cli/catalogs/unity.md',
+                '/cli/catalogs/dataplex.md',
+                '/cli/catalogs/glue.md',
+                '/cli/catalogs/datahub.md',
+                '/cli/catalogs/datamesh-manager.md'
+              ]
+            },
+            {
+              text: 'CLI by task',
+              collapsible: true,
+              children: [
+                '/cli/tasks/README.md',
+                '/cli/tasks/add-quality-rules.md',
+                '/cli/tasks/agent-governance.md',
+                '/cli/tasks/debug-failed-run.md',
+                '/cli/tasks/switch-clouds.md'
+              ]
+            }
+          ]
+        },
+        {
+          text: 'Recipes',
+          children: [
+            '/recipes/README.md',
+            '/recipes/add-a-quality-rule.md',
+            '/recipes/switch-clouds.md',
+            '/recipes/tag-pii.md'
           ]
         },
         {
@@ -285,8 +353,6 @@ export default defineUserConfig({
     sitemapPlugin({
       hostname: 'https://agenticstiger.github.io/forge_docs/',
     }),
-    markdownChartPlugin({
-      mermaid: true,
-    }),
+    markdownChartPlugin({}),
   ],
 })

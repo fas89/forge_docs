@@ -17,7 +17,7 @@ A top-level `agentPolicy` block to your contract:
 agentPolicy:
   allowedModels: ["gpt-4", "claude-3-opus", "gemini-2.5-flash"]
   allowedUseCases: ["analysis", "summarization", "qa"]
-  deniedUseCases: ["training", "fine-tuning", "profiling"]
+  deniedUseCases: ["training", "fine_tuning"]
   maxTokensPerRequest: 4000
   canStore: false
   auditRequired: true
@@ -25,7 +25,7 @@ agentPolicy:
 
 What this declaration does:
 - **Allow** reads from `gpt-4`, `claude-3-opus`, or `gemini-2.5-flash` for `analysis`, `summarization`, or `qa`
-- **Deny** any read tagged as `training` / `fine-tuning` / `profiling` — even from an allowed model
+- **Deny** any read tagged as `training` / `fine_tuning` — even from an allowed model
 - Cap tokens per request at 4,000 (prevents excessive data exfiltration in one call)
 - Forbid storage / caching (`canStore: false` = ephemeral reads only)
 - Log every read (`auditRequired: true`)
@@ -52,7 +52,7 @@ accessPolicy:                          # human/service grants
 agentPolicy:                           # AI/LLM grants — separate
   allowedModels: ["gpt-4", "claude-3-opus", "gemini-2.5-flash"]
   allowedUseCases: ["analysis", "summarization", "qa"]
-  deniedUseCases: ["training", "fine-tuning"]
+  deniedUseCases: ["training", "fine_tuning"]
   maxTokensPerRequest: 4000
   canStore: false
   auditRequired: true
@@ -75,10 +75,10 @@ fluid validate contract.fluid.yaml --strict
 ## Step 3 — preview enforcement
 
 ```bash
-fluid policy-check contract.fluid.yaml --report agentPolicy
+fluid policy-check contract.fluid.yaml --category sensitivity
 ```
 
-This shows the **enforcement summary** — who/what is allowed, what's denied, what's audited:
+This runs the schema-driven policy engine. The **enforcement summary** shows who/what is allowed, what's denied, what's audited:
 
 ```
 🛡  agentPolicy enforcement summary
@@ -96,11 +96,19 @@ Limits     maxTokensPerRequest=4000
 
 Run this in CI on every contract change. It's the equivalent of `fluid validate` for the AI-access surface specifically.
 
-## Step 4 — apply the policy
+## Step 4 — compile, then apply the policy
+
+`policy-apply` does not read the contract directly — it deploys a *compiled bindings file*. Compile first, then apply:
 
 ```bash
-fluid policy-apply contract.fluid.yaml --env prod --yes
+# Compile the contract (with the prod overlay) into provider-specific bindings
+fluid policy compile contract.fluid.yaml --env prod --out runtime/policy/bindings.json
+
+# Apply the compiled bindings — --mode enforce actually deploys the IAM changes
+fluid policy apply runtime/policy/bindings.json --mode enforce
 ```
+
+`policy compile` is a pure function (contract in, JSON out — no cloud calls). `policy apply` defaults to `--mode check` (dry-run); pass `--mode enforce` to deploy.
 
 This emits the cloud-specific enforcement primitives and applies them. **What gets emitted depends on the platform**:
 
@@ -120,7 +128,7 @@ You have three options for how agents actually hit the gate. Pick one:
 ### Option A — Forge MCP server (recommended for new agents)
 
 ```bash
-fluid mcp serve --contract contract.fluid.yaml
+fluid mcp serve
 ```
 
 Exposes the data product as an MCP resource. Every MCP read passes through the agentPolicy gate. Audit records ship to the platform's native audit log automatically.
@@ -129,7 +137,7 @@ This is the cleanest mode. Use it whenever your agent infrastructure can speak M
 
 ### Option B — Side-car interceptor (for existing agents)
 
-If your agents read directly via SQL/HTTP (not MCP), the side-car pattern intercepts at the platform layer. The bindings emitted by `policy-apply` (the BigQuery RLS rule, the Snowflake masking policy, etc.) **already** enforce the policy. No further setup needed beyond passing the agent identity in the connection string.
+If your agents read directly via SQL/HTTP (not MCP), the side-car pattern intercepts at the platform layer. The bindings compiled by `policy compile` and deployed by `policy apply` (the BigQuery RLS rule, the Snowflake masking policy, etc.) **already** enforce the policy. No further setup needed beyond passing the agent identity in the connection string.
 
 Example (BigQuery):
 
@@ -199,7 +207,7 @@ The MCP server (Option A) tags each read with the agent identity, model, and use
 
 ```yaml
 agentPolicy:
-  deniedUseCases: ["training", "fine-tuning", "embedding-export"]
+  deniedUseCases: ["training", "fine_tuning", "embedding"]
   canStore: false
   auditRequired: true
   purposeLimitation: "Read-only inference for analysis. Data may not leave the runtime context."
@@ -211,7 +219,7 @@ agentPolicy:
 agentPolicy:
   allowedModels: ["gpt-4", "claude-3-opus"]
   allowedUseCases: ["analysis", "summarization", "qa"]
-  deniedUseCases: ["training", "fine-tuning"]
+  deniedUseCases: ["training", "fine_tuning"]
   maxTokensPerRequest: 4000
   maxTokensPerDay: 1000000
   canStore: false
@@ -241,5 +249,6 @@ agentPolicy:
 - [Agent Policy concept](/forge_docs/concepts/agent-policy) — full conceptual treatment + audit event schema
 - [Agent policy demo](/forge_docs/see-it-run.html) — frame-perfect cast of validate → policy-check → audit replay
 - [`fluid mcp serve`](/forge_docs/cli/mcp) — the MCP server
-- [`fluid policy-apply`](/forge_docs/cli/policy-apply) — emit + apply the side-car interceptors
+- [`fluid policy compile`](/forge_docs/cli/policy-compile) — compile the contract into provider bindings
+- [`fluid policy apply`](/forge_docs/cli/policy-apply) — deploy the compiled bindings
 - [Governance & Policy](/forge_docs/concepts/governance-policy) — `accessPolicy` for human/service principals (the complementary gate)

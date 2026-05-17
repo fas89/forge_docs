@@ -4,7 +4,7 @@ Use this checklist when reviewing or self-checking a draft. Report each item as 
 
 ## 1. Schema And Version
 
-- `fluidVersion` is `0.7.2` unless the user explicitly requested another version
+- `fluidVersion` is `0.7.3` unless the user explicitly requested another version
 - Top-level `kind`, `id`, `name`, `metadata`, and `exposes` are present
 - Each tabular expose includes `binding` and `contract.schema`
 - `contract.schema` is an array of columns, not an ad hoc object

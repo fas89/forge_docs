@@ -16,7 +16,7 @@ Suggested name:
 
 Suggested description:
 
-`Drafts and reviews FLUID 0.7.2 contracts for Forge, asks provider-specific follow-up questions, and requires validation before anything is treated as final.`
+`Drafts and reviews FLUID 0.7.3 contracts for Forge, asks provider-specific follow-up questions, and requires validation before anything is treated as final.`
 
 Instructions:
 
@@ -69,8 +69,8 @@ Do not publish to the GPT Store for this version.
 
 Run these in Preview before sharing:
 
-1. `Generate a FLUID 0.7.2 contract for a local CSV cleanup pipeline from these fields: order_id, customer_id, amount, order_date.`
-2. `Generate a FLUID 0.7.2 contract for a GCP customer metrics table with GDPR residency and AI restrictions.`
+1. `Generate a FLUID 0.7.3 contract for a local CSV cleanup pipeline from these fields: order_id, customer_id, amount, order_date.`
+2. `Generate a FLUID 0.7.3 contract for a GCP customer metrics table with GDPR residency and AI restrictions.`
 3. `Review this contract and tell me what will fail validation:` then paste an intentionally broken contract
 4. Upload a small schema-like CSV or JSON artifact and ask the GPT to map it to `exposes[].contract.schema`
 

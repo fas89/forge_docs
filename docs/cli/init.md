@@ -16,7 +16,7 @@ fluid init NAME
 | `--blank` | Create an empty project skeleton |
 | `--template NAME` | Create from a named template |
 | `--list-templates` | Show available templates and exit |
-| `--discover URI` | Introspect a source (`postgres://`, `mysql://`, `file://`, `s3://`) and emit a Bronze acquisition contract per discovered stream. **Coming on the source-aligned-acquisition branch — schema 0.7.3.** |
+| `--discover URI` | Introspect a source (`postgres://`, `mysql://`, `file://`, `s3://`) and emit a Bronze acquisition contract per discovered stream. **Coming with the source-aligned acquisition stack — schema 0.7.3.** |
 | `--provider` | Target provider, defaulting to local |
 | `--yes`, `-y` | Skip confirmation prompts |
 | `--dry-run` | Preview what would be created |
@@ -37,7 +37,7 @@ fluid init my-project --provider snowflake
 ## `--discover` — introspect a source into a Bronze contract
 
 ::: tip Coming in the next release
-`--discover` ships on the `feat/source-aligned-acquisition` branch as part of schema 0.7.3. The pinned 0.8.0 baseline doesn't include it yet.
+`--discover` ships with the source-aligned acquisition stack (schema 0.7.3). The pinned 0.8.0 baseline doesn't include it yet.
 :::
 
 Instead of writing the acquisition block by hand, point `fluid init` at a source URI and it emits a deterministic 0.7.3 Bronze (SDP) contract per discovered stream:
@@ -72,7 +72,7 @@ You can then `fluid validate` and `fluid apply` immediately, or open the files a
 ## Notes
 
 - The promoted newcomer path is `fluid init ... --quickstart`, then `validate`, `plan`, and `apply`.
-- Current scaffolds emit contracts using `fluidVersion: 0.7.2`. The `--discover` path emits `fluidVersion: 0.7.3`.
+- Current scaffolds emit contracts using `fluidVersion: 0.7.2`.
 - If you want AI-assisted scaffolding instead, use [`fluid forge`](./forge.md).
 
 ## Fastest path — `fluid demo`

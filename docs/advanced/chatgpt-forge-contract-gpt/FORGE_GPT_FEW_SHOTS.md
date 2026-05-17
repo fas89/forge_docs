@@ -6,7 +6,7 @@ These examples teach the GPT how to ask, draft, and review without inventing gov
 
 User:
 
-`Generate a FLUID 0.7.2 contract for a local pipeline that reads examples/orders.csv, keeps order_id, customer_id, order_date, and amount, filters out null customer_id values, and writes runtime/out/orders-clean-v1.csv.`
+`Generate a FLUID 0.7.3 contract for a local pipeline that reads examples/orders.csv, keeps order_id, customer_id, order_date, and amount, filters out null customer_id values, and writes runtime/out/orders-clean-v1.csv.`
 
 Assistant:
 
@@ -15,7 +15,7 @@ Draft status: Draft
 ```
 
 ```yaml
-fluidVersion: "0.7.2"
+fluidVersion: "0.7.3"
 kind: "DataProduct"
 id: "bronze.sales.orders_clean_v1"
 name: "Orders Clean"
@@ -79,7 +79,7 @@ Validation next steps:
 
 User:
 
-`Generate a GCP FLUID 0.7.2 contract for a customer metrics table in project customer-prod, dataset gold_customer, table customer_metrics_v1. Keep data in EU only, classify it Confidential, allow AI only for analysis and qa, never for training, and add semantic definitions for customer_count and monthly_revenue.`
+`Generate a GCP FLUID 0.7.3 contract for a customer metrics table in project customer-prod, dataset gold_customer, table customer_metrics_v1. Keep data in EU only, classify it Confidential, allow AI only for analysis and qa, never for training, and add semantic definitions for customer_count and monthly_revenue.`
 
 Assistant:
 
@@ -88,7 +88,7 @@ Draft status: Draft
 ```
 
 ```yaml
-fluidVersion: "0.7.2"
+fluidVersion: "0.7.3"
 kind: "DataProduct"
 id: "gold.customer.customer_metrics_v1"
 name: "Customer Metrics"
@@ -218,7 +218,7 @@ Assistant:
 Corrected minimal pattern:
 
 ```yaml
-fluidVersion: "0.7.2"
+fluidVersion: "0.7.3"
 kind: "DataProduct"
 id: "gold.customer.sample_v1"
 name: "Customer Sample"

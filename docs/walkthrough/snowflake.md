@@ -120,7 +120,7 @@ The CI version of this review flow should run with key-pair or OAuth credentials
 This is the kind of first draft the data engineer might propose:
 
 ```yaml
-fluidVersion: "0.7.2"
+fluidVersion: "0.7.3"
 kind: DataProduct
 id: finance.customer_orders_weekly_revenue
 name: Customer Orders Weekly Revenue

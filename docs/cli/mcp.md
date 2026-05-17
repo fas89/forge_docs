@@ -50,6 +50,10 @@ FLUID_QUIET=1 fluid mcp serve \
 
 Inline catalog credentials are blocked by default. Configure source credentials outside MCP and pass credential ids from the client.
 
+## Server internals
+
+`fluid mcp serve` is built on the official MCP Python SDK (`FastMCP`) and speaks MCP protocol version `2025-06-18`. It advertises 14 typed tools — including `forge_run`, which can drive a full forge from inside the client. See the [Advanced MCP server guide](../advanced/mcp.md) for the complete tool catalog and the LLM sampling backchannel.
+
 ## Related guides
 
 - [Advanced MCP server guide](../advanced/mcp.md)

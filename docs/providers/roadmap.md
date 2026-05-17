@@ -23,7 +23,7 @@
 
 ## AWS Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (CLI v0.8.0)
 
 ### Infrastructure Deployment (Available Now)
 
@@ -73,7 +73,7 @@ fluid export aws-contract.yaml --engine prefect -o flows/
 
 ## Snowflake Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (CLI v0.8.0)
 
 ### Infrastructure Deployment (Available Now)
 
@@ -110,7 +110,7 @@ fluid generate-airflow snowflake-contract.yaml --env prod -o dags/prod_pipeline.
 
 ## GCP Provider
 
-**Status:** ✅ Production Ready (v0.7.1)
+**Status:** ✅ Production Ready (CLI v0.8.0)
 
 The flagship provider with the most mature implementation:
 
@@ -135,12 +135,12 @@ fluid export gcp-contract.yaml --engine prefect -o flows/
 
 ## Data Catalog Providers
 
-### ODPS (Open Data Product Standard)
+### ODPS (Open Data Product Specification)
 
 **Status:** ✅ Available Now
 
 ```bash
-fluid export-odps contract.yaml -o catalog/
+fluid export-opds contract.yaml --out catalog/
 fluid odps validate catalog/product.yaml
 ```
 
@@ -149,7 +149,7 @@ fluid odps validate catalog/product.yaml
 **Status:** ✅ Available Now
 
 ```bash
-fluid export-odcs contract.yaml -o contracts/
+fluid odcs export contract.yaml -o contracts/
 fluid odcs validate contracts/contract.yaml
 ```
 
@@ -216,20 +216,39 @@ Fluid Forge is designed for extensibility. Community providers welcome for:
 Deploy the same contract to multiple clouds:
 
 ```yaml
-fluidVersion: "0.7"
+fluidVersion: "0.7.3"
 kind: DataProduct
-exposeId: multi-cloud-analytics
+id: analytics.multi_cloud_analytics
+name: Multi-Cloud Analytics
 
-binding:
-  provider: gcp          # or aws, snowflake
-  project: my-project
+metadata:
+  layer: Gold
+  owner:
+    team: data-engineering
+    email: data-engineering@company.com
 
 exposes:
-  - type: dataset
-    name: analytics
+  - exposeId: analytics
+    kind: table
+    title: Multi-Cloud Analytics Table
+    version: "1.0.0"
+
+    binding:
+      platform: gcp                # or aws, snowflake
+      format: bigquery_table       # provider-specific format
+      location:
+        project: my-project
+        dataset: analytics
+        table: analytics
+
+    contract:
+      schema:
+        - name: id
+          type: STRING
+          required: true
 ```
 
-The same contract structure works across GCP, AWS, and Snowflake — just change the `binding.provider` field.
+The same contract structure works across GCP, AWS, and Snowflake — just change `binding.platform` (and the matching `binding.format` / `binding.location`).
 
 ---
 
@@ -238,8 +257,8 @@ The same contract structure works across GCP, AWS, and Snowflake — just change
 Vote for providers or request new ones:
 
 - 🗳️ [Provider Feature Requests](https://github.com/Agenticstiger/forge-cli/issues?q=is%3Aissue+is%3Aopen+label%3Aprovider)
-- 💬 [Discord Discussion](https://github.com/Agenticstiger/forge-cli/discussions)
-- 📧 Email: https://github.com/Agenticstiger/forge-cli/issues/new?labels=provider-request
+- 💬 [GitHub Discussions](https://github.com/Agenticstiger/forge-cli/discussions)
+- 📋 [Open a provider request issue](https://github.com/Agenticstiger/forge-cli/issues/new?labels=provider-request)
 
 ---
 

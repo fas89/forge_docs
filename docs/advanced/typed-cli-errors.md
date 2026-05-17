@@ -1,6 +1,6 @@
 # Typed CLI Errors
 
-The `feat/source-aligned-acquisition` branch introduces a 14-class typed-error catalog at `fluid_build.cli._errors`. Every user-facing CLI error renders the same five-field shape: **what**, **where**, **why**, **fix**, **doc**. JSON output is stable so CI log parsers and IDE integrations can consume it without regex.
+The source-aligned acquisition release (schema 0.7.3) introduces a 15-class typed-error catalog at `fluid_build.cli._errors`. This is a next-release surface — not in the 0.8.0 baseline yet. Every user-facing CLI error renders the same five-field shape: **what**, **where**, **why**, **fix**, **doc**. JSON output is stable so CI log parsers and IDE integrations can consume it without regex.
 
 ::: tip Where this fits
 This is the **CLI-level** error catalog, distinct from the **agent-layer** typed errors (`RateLimitError`, `ContextOverflowError`, etc.) documented at [Typed Errors](/forge_docs/advanced/typed-errors.html). CLI errors fire from user-facing commands; agent errors fire inside the LLM provider stack.
@@ -37,7 +37,7 @@ And like this when the calling command was given `--json`:
 
 The `extras` field carries error-class-specific structured detail (added columns, retry-after seconds, secret reference, etc.).
 
-## The 14 typed errors
+## The 15 typed errors
 
 All inherit from `FluidUserError` (which subclasses `Exception`). Each has a `for_*` factory that constructs the right `where`/`extras` for the calling context.
 
@@ -78,11 +78,12 @@ All inherit from `FluidUserError` (which subclasses `Exception`). Each has a `fo
 | `BudgetExceededError` | The projected run cost would exceed the contract's monthly budget cap; `cost.onExceed=fail`. |
 | `SovereigntyViolationError` | A connector / sink combination is not allowed in the declared jurisdiction. |
 | `ResidencyViolationError` | A data transfer would violate `metadata.dataResidency.region` / `prohibitTransferTo`. |
+| `SupplyChainViolationError` | A container image failed Cosign signature verification — its signature couldn't be verified with the configured public key, or its signer isn't on `sovereignty.allowedSigners`. Fix: pin a Cosign-signed image signed with the configured key, or update `sovereignty.allowedSigners`. |
 | `InfraDriftError` | The live infrastructure version doesn't match what was declared (e.g. Helm chart drift). |
 
 ## Exit-code contract
 
-The CLI exit-code contract is **uniform across all 14 error classes** so CI matrices stay simple:
+The CLI exit-code contract is **uniform across all 15 error classes** so CI matrices stay simple:
 
 | Exit code | Meaning |
 |---|---|
@@ -92,7 +93,7 @@ The CLI exit-code contract is **uniform across all 14 error classes** so CI matr
 | `3` | Transient — retry might succeed (`ConnectivityProbeError`, `LockHeldError`) |
 | `4` | Internal — file an issue with the JSON output and traceback |
 
-`SchemaValidationError`, `CapabilityMismatchError`, `MissingExtraError`, `BudgetExceededError`, `SovereigntyViolationError`, `ResidencyViolationError`, `SecretResolutionError`, `DLQOverflowError`, `SchemaDriftError`, `InfraDriftError` → exit code `1`.
+`SchemaValidationError`, `CapabilityMismatchError`, `MissingExtraError`, `BudgetExceededError`, `SovereigntyViolationError`, `ResidencyViolationError`, `SupplyChainViolationError`, `SecretResolutionError`, `DLQOverflowError`, `SchemaDriftError`, `InfraDriftError` → exit code `1`.
 
 `PartialFailureError` → exit code `2`.
 
@@ -130,5 +131,5 @@ except FluidUserError as e:
 
 - [Source-Aligned Acquisition](/forge_docs/advanced/source-aligned-acquisition.html) — the framework these errors guard
 - [Typed Errors](/forge_docs/advanced/typed-errors.html) — the **agent-layer** typed errors (LLM-side; distinct catalog)
-- [`fluid validate --probe`](/forge_docs/cli/validate.html#probe) — what triggers `ConnectivityProbeError`
+- [`fluid validate --probe`](/forge_docs/cli/validate.html#probe-—-live-external-connectivity-checks) — what triggers `ConnectivityProbeError`
 - [`fluid retention sweep`](/forge_docs/cli/retention.html) — what `StaleReplayError` is preventing

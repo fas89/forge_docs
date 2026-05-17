@@ -54,7 +54,7 @@ accessPolicy:
       permissions: ["read", "select"]       # cleared role; sees PII unmasked (verified by audit log)
 ```
 
-The actual unmasking-vs-masking behavior is determined by the platform's masking policies; `fluid policy-apply` emits the policy attached to each principal.
+The actual unmasking-vs-masking behavior is determined by the platform's masking policies; `fluid policy apply` deploys the policy attached to each principal.
 
 ## 3. Block AI agents from reading PII
 
@@ -71,12 +71,13 @@ The combination of `sensitivity: pii` on columns + `agentPolicy` at the contract
 ## Verify before deploying
 
 ```bash
-fluid policy-check contract.fluid.yaml      # validates the policy block
-fluid plan contract.fluid.yaml              # shows which masks/grants will be applied
-fluid policy-apply contract.fluid.yaml      # apply the compiled IAM
+fluid policy-check contract.fluid.yaml                                  # validates the policy block
+fluid plan contract.fluid.yaml                                          # shows which masks/grants will be applied
+fluid policy compile contract.fluid.yaml --out runtime/policy/bindings.json  # contract → provider bindings
+fluid policy apply runtime/policy/bindings.json                         # deploy the compiled IAM (dry-run; add --mode enforce)
 ```
 
 ## See also
 
-- [Concepts → Governance & Policy](/forge_docs/concepts/governance-policy.md) — full sovereignty + accessPolicy schema.
-- [Concepts → Agent Policy](/forge_docs/concepts/agent-policy.md) — every `agentPolicy` field.
+- [Concepts → Governance & Policy](/forge_docs/concepts/governance-policy.html) — full sovereignty + accessPolicy schema.
+- [Concepts → Agent Policy](/forge_docs/concepts/agent-policy.html) — every `agentPolicy` field.

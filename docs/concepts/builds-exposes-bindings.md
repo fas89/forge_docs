@@ -29,10 +29,11 @@ builds:
         FROM raw_btc_feed
 ```
 
-Patterns supported in v0.7.2 (verified against `fluid-schema-0.7.2.json`):
+Patterns supported in v0.7.3 (verified against `fluid-schema-0.7.3.json`):
 - **`embedded-logic`** — SQL/code inline in the contract. `language` enum: `sql`, `flink_sql`, `pyspark`, `scala`, `python`, `r`.
 - **`hybrid-reference`** — dbt-style: point at an external repo with a `model:` field and optional `vars:`.
 - **`multi-stage`** — orchestration pattern with a `stages[]` array of named build steps. Schema description: "Multi-stage orchestration pattern" (introduced in v0.5.5).
+- **`acquisition`** — source-aligned ingestion pattern (added in v0.7.3) for landing raw external data.
 
 ## `exposes[]` — the consumer-facing API
 
@@ -58,15 +59,15 @@ exposes:
 
 The schema lives at `exposes[].contract.schema`. Quality rules live one level deeper at `exposes[].contract.dq.rules` (see [Quality, SLAs & Lineage](./quality-sla-lineage.md)).
 
-`expose.kind` enum (verified against `fluid-schema-0.7.2.json`):
+`expose.kind` enum (verified against `fluid-schema-0.7.3.json`):
 `table` · `view` · `api` · `file` · `stream` · `topic` · `feature_store` · `model` · `vector` · `graph` · `time_series` · `other`
 
 ## `binding` — the physical landing target
 
-`binding.platform` enum (v0.7.2):
+`binding.platform` enum (v0.7.3):
 `gcp` · `aws` · `azure` · `snowflake` · `databricks` · `kafka` · `local` · `kubernetes` · `other`
 
-`binding.format` enum (v0.7.2):
+`binding.format` enum (v0.7.3):
 `bigquery_table` · `snowflake_table` · `gcs_file` · `s3_file` · `http_api` · `grpc_api` · `pubsub_topic` · `kafka_topic` · `delta_table` · `iceberg` · `parquet` · `csv` · `json` · `other`
 
 `binding.location` shape varies per `format`:
@@ -150,11 +151,12 @@ builds:
     execution:
       runtime:
         image: python:3.11-slim
-        dependencies: [boto3, requests, pyarrow]
-        env: [AWS_REGION, S3_BUCKET]
-      retries:
-        count: 3
-        backoff: exponential
+        environment:                   # map of NAME: value, injected into the container
+          AWS_REGION: us-east-1
+          S3_BUCKET: my-ingest-bucket
+      retries:                         # → retryPolicy schema
+        maxAttempts: 3
+        backoffStrategy: exponential   # fixed | exponential | linear
       trigger:
         type: scheduled
         cron: "0 * * * *"             # hourly
@@ -165,6 +167,6 @@ For SQL builds (`engine: sql`), the runtime is the warehouse itself (BigQuery, S
 ## Where to look next
 
 - [Providers vs platforms](./providers-vs-platforms.md) — how `binding.platform` resolves to actual cloud SDKs
-- [Quality, SLAs & Lineage](./quality-sla-lineage.md) — the `dq.rules`, `slas`, and `lineage` blocks
+- [Quality, SLAs & Lineage](./quality-sla-lineage.md) — the `dq.rules`, `qos`, and `lineage` blocks
 - [Governance & Policy](./governance-policy.md) — the `accessPolicy` and `agentPolicy` blocks
 - [`fluid plan` walkthrough](/forge_docs/cli/plan) — what the planner emits per binding

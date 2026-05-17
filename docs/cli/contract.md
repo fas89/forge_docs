@@ -3,7 +3,7 @@
 Manipulate FLUID contracts — apply AI-suggested edits with provenance gating, and migrate older contracts to the schema 0.7.3 productType vocabulary.
 
 ::: tip Where this fits
-`fluid contract` ships with the source-aligned acquisition stack on the `feat/source-aligned-acquisition` branch. The pinned 0.8.0 docs baseline doesn't include it yet; this page documents the surface ahead of release.
+`fluid contract` ships with the source-aligned acquisition stack (schema 0.7.3). The pinned 0.8.0 docs baseline doesn't include it yet; this page documents the surface ahead of release.
 :::
 
 ## Syntax
@@ -22,7 +22,7 @@ Merge an AI suggestion file into a target contract, with per-field provenance ga
 fluid contract apply-suggestion suggestion.yaml --target contract.fluid.yaml
 fluid contract apply-suggestion suggestion.yaml \
   --target contract.fluid.yaml \
-  --accept-provenance ai,template \
+  --accept-provenance ai template \
   --out contract.next.fluid.yaml
 ```
 
@@ -30,9 +30,8 @@ fluid contract apply-suggestion suggestion.yaml \
 |---|---|
 | `<suggestion-file>` | Required. Path to a per-field provenance-annotated suggestion file. |
 | `--target <path>` | Required. The contract to merge into. |
-| `--accept-provenance <list>` | Comma-separated provenance tags to accept: `ai`, `introspection`, `template`, `user`. Default: all except `ai` on safety-critical paths. |
+| `--accept-provenance <list>` | Space-separated provenance tags to accept: `ai`, `introspection`, `template`, `user`. Default: all (subject to safety-critical-path guardrails). |
 | `--out <path>` | Output path. Default: overwrite `--target` (with a one-line backup). |
-| `--dry-run` | Print the merged contract without writing. |
 
 #### How suggestions are structured
 
@@ -73,8 +72,7 @@ fluid contract migrate-product-type --root ./products --write --yes
 | `--root <path>` | Directory to walk. Default: current directory. |
 | `--check` | Dry-run mode. Exit non-zero if any contracts are still incomplete. |
 | `--write` | Rewrite files in place (default behavior is dry-run-only output). |
-| `--yes` | Skip the interactive confirmation. |
-| `--json` | Emit a structured summary. |
+| `-y`, `--yes` | Skip the interactive confirmation that fires before `--write` rewrites files. Required for non-interactive / CI use; ignored without `--write`. |
 
 #### Equivalence axiom
 
@@ -92,19 +90,7 @@ The migrator applies this canonical mapping (same one the runtime validator uses
 
 If both fields are already set and disagree, the migrator emits an error and exits non-zero — that's a contract bug to fix by hand, not a normalization the migrator will silently overwrite.
 
-#### Output (JSON)
-
-```json
-{
-  "scanned": 47,
-  "alreadyComplete": 32,
-  "filled": 14,
-  "inconsistent": 1,
-  "errors": [
-    { "path": "products/orders.fluid.yaml", "issue": "layer=Bronze but productType=ADP — pick one and re-run" }
-  ]
-}
-```
+The migrator logs a per-file line as it scans (`✏️ would write …` in dry-run, `✏️ rewrote …` under `--write`) and a closing one-line summary of how many contracts were scanned, rewritten, already complete, or still missing both twins.
 
 ## Exit codes
 

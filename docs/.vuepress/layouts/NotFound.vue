@@ -37,7 +37,7 @@
       <a class="ff-404__card" href="/forge_docs/cli/">
         <span class="ff-404__card-eyebrow">Reference</span>
         <strong>CLI</strong>
-        <span class="ff-404__card-detail">Every command, every flag, mirrored from `fluid --help`.</span>
+        <span class="ff-404__card-detail">Every command, every flag, mirrored from the fluid CLI.</span>
       </a>
       <a class="ff-404__card" href="/forge_docs/walkthrough/local">
         <span class="ff-404__card-eyebrow">Hands-on tutorial</span>
@@ -48,7 +48,7 @@
 
     <p class="ff-404__report">
       Found a true broken link? Please
-      <a href="https://github.com/Agentics-Rising/forge_docs/issues/new"
+      <a href="https://github.com/Agenticstiger/forge_docs/issues/new"
          rel="noopener">open an issue</a>
       so it doesn't trip the next visitor.
     </p>
@@ -98,6 +98,7 @@ onMounted(() => {
     background: var(--ff-hero-gradient);
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
     letter-spacing: -0.04em;
     margin-bottom: 16px;

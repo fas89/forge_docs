@@ -118,14 +118,15 @@ The DLQ block is honored uniformly across all engines: records that fail to land
 
 ```yaml
 schemaEvolution:
-  policy: discover_and_freeze    # strict | discover_and_freeze | evolve_safe
+  policy: discover_and_freeze    # strict | discover_and_freeze | evolve_safe | evolve_all
 ```
 
 | Policy | Behavior on a schema change in the source |
 |---|---|
-| **`strict`** | Run aborts with `SchemaDriftError`. The drift fingerprint is logged for review. |
-| **`discover_and_freeze`** *(default for first run)* | First-ever run discovers the schema and pins it; subsequent runs require strict matching. |
+| **`strict`** *(default)* | Run aborts with `SchemaDriftError`. The drift fingerprint is logged for review. |
+| **`discover_and_freeze`** | First-ever run discovers the schema and pins it; subsequent runs require strict matching. |
 | **`evolve_safe`** | Additive changes (new nullable columns, widened types) are accepted; breaking changes (column drop, type narrow) abort. |
+| **`evolve_all`** | Every schema change is accepted. Type narrows are handled by casting the affected values, and any rows that fail the cast are routed to the DLQ rather than aborting the run. The most permissive policy — use it only when downstream consumers tolerate schema churn. |
 
 Decisions are deterministic — the same input fingerprint always yields the same accept/abort decision, so CI replays are reproducible.
 
@@ -267,7 +268,7 @@ For migrating existing tooling, [`fluid import`](/forge_docs/cli/import.html) co
 
 - [Product Types — SDP, ADP, CDP](/forge_docs/data-products/product-type.html) — the vocabulary that gates composition
 - [Postgres → DuckDB walkthrough](/forge_docs/walkthrough/source-aligned-postgres-duckdb.html) — end-to-end worked example
-- [`fluid init --discover`](/forge_docs/cli/init.html#discover) — flagship onboarding for source-aligned ingestion
+- [`fluid init --discover`](/forge_docs/cli/init.html#discover-—-introspect-a-source-into-a-bronze-contract) — flagship onboarding for source-aligned ingestion
 - [`fluid import`](/forge_docs/cli/import.html) — Meltano / Airbyte / dlt / Singer importers
 - [`fluid runs`](/forge_docs/cli/runs.html), [`fluid retention`](/forge_docs/cli/retention.html), [`fluid secrets`](/forge_docs/cli/secrets.html) — day-2 ops for acquisition pipelines
 - [API Stability](/forge_docs/advanced/api-stability.html) — `fluid_build.api` v1.0 surface for out-of-tree runners and registrars

@@ -4,7 +4,7 @@ Use this guide as the GPT's contract drafting standard.
 
 ## 1. Contract Baseline
 
-- Default to `fluidVersion: "0.7.2"`
+- Default to `fluidVersion: "0.7.3"`
 - Default to `kind: "DataProduct"`
 - Treat all output as `Draft` until validation has been run
 - Prefer one complete `contract.fluid.yaml` over fragmented snippets when drafting from scratch
@@ -104,7 +104,7 @@ When the user explicitly provides governance requirements:
 - preserve the user's terminology
 - surface any ambiguous or conflicting value in `Open questions`
 
-## 7. Semantics Rules For 0.7.2
+## 7. Semantics Rules For 0.7.3
 
 `semantics` is optional and should only be added when the user provides business logic rich enough to support it.
 
@@ -122,7 +122,7 @@ Do not invent metrics or KPI formulas that the user did not define.
 Use these defaults when they are low-risk and repo-aligned:
 
 - `kind: "DataProduct"`
-- `fluidVersion: "0.7.2"`
+- `fluidVersion: "0.7.3"`
 - local demo outputs under `runtime/out/`
 - omit optional governance blocks if the user did not provide them
 - put unresolved governance items into `Open questions`

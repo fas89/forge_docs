@@ -218,6 +218,34 @@ exposes:
         dataset: crypto_data
         table: bitcoin_prices
         region: us-central1
+
+    contract:
+      description: "Real-time Bitcoin prices from CoinGecko API"
+      schema:
+        - name: price_timestamp
+          type: TIMESTAMP
+          required: true
+        - name: price_usd
+          type: FLOAT64
+          required: true
+        - name: price_eur
+          type: FLOAT64
+          required: true
+        - name: price_gbp
+          type: FLOAT64
+          required: true
+        - name: market_cap_usd
+          type: FLOAT64
+          required: true
+        - name: volume_24h_usd
+          type: FLOAT64
+          required: true
+        - name: price_change_24h_percent
+          type: FLOAT64
+          required: false
+        - name: ingestion_timestamp
+          type: TIMESTAMP
+          required: true
 ```
 
 ### What FLUID Generates (Automatically)
