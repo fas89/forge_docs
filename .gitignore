@@ -16,6 +16,9 @@ Thumbs.db
 *.swo
 *~
 
+# Claude Code local tooling (launch.json, scheduled_tasks.lock)
+.claude/
+
 # Logs
 *.log
 npm-debug.log*
