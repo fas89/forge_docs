@@ -21,8 +21,15 @@
 
 import { defineClientConfig } from 'vuepress/client'
 import { defineAsyncComponent } from 'vue'
-import CliCast from './components/CliCast.vue'
 import NotFound from './layouts/NotFound.vue'
+
+// CliCast and Playground both async-load: CliCast carries scoped SCSS
+// and only renders on demo-heavy pages; Playground pulls in Monaco
+// (~1 MB gzipped) and only runs on /playground/. Every other doc page
+// loads neither.
+const CliCast = defineAsyncComponent(
+  () => import('./components/CliCast.vue'),
+)
 
 const Playground = defineAsyncComponent(
   () => import('./components/Playground.vue'),

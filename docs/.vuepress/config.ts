@@ -21,17 +21,7 @@ export default defineUserConfig({
   // and the branded NotFound layout overrides the theme's default 404.
   clientConfigFile: resolve(__dirname, './client.ts'),
 
-  bundler: viteBundler({
-    viteOptions: {
-      build: {
-        rollupOptions: {
-          output: {
-            manualChunks: undefined
-          }
-        }
-      }
-    }
-  }),
+  bundler: viteBundler(),
 
   shouldPrefetch: false,
   shouldPreload: false,
