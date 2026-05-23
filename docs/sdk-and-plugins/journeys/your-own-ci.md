@@ -228,11 +228,11 @@ metadata:
 
 environments:
   dev:
-    cloud: { provider: aws, account: "111111111111", region: us-east-1 }
+    cloud: { provider: gcp, project: "order-events-dev",     region: us-central1 }
   staging:
-    cloud: { provider: aws, account: "222222222222", region: us-east-1 }
+    cloud: { provider: gcp, project: "order-events-staging", region: us-central1 }
   prod:
-    cloud: { provider: aws, account: "333333333333", region: us-west-2 }
+    cloud: { provider: gcp, project: "order-events-prod",    region: us-east1 }
 
 extensions:
   customScaffold:

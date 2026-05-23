@@ -53,7 +53,7 @@ metadata:
   productType: SDP
 environments:
   dev:
-    cloud: { provider: aws, account: "111111111111", region: us-east-1 }
+    cloud: { provider: gcp, project: "order-events-dev", region: us-central1 }
 extensions:
   customScaffold:
     libraries:
