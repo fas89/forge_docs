@@ -8,8 +8,8 @@
   The svg-term output already includes the macOS three-dot title
   bar. This component adds:
     - the surrounding browser-window-style frame
-    - a click-to-play overlay (so the heavy SVG only animates after
-      the visitor opts in)
+    - a click-to-play overlay (so the heavy SVG is only fetched
+      after the visitor opts in)
     - a replay button
     - an optional caption row beneath
 
@@ -22,19 +22,20 @@
       width="900"
     />
 
-  All props are optional except `src`. The SVG itself is loaded
-  lazily (intersection-observer) so an off-screen cast doesn't burn
-  bandwidth until you scroll near it.
+  All props are optional except `src`. The SVG is NOT fetched until
+  the visitor clicks Play — index pages with many casts pay zero
+  network cost on first paint. The placeholder uses an aspect-ratio
+  box so layout doesn't shift when the animation mounts.
   ============================================================
 -->
 
 <template>
   <figure
     class="ff-cast"
-    :class="{ 'ff-cast--playing': playing, 'ff-cast--loaded': loaded }"
+    :class="{ 'ff-cast--playing': playing }"
     :style="{ '--ff-cast-w': widthPx }"
   >
-    <div class="ff-cast__frame" ref="frameRef">
+    <div class="ff-cast__frame">
       <header class="ff-cast__chrome" v-if="title">
         <span class="ff-cast__dot ff-cast__dot--red"></span>
         <span class="ff-cast__dot ff-cast__dot--yellow"></span>
@@ -43,25 +44,14 @@
       </header>
 
       <div class="ff-cast__viewport">
-        <!-- Static poster — frame 0 of the cast. Rendered once the frame
-             scrolls into view; it sets the viewport height and is what
-             the visitor sees before (and behind) playback. -->
-        <img
-          v-if="visible"
-          :src="src"
-          :alt="alt || title || 'CLI demo'"
-          :aria-hidden="playing ? 'true' : null"
-          class="ff-cast__svg"
-          @load="loaded = true"
-          loading="lazy"
-        />
-
         <!-- Live animation. CSS @keyframes inside an SVG only run when the
              SVG loads as its own document — an <img> silently freezes it
              at frame 0 — so the cast is embedded via <object>. Mounted
-             only after the visitor clicks play; re-keyed by replay(). -->
+             (and fetched) only after the visitor clicks play; re-keyed by
+             replay(). Nothing on the page touches the network for this
+             cast until then — index pages with many casts cost ~0KB. -->
         <object
-          v-if="visible && playing"
+          v-if="playing"
           :key="reloadKey"
           :data="src"
           type="image/svg+xml"
@@ -72,7 +62,9 @@
           <span class="ff-cast__sr">{{ alt || title || 'CLI demo animation' }}</span>
         </object>
 
-        <!-- Click-to-play overlay (covers the poster until the visitor opts in) -->
+        <!-- Click-to-play placeholder. Pure CSS — no image fetched yet.
+             The viewport itself carries the aspect-ratio so layout doesn't
+             shift when the <object> mounts and the SVG loads. -->
         <button
           v-if="!playing"
           type="button"
@@ -123,7 +115,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, computed } from 'vue'
 
 interface Props {
   /** Path to the rendered animated SVG (typically /demos/<name>.svg) */
@@ -169,42 +161,11 @@ const insightLines = computed<string[]>(() => {
     .filter(Boolean)
 })
 
-const frameRef = ref<HTMLElement | null>(null)
-const visible = ref(false)
 const playing = ref(false)
-const loaded = ref(false)
 const reloadKey = ref(0)
 
-let observer: IntersectionObserver | null = null
-
-onMounted(() => {
-  if (!frameRef.value || typeof IntersectionObserver === 'undefined') {
-    visible.value = true // SSR or older browsers — just show immediately
-    return
-  }
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          visible.value = true
-          observer?.disconnect()
-          break
-        }
-      }
-    },
-    { rootMargin: '200px' },
-  )
-  observer.observe(frameRef.value)
-})
-
-onBeforeUnmount(() => {
-  observer?.disconnect()
-  observer = null
-})
-
 function play() {
-  // Mount the cast even if the IntersectionObserver hasn't fired yet.
-  visible.value = true
+  // First mount of <object> — this is when the SVG is actually fetched.
   playing.value = true
 }
 
@@ -279,15 +240,15 @@ function onObjectLoad(e: Event) {
     position: relative;
     background: #0d1117;
     line-height: 0;
+    // svg-term casts render at 920 wide; observed heights span 477–651
+    // (median ~560). A fixed 920/560 ratio keeps the placeholder visually
+    // honest, and means at most one cast (the tallest) will scroll-jump
+    // slightly when the SVG mounts — instead of every cast on the page
+    // shifting after Play.
+    aspect-ratio: 920 / 560;
   }
 
-  &__svg {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  // Live animated cast — overlays the poster, identical box.
+  // Live animated cast — fills the viewport box.
   &__object {
     position: absolute;
     inset: 0;
