@@ -127,8 +127,52 @@ double-slash (`https://api.datamesh-manager.com//dataproducts`),
 or that you're not behind a corporate proxy that's blocking the
 DMM domain.
 
+## Publishing to Data Mesh Manager
+
+The page above covers the **source-side** read adapter (`fluid forge data-model from-source --source datamesh_manager`). DMM is **bidirectional**: contracts can also push themselves back to DMM at apply / publish time, closing the loop.
+
+### Opt in
+
+```yaml
+# contract.fluid.yaml
+properties:
+  catalog:
+    register: [datamesh_manager]
+```
+
+### Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `FLUID_CATALOG_DMM_URL` | DMM REST endpoint. Default `https://api.datamesh-manager.com`. Falls back to legacy `DMM_API_URL`. |
+| `FLUID_CATALOG_DMM_TOKEN` | DMM API key (Bearer). Falls back to legacy `DMM_API_KEY`. |
+
+Both legacy names (`DMM_API_URL` / `DMM_API_KEY`) are still honoured for existing deployments. New deployments should use the `FLUID_CATALOG_DMM_*` names for consistency with the other publish-side registrars.
+
+### What gets emitted (Phase 1)
+
+| Contract field | DMM entity |
+|---|---|
+| Data product | `PUT /api/dataproducts/{id}` in ODPS |
+| Output port contracts | `PUT /api/datacontracts/{product_id}.{expose_id}` in ODCS, per asset |
+| Source system per build | `SourceSystem` upsert with proper lineage links (Phase 1) |
+| Per-port `contractId` reference | Resolved via the ODPS → ODCS resolver so DMM sees the canonical contract identifier |
+
+Phase 1 of the DMM flow emits the `SourceSystem` lineage links rather than the prior flat-dataset-list shape — `properties.source` on each build drives the upserts.
+
+### Verify a publish locally
+
+```bash
+export FLUID_CATALOG_DMM_URL=https://api.datamesh-manager.com
+export FLUID_CATALOG_DMM_TOKEN=dmm-...
+fluid apply contract.fluid.yaml --yes
+# → ... [publish] datamesh_manager: PUT /api/dataproducts/my-product (200)
+# → ... [publish] datamesh_manager: PUT /api/datacontracts/my-product.orders (200)
+```
+
 ## See also
 
-- [Catalog index](README.md)
+- [Catalog overview](./overview.md) — the unified publish-side flow
+- [Catalog index](README.md) — source-side catalog reading
 - [DMM provider page](../datamesh-manager.md) — for the
-  publish-target side (write contracts BACK to DMM).
+  full publish workflow (`fluid datamesh-manager publish --with-contract`).

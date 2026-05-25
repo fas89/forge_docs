@@ -12,7 +12,7 @@ Two related but distinct ideas:
 
 `fluid providers` lists everything installed in your environment.
 
-## Cloud providers shipping in `data-product-forge` 0.8.0
+## Cloud providers shipping in `data-product-forge` 0.8.3
 
 These are the cloud-platform providers that implement `plan`/`apply` against a target cloud:
 
@@ -24,6 +24,8 @@ These are the cloud-platform providers that implement `plan`/`apply` against a t
 | `snowflake` | ✅ Production (Snowflake + Snowpark)  | `pip install "data-product-forge[snowflake]"` |
 | `azure`     | 🔜 Roadmap (Synapse + ADLS)           | — |
 | `databricks`| 🔜 Roadmap (Unity Catalog)            | — |
+
+How each provider materialises `apply()` — native execution vs IaC compilation — is an implementation detail; see [`fluid generate iac`](/forge_docs/cli/generate-iac.html) for the cloud-provider engine details and the `tofu` runtime requirement.
 
 ## Other valid `binding.platform` values
 

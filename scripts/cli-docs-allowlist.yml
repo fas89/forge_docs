@@ -22,6 +22,10 @@ docs_only_ok:
   - generate-artifacts  # subcommand of `generate`, not a top-level command;
                      # dedicated page because it's the stage-3 surface of the
                      # 11-stage pipeline and operators look up the full name.
+  - generate-iac    # subcommand of `generate` (registered in
+                    # fluid_build/cli/generate_iac.py::register_subcommand);
+                    # dedicated page because PR #140's OpenTofu autogenerator
+                    # is a user-facing feature operators look up by full name.
   - mcp             # staged forge-cli branch command documented ahead of the
                     # stable docs pin; remove once promoted to the pinned CLI.
   - memory          # staged forge-cli branch command documented ahead of the

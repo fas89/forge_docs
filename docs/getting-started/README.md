@@ -30,21 +30,26 @@ You're about to ship a working data product in 30 seconds. The four-tool stack y
 
 ## Install the CLI
 
-Stable release from PyPI. The current docs baseline is `0.8.3`:
+The current docs baseline is `0.8.3` — the stable tag was cut on `2026-05-25`. The PyPI publish lands shortly after the tag, so depending on timing you may see either `0.8.3` or the functionally-equivalent `0.8.3rc1` candidate as the latest stable on PyPI:
 
 ```bash
+# Once 0.8.3 stable is on PyPI:
 pip install --upgrade data-product-forge
+pip install "data-product-forge==0.8.3"     # exact pin
 
-# For exact reproducibility with these docs:
-pip install "data-product-forge==0.8.3"
+# While the PyPI publish is in flight, opt in to the matching candidate:
+pip install --pre data-product-forge        # resolves to 0.8.3rc1
 ```
 
-Want to try the next release line before it goes stable? Pre-releases (e.g. `0.8.4rc1`) ship to PyPI as PEP 440 pre-releases — `pip install` skips them by default. Opt in explicitly:
+Pre-releases ship to PyPI as PEP 440 pre-releases — `pip install` skips them by default. The `--pre` flag opts in.
 
-```bash
-pip install --pre data-product-forge       # latest pre-release
-pip install data-product-forge==0.8.4rc1   # exact pin
-```
+### Dependency floor (what you'll see in `pip install`)
+
+`0.8.3` pins minimum versions on several deps to close known CVEs:
+
+- `jinja2 >= 3.1.6` (CVE-2025-27516), `h11 >= 0.16` (CVE-2025-43859), `cryptography >= 46.0.7` (CVE-2026-26007 / 39892 / 34073)
+- `litellm >= 1.83.7, < 2` (CVE-2026-42208) — **skips the compromised `1.82.7` / `1.82.8` PyPI artifacts**
+- `mcp >= 1.20` (required for `fluid mcp serve` sampling), `keyring >= 24.0` (now a hard dependency — catalog source secrets default to the OS keyring)
 
 Check the installed CLI and basic system health:
 
@@ -66,7 +71,12 @@ You will see two different version concepts in the docs:
 - `fluid version` reports the installed CLI release, such as `0.8.3`
 - `fluidVersion` inside `contract.fluid.yaml` selects the contract schema version, such as `0.7.3`
 
-Current scaffolds in `forge-cli` emit `fluidVersion: 0.7.3` (the GA version that ships with `0.8.3`). The CLI still accepts contracts with `fluidVersion` `0.4.0`, `0.5.7`, `0.7.1`, `0.7.2`, and `0.7.3` — run `fluid version` for the authoritative compatibility list.
+Which `fluidVersion` a fresh scaffold emits depends on the path:
+
+- `fluid init --quickstart` copies the `customer-360` template verbatim, which is pinned at `fluidVersion: 0.7.2`.
+- `fluid init --discover`, `fluid forge`, and `fluid product-new` go through the factory and emit `fluidVersion: 0.7.3` — the latest bundled schema.
+
+The CLI still accepts contracts with `fluidVersion` `0.4.0`, `0.5.7`, `0.7.1`, `0.7.2`, and `0.7.3` — run `fluid version` for the authoritative compatibility list.
 
 ## Quickstart with `fluid init`
 

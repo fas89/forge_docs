@@ -84,6 +84,38 @@ See the [Forge Data Model guide](../forge-data-model.md) for the field mapping, 
 
 For hosted provider smoke tests, export a provider key in your shell and use `--require-llm`. Do not paste API keys into command examples, contracts, intent files, or docs.
 
+## Seeding from an existing ODCS or Bitol ODPS contract
+
+::: tip Available in 0.8.3 (experimental — pre-processor)
+`--seed-from` accepts an ODCS contract, a Bitol ODPS product, or a directory bundle as a **structural seed** for the copilot. The schema / quality / qos from the seed are treated as ground truth; the LLM fills in builds, execution, and governance.
+:::
+
+If you already have an upstream ODCS or Bitol ODPS contract (your own, or one published by an upstream team), use `--seed-from` to skip the discovery phase entirely:
+
+```bash
+fluid forge --seed-from ./upstream.odcs.yaml
+fluid forge --seed-from ./upstream.odps.yaml
+fluid forge --seed-from ./bitol-bundle/             # directory with ODPS + sibling ODCS files
+```
+
+Accepted entry shapes:
+
+- `*.odcs.yaml` — a lone Open Data Contract Standard v3.1.0 file
+- `*.odps.yaml` — a Bitol ODPS data product file
+- a **directory bundle** containing the ODPS doc plus sibling `<contractId>.odcs.yaml` files (or only ODCS files)
+
+### Remote seeds — opt in to `http(s)` fetch
+
+```bash
+fluid forge --seed-from https://catalog.example.com/products/orders.odps.yaml --seed-allow-remote
+```
+
+Remote `http(s)` `contractId` references are **off by default** (the May 2026 SSRF hardening). `--seed-allow-remote` opts in to remote fetch; the fetcher rejects internal/private IPs, pins the validated IP, and caps the body at 10 MiB. Only enable when you trust the upstream catalog. See [network safety](/forge_docs/advanced/network-safety.html) for the full SSRF posture.
+
+### Where the seed lands
+
+The seed pre-processor lives at `fluid_build/cli/forge_copilot_seed.load_seed(...)` and is callable as a library. The copilot runtime hand-off plus the ground-truth diff guard (rejecting an LLM rewrite that mutates schema fields the seed pinned) are wired into the standard `fluid forge` flow.
+
 ## Forging from a source catalog
 
 If your team already maintains rich metadata (descriptions, tags,
