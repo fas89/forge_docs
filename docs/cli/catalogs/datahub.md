@@ -142,8 +142,60 @@ for any non-sandbox deployment.
 Likely missing the `View Lineage` policy. DV2 link inference falls
 back to FK constraints only — forge still works.
 
+## Publishing to DataHub
+
+The page above covers the **source-side** read adapter (`fluid forge data-model from-source --source datahub`). `v0.8.3` added a **publish-side** DataHub registrar — contracts can register themselves with DataHub at apply / publish time so that the catalog reflects the data product alongside the underlying datasets.
+
+### Opt in
+
+Add `datahub` to the contract's catalog register list:
+
+```yaml
+# contract.fluid.yaml
+properties:
+  catalog:
+    register: [datahub]
+```
+
+### Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `FLUID_CATALOG_DATAHUB_URL` | DataHub GMS endpoint (e.g. `https://datahub.corp.example.com/api/gms`). Falls back to `DATAHUB_GMS_URL`. |
+| `FLUID_CATALOG_DATAHUB_TOKEN` | DataHub PAT used for the publish path. Falls back to `DATAHUB_GMS_TOKEN`. |
+| `FLUID_CATALOG_DATAHUB_SPEC_BASE_URL` | Optional base URL for spec source documents (used when the registrar links contracts back to their source-of-truth URL). |
+| `FLUID_LAYER_PROPERTY_ID` | DataHub structured-property URN that the registrar uses to surface `metadata.layer` (Bronze / Silver / Gold). Override only if you've registered the property under a non-default URN. |
+| `FLUID_PRODUCT_TYPE_PROPERTY_ID` | DataHub structured-property URN for `metadata.productType` (SDP / ADP / CDP). |
+
+The publish-side path uses the canonical SSRF-guarded HTTP client — no `http://` or private-IP DataHub instance will be reachable unless `FLUID_WEBHOOK_HOST_ALLOWLIST` covers it. See [network safety](/forge_docs/advanced/network-safety.html).
+
+### What gets emitted
+
+| Contract field | DataHub entity |
+|---|---|
+| Data product | `DataProduct` (canonical MCP) |
+| Output ports (datasets) | `Dataset` per port with full schema, ownership, tags, descriptions |
+| Per-port contract | `DataContract` linked to the `Dataset` |
+| `metadata.domain` | `Domain` (created if absent) |
+| `metadata.layer` / `metadata.productType` | Structured properties (URNs from `FLUID_LAYER_PROPERTY_ID` / `FLUID_PRODUCT_TYPE_PROPERTY_ID`) |
+| Quality assertions | `Assertion` MCPs linked to the parent dataset |
+
+The registrar writes are idempotent — re-publishing the same contract is a no-op against DataHub.
+
+### Verify a publish locally
+
+```bash
+export FLUID_CATALOG_DATAHUB_URL=https://datahub.local:8080/api/gms
+export FLUID_CATALOG_DATAHUB_TOKEN=$(cat ~/.datahub-pat)
+fluid apply contract.fluid.yaml --yes
+# → ... [publish] datahub: registered DataProduct urn:li:dataProduct:my-product
+```
+
+If the registrar can't reach DataHub, the publish step warns rather than fails the apply — pair with `--strict-publish` (a future flag, currently planned) to make publish failures fatal.
+
 ## See also
 
-- [Catalog index](README.md)
+- [Catalog overview](./overview.md) — the unified publish-side flow
+- [Catalog index](README.md) — source-side catalog reading
 - [DataHub upstream docs](https://datahubproject.io/docs/) — for
   installing / configuring DataHub itself.

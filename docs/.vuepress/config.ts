@@ -185,6 +185,7 @@ export default defineUserConfig({
             '/cli/verify-signature.md',
             '/cli/generate-airflow.md',
             '/cli/generate-pipeline.md',
+            '/cli/generate-iac.md',
             '/cli/viz-graph.md',
             // Standards & interop
             '/cli/odps.md',
@@ -244,13 +245,15 @@ export default defineUserConfig({
               collapsible: true,
               children: [
                 '/cli/catalogs/README.md',
+                '/cli/catalogs/overview.md',
                 '/cli/catalogs/bigquery.md',
                 '/cli/catalogs/snowflake.md',
                 '/cli/catalogs/unity.md',
                 '/cli/catalogs/dataplex.md',
                 '/cli/catalogs/glue.md',
                 '/cli/catalogs/datahub.md',
-                '/cli/catalogs/datamesh-manager.md'
+                '/cli/catalogs/datamesh-manager.md',
+                '/cli/catalogs/openmetadata.md'
               ]
             },
             {
@@ -272,7 +275,9 @@ export default defineUserConfig({
             '/recipes/README.md',
             '/recipes/add-a-quality-rule.md',
             '/recipes/switch-clouds.md',
-            '/recipes/tag-pii.md'
+            '/recipes/tag-pii.md',
+            '/recipes/consumes-contract-to-contract.md',
+            '/recipes/per-environment-overlays.md'
           ]
         },
         {
@@ -338,6 +343,8 @@ export default defineUserConfig({
         {
           text: 'Advanced',
           children: [
+            '/advanced/environment-variables.md',
+            '/advanced/network-safety.md',
             '/advanced/blueprints.md',
             '/advanced/governance.md',
             '/advanced/airflow.md',

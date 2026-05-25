@@ -1,86 +1,85 @@
-# LiteLLM Backend (opt-in)
+# LiteLLM Backend
 
-The upcoming `0.7.3` release ships an opt-in `LiteLLMProvider` that routes every LLM call through [LiteLLM](https://github.com/BerriAI/litellm) instead of Forge's native per-provider HTTP shapes. Enable it for unified routing, accurate per-call cost attribution, and access to LiteLLM's broader provider catalog.
+[LiteLLM](https://github.com/BerriAI/litellm) is the canonical LLM backend on `v0.8.3` — every LLM call from `fluid forge`, `fluid ai`, and the copilot routes through it. LiteLLM replaced ~1,300 lines of per-provider wire-format code with one unified API; no extra install step, no toggle.
 
 ::: tip Where this fits
-LiteLLM is a routing-layer alternative to the native provider stack documented at [LLM Providers](/forge_docs/advanced/llm-providers.html). Both stacks share the same `LlmProvider` base class — switching between them is a one-env-var flip.
+LiteLLM is wired into core `data-product-forge` (`litellm >= 1.83.7, < 2` is a hard dependency). The historical "opt-in extra" framing from pre-`0.8.0` docs is no longer accurate — the dispatcher always goes through LiteLLM. The companion [LLM Providers](/forge_docs/advanced/llm-providers.html) page covers which provider env vars to set; this page covers the routing-layer specifics.
 :::
 
-## Enabling
+## Built-in providers
+
+The dispatcher resolves `--llm-provider <name>` against this provider map (`fluid_build/cli/forge_copilot_llm_litellm.py`):
+
+| Provider key | LiteLLM provider | Default model |
+|---|---|---|
+| `openai` | `openai` | `gpt-4.1-mini` |
+| `anthropic` | `anthropic` | `claude-haiku-4-5` |
+| `claude` (alias for `anthropic`) | `anthropic` | `claude-haiku-4-5` |
+| `gemini` | `gemini` | `gemini-2.5-flash` |
+| `google` (alias for `gemini`) | `gemini` | `gemini-2.5-flash` |
+| `bedrock` | `bedrock` | `anthropic.claude-3-5-sonnet-20240620-v1:0` |
+| `vertex` / `vertex_ai` | `vertex_ai` | `gemini-2.5-flash` |
+| `ollama` | `ollama` (localhost-only) | `gemma3:4b` |
+
+Beyond these built-ins, LiteLLM exposes 100+ providers through its catalog — point `--llm-model` (or `FLUID_LLM_MODEL`) at any model the LiteLLM docs list and the dispatcher routes the call.
+
+## Quickstart
 
 ```bash
-pip install 'data-product-forge[litellm]'
-
-export FLUID_LLM_BACKEND=litellm
-fluid forge --domain retail
+fluid forge --domain retail                                    # uses the configured default
+fluid forge --llm-provider openai --llm-model gpt-4.1-mini
+fluid forge --llm-provider bedrock --llm-model anthropic.claude-3-5-sonnet-20240620-v1:0
+fluid forge --llm-provider vertex --llm-model gemini/gemini-2.5-pro
 ```
 
-That's it. The dispatcher in `cli/forge_copilot_llm_providers.py::get_llm_provider` short-circuits to `LiteLLMProvider` when the env var is set; `call_llm` and `call_llm_streaming` route through it transparently.
-
-## What changes
-
-| Aspect | Native stack | LiteLLM stack |
-|---|---|---|
-| Provider list | Anthropic / OpenAI / Gemini / Azure / Ollama (5 hand-rolled) | 100+ providers via LiteLLM's catalog |
-| Cost attribution | Heuristic estimator (token counts × price/token table) | LiteLLM's per-call `usage.cost` field — accurate to the cent |
-| Streaming | Native SSE per provider | LiteLLM's unified streaming wrapper |
-| Tool use | Native per-provider tool-use shapes | LiteLLM's unified `tools` parameter |
-| Prompt caching | Native (Anthropic only) | Whatever LiteLLM passes through |
-| Token-usage capture | SSE wire decoder per provider | LiteLLM's `usage` callback |
+Per-call cost is attributed via LiteLLM's `usage.cost` field — accurate to the cent — and folded into `.fluid/agents/<run-id>/cost.json`. See [`fluid stats`](/forge_docs/cli/stats.html) for the cross-run aggregator.
 
 ## Configuration
 
 | Env var | Purpose |
 |---|---|
-| `FLUID_LLM_BACKEND=litellm` | Activate the LiteLLM stack |
-| `FLUID_LLM_MODEL` | Model name. Use LiteLLM's model-name conventions (e.g. `claude-3-5-sonnet-20241022`, `gpt-4.1-mini`, `gemini/gemini-2.5-pro`). |
-| `FLUID_LITELLM_MODEL_PREFIX` | Override the prefix LiteLLM uses for niche providers — e.g. `azure/`, `bedrock/`. |
-| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | Provider keys, same as the native stack. |
+| `FLUID_LLM_PROVIDER` | Provider key (`openai` / `anthropic` / `gemini` / `bedrock` / `vertex` / `ollama`, etc.). Honoured as the default when `--llm-provider` is not passed. |
+| `FLUID_LLM_MODEL` | Model name. Use LiteLLM's model-name conventions (e.g. `claude-haiku-4-5`, `gpt-4.1-mini`, `gemini/gemini-2.5-pro`). |
+| `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` | Provider keys. LiteLLM reads the same env-var names the underlying SDKs use. |
+| `AWS_*` / `AWS_PROFILE` | Bedrock auth — standard AWS-CLI env vars. |
+| `GOOGLE_APPLICATION_CREDENTIALS` / `VERTEX_PROJECT` / `VERTEX_LOCATION` | Vertex AI auth. |
+| `FLUID_OLLAMA_MODEL` | Override the default Ollama model. |
 | `LITELLM_*` | Any LiteLLM-specific env var (LiteLLM reads these directly; Forge doesn't filter them). |
+
+See the canonical [environment variables index](/forge_docs/advanced/environment-variables.html) for everything else.
 
 ## Cost attribution
 
-The native stack estimates cost from input/output token counts via an internal price table that gets stale every time providers change pricing. LiteLLM's `usage.cost` field is the authoritative per-call cost the LLM API itself reports, so:
+LiteLLM's `usage.cost` field is the authoritative per-call cost the LLM API itself reports, so the per-run `cost.json` and [`fluid stats`](/forge_docs/cli/stats.html) reflect billing-grade figures:
 
 ```python
-# Internal — RunCostTracker.record_call signature gained usd_override
+# Internal — RunCostTracker.record_call accepts usd_override
 tracker.record_call(
     provider="anthropic",
-    model="claude-3-5-sonnet-20241022",
+    model="claude-haiku-4-5",
     input_tokens=8420,
     output_tokens=1800,
     usd_override=0.0286,   # passed in from LiteLLM's reported cost
 )
 ```
 
-`fluid stats` ([page](/forge_docs/cli/stats.html)) and the per-run `cost.json` show the LiteLLM-reported figure when `FLUID_LLM_BACKEND=litellm`. Older runs (or runs on the native stack) keep using the heuristic estimate.
+Runs from older releases that pre-date the LiteLLM unification still show the heuristic estimate until they age out of `.fluid/agents/`.
 
 ## Capability warnings
 
-The capability catalog at `fluid_build/copilot/agents/capability_catalog.py` covers the native-stack provider/model combinations. When you switch to LiteLLM, the catalog still applies (LiteLLM is just a router) but the warnings reflect the underlying model — `litellm + claude-sonnet-4-6` warns identically to `anthropic + claude-sonnet-4-6`.
+The capability catalog at `fluid_build/copilot/agents/capability_catalog.py` covers the canonical provider/model combinations. The warnings reflect the underlying model regardless of LiteLLM's routing layer — `claude-sonnet-4-6` warns identically whether reached via `anthropic` direct or via Bedrock.
 
-If you point LiteLLM at a model not in the catalog, the run-start banner says "model X is not in the capability catalog" and the run continues with conservative defaults. See [Capability Warnings](/forge_docs/advanced/capability-warnings.html#unknown-provider-model).
-
-## When to use LiteLLM vs. native
-
-| Use LiteLLM when | Use native when |
-|---|---|
-| You need a provider not in the native 5 (Bedrock, Vertex direct, Cohere, Mistral cloud, etc.) | You're on Anthropic / OpenAI / Gemini / Ollama and want fewest dependencies |
-| You want per-call cost accurate to the cent (LiteLLM passes through provider billing) | You're cost-budgeting at the run level — heuristic is good enough |
-| You're already running LiteLLM as a routing proxy in production and want Forge to use the same path | You want zero new runtime deps |
-| You want to A/B test models without code changes | — |
-
-The two stacks coexist safely — you can flip `FLUID_LLM_BACKEND` per run without touching contracts or config.
+If you point LiteLLM at a model the catalog doesn't know, the run-start banner says "model X is not in the capability catalog" and the run continues with conservative defaults. See [Capability Warnings](/forge_docs/advanced/capability-warnings.html#unknown-provider-model).
 
 ## Caveats
 
-- LiteLLM is an extra at install time (`pip install 'data-product-forge[litellm]'`). Without it, setting `FLUID_LLM_BACKEND=litellm` raises `MissingExtraError` at run start.
-- Tool-use behaviour matches LiteLLM's wrapper, not the native shape. If you've been depending on Anthropic's exact tool-use response shape (rare), switching to LiteLLM may surface differences.
-- The agent-layer typed errors (`RateLimitError`, `ContextOverflowError`, etc. — see [Typed Errors](/forge_docs/advanced/typed-errors.html)) still fire under LiteLLM; the classifier handles both wire shapes.
+- Tool-use behaviour matches LiteLLM's wrapper. If you've been depending on a specific provider's exact tool-use response shape, surface mismatches will show up at the agent-layer error classifier — but the typed errors (`RateLimitError`, `ContextOverflowError`, etc. — see [Typed Errors](/forge_docs/advanced/typed-errors.html)) handle both wire shapes.
+- Ollama is restricted to `localhost` (`127.0.0.1` / `::1`) by the SSRF guard. See [network safety](/forge_docs/advanced/network-safety.html).
 
 ## See also
 
-- [LLM Providers](/forge_docs/advanced/llm-providers.html) — the native stack
-- [Capability Warnings](/forge_docs/advanced/capability-warnings.html) — what the capability catalog enforces under both stacks
+- [LLM Providers](/forge_docs/advanced/llm-providers.html) — provider-specific env vars and auth modes
+- [Capability Warnings](/forge_docs/advanced/capability-warnings.html) — what the capability catalog enforces
 - [Cost Tracking](/forge_docs/advanced/cost-tracking.html) — how cost figures land in `.fluid/agents/<run-id>/cost.json`
 - [`fluid stats`](/forge_docs/cli/stats.html) — aggregating cost across runs
+- [Environment variables](/forge_docs/advanced/environment-variables.html) — canonical `FLUID_*` reference
